@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0c1424" />
+  <title>창원NC파크 날씨 전광판</title>
+  <style>
+    :root{
+      --bg:#09111f;
+      --panel:rgba(255,255,255,.075);
+      --panel-strong:rgba(255,255,255,.11);
+      --line:rgba(255,255,255,.13);
+      --text:#f5f8ff;
+      --muted:#aeb9cb;
+      --accent:#70b7ff;
+      --good:#78d6a3;
+      --warn:#ffd47a;
+      --bad:#ff9a8f;
+      --shadow:0 12px 35px rgba(0,0,0,.18);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+    }
+    body{
+      background:
+        radial-gradient(circle at 15% 15%, rgba(67,128,201,.20), transparent 30%),
+        radial-gradient(circle at 90% 8%, rgba(108,166,218,.10), transparent 28%),
+        linear-gradient(145deg,#07101d 0%,#101d31 58%,#0a1322 100%);
+    }
+
+    .app{
+      width:100vw;
+      height:100vh;
+      min-height:560px;
+      padding:2.2vh 2.0vw 1.6vh;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto auto;
+      gap:1.5vh;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      padding:0 .25vw;
+    }
+    .place-wrap{min-width:0}
+    .place{
+      font-size:clamp(24px,2.15vw,44px);
+      line-height:1.15;
+      font-weight:800;
+      letter-spacing:-.04em;
+      white-space:nowrap;
+    }
+    .subplace{
+      margin-top:.45vh;
+      color:var(--muted);
+      font-size:clamp(12px,.93vw,20px);
+      letter-spacing:-.015em;
+    }
+    .datetime{text-align:right;white-space:nowrap}
+    .date{
+      color:var(--muted);
+      font-size:clamp(14px,1.02vw,22px);
+      margin-bottom:.25vh;
+    }
+    .clock{
+      font-size:clamp(31px,3.1vw,62px);
+      font-weight:800;
+      line-height:1;
+      letter-spacing:-.035em;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .main-grid{
+      min-height:0;
+      display:grid;
+      grid-template-columns:1.12fr .88fr;
+      gap:1.25vw;
+    }
+    .panel{
+      border:1px solid var(--line);
+      background:var(--panel);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    .current{
+      min-height:0;
+      padding:2.2vh 2vw;
+      display:grid;
+      grid-template-columns:minmax(250px,.95fr) minmax(290px,1.05fr);
+      gap:1.5vw;
+      align-items:center;
+    }
+    .hero{
+      display:flex;
+      align-items:center;
+      gap:1.3vw;
+      min-width:0;
+    }
+    .weather-icon{
+      width:clamp(100px,10vw,190px);
+      flex:0 0 auto;
+      text-align:center;
+      font-size:clamp(82px,8.2vw,158px);
+      line-height:1;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.18));
+    }
+    .temp{
+      font-size:clamp(66px,7vw,142px);
+      font-weight:800;
+      letter-spacing:-.075em;
+      line-height:.9;
+      font-variant-numeric:tabular-nums;
+    }
+    .condition{
+      margin-top:1.0vh;
+      font-size:clamp(23px,2vw,42px);
+      font-weight:750;
+      letter-spacing:-.04em;
+    }
+    .feels{
+      margin-top:.55vh;
+      color:var(--muted);
+      font-size:clamp(14px,1.1vw,22px);
+    }
+    .today-range{
+      margin-top:1.15vh;
+      display:flex;
+      gap:1vw;
+      flex-wrap:wrap;
+      color:#dbe7f8;
+      font-size:clamp(15px,1.15vw,23px);
+      font-weight:650;
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.0vh .75vw;
+    }
+    .metric{
+      min-height:8.7vh;
+      padding:1.25vh 1.0vw;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.055);
+      border-radius:18px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .metric-label{
+      color:var(--muted);
+      font-size:clamp(12px,.9vw,18px);
+      margin-bottom:.45vh;
+    }
+    .metric-value{
+      font-size:clamp(21px,1.65vw,34px);
+      font-weight:760;
+      letter-spacing:-.035em;
+      font-variant-numeric:tabular-nums;
+    }
+    .metric-small{
+      margin-top:.2vh;
+      color:var(--muted);
+      font-size:clamp(11px,.75vw,15px);
+    }
+
+    .forecast{
+      min-height:0;
+      padding:1.5vh 1.25vw 1.2vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .section-title{
+      font-size:clamp(14px,1.05vw,21px);
+      font-weight:720;
+      margin:0 0 1.0vh .2vw;
+      color:#eaf2ff;
+    }
+    .days{
+      flex:1;
+      min-height:0;
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:.65vw;
+    }
+    .day{
+      min-width:0;
+      padding:1.15vh .65vw;
+      border-radius:17px;
+      background:rgba(255,255,255,.047);
+      border:1px solid rgba(255,255,255,.075);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      text-align:center;
+    }
+    .day.today{
+      background:rgba(112,183,255,.12);
+      border-color:rgba(112,183,255,.28);
+    }
+    .day-name{
+      font-size:clamp(12px,.88vw,18px);
+      color:var(--muted);
+      font-weight:650;
+    }
+    .day-icon{
+      font-size:clamp(28px,2.7vw,52px);
+      line-height:1.1;
+      margin:.45vh 0;
+    }
+    .day-temp{
+      font-size:clamp(15px,1.12vw,23px);
+      font-weight:720;
+      white-space:nowrap;
+    }
+    .day-rain{
+      margin-top:.3vh;
+      font-size:clamp(11px,.78vw,16px);
+      color:#a9d2ff;
+      white-space:nowrap;
+    }
+
+    .hourly{
+      display:grid;
+      grid-template-columns:auto repeat(8,1fr);
+      gap:.5vw;
+      align-items:center;
+      padding:.75vh .7vw;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.045);
+      border-radius:18px;
+    }
+    .hourly-label{
+      padding:0 .65vw;
+      color:var(--muted);
+      font-size:clamp(11px,.78vw,16px);
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .hour{
+      min-width:0;
+      text-align:center;
+      padding:.55vh .25vw;
+      border-radius:12px;
+    }
+    .hour-time{
+      color:var(--muted);
+      font-size:clamp(10px,.72vw,14px);
+    }
+    .hour-data{
+      margin-top:.25vh;
+      font-size:clamp(12px,.88vw,18px);
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .hour-rain{
+      margin-top:.15vh;
+      color:#9fcaff;
+      font-size:clamp(9px,.62vw,13px);
+    }
+
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      color:var(--muted);
+      font-size:clamp(10px,.72vw,14px);
+      padding:0 .25vw;
+      min-height:2vh;
+    }
+    .status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .source{text-align:right;white-space:nowrap}
+
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      display:inline-block;margin-right:7px;vertical-align:1px;
+      background:var(--good);
+      box-shadow:0 0 0 3px rgba(120,214,163,.08);
+    }
+    .dot.loading{background:var(--warn)}
+    .dot.error{background:var(--bad)}
+
+    @media (max-width:980px), (max-aspect-ratio:4/3){
+      html,body{overflow:auto}
+      .app{height:auto;min-height:100vh;grid-template-rows:auto auto auto auto}
+      .main-grid{grid-template-columns:1fr}
+      .current{grid-template-columns:1fr}
+      .days{grid-template-columns:repeat(3,1fr)}
+      .hourly{grid-template-columns:auto repeat(4,1fr)}
+      .hour:nth-child(n+6){display:none}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="place-wrap">
+        <div class="place">창원NC파크 날씨</div>
+        <div class="subplace">경남 창원시 마산회원구 · 사무실 기상 전광판</div>
+      </div>
+      <div class="datetime">
+        <div id="date" class="date">날짜 불러오는 중</div>
+        <div id="clock" class="clock">--:--:--</div>
+      </div>
+    </header>
+
+    <section class="main-grid">
+      <article class="panel current">
+        <div class="hero">
+          <div id="currentIcon" class="weather-icon">⛅</div>
+          <div>
+            <div id="temp" class="temp">--°</div>
+            <div id="condition" class="condition">날씨 불러오는 중</div>
+            <div id="feels" class="feels">체감온도 --°C</div>
+            <div class="today-range">
+              <span id="high">최고 --°</span>
+              <span id="low">최저 --°</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">습도</div>
+            <div id="humidity" class="metric-value">--%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">바람</div>
+            <div id="wind" class="metric-value">-- m/s</div>
+            <div id="windDir" class="metric-small">--</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">현재 강수확률</div>
+            <div id="rain" class="metric-value">--%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">미세먼지 PM10</div>
+            <div id="pm10" class="metric-value">--</div>
+            <div id="pm10Grade" class="metric-small">대기질 불러오는 중</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">초미세먼지 PM2.5</div>
+            <div id="pm25" class="metric-value">--</div>
+            <div id="pm25Grade" class="metric-small">대기질 불러오는 중</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">오늘 예상 강수량</div>
+            <div id="precipSum" class="metric-value">-- mm</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel forecast">
+        <h2 class="section-title">6일 예보</h2>
+        <div id="days" class="days">
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+          <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="hourly" class="hourly">
+      <div class="hourly-label">시간대별</div>
+    </section>
+
+    <footer class="footer">
+      <div id="status" class="status"><span id="statusDot" class="dot loading"></span><span id="statusText">기상정보 연결 중</span></div>
+      <div class="source">10분마다 자동 갱신 · Open-Meteo</div>
+    </footer>
+  </main>
+
+  <script>
+  (function(){
+    "use strict";
+
+    // 창원NC파크 부근
+    var LAT = 35.2220;
+    var LON = 128.5823;
+    var TZ = "Asia/Seoul";
+    var REFRESH_MS = 10 * 60 * 1000;
+
+    var weatherUrl =
+      "https://api.open-meteo.com/v1/forecast" +
+      "?latitude=" + LAT +
+      "&longitude=" + LON +
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m" +
+      "&hourly=temperature_2m,precipitation_probability,weather_code" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum" +
+      "&temperature_unit=celsius&wind_speed_unit=ms&precipitation_unit=mm" +
+      "&timezone=" + encodeURIComponent(TZ) +
+      "&forecast_days=7";
+
+    var airUrl =
+      "https://air-quality-api.open-meteo.com/v1/air-quality" +
+      "?latitude=" + LAT +
+      "&longitude=" + LON +
+      "&current=pm10,pm2_5" +
+      "&timezone=" + encodeURIComponent(TZ);
+
+    function el(id){ return document.getElementById(id); }
+
+    function weatherInfo(code, isDay){
+      var c = Number(code);
+      if(c === 0) return {text:"맑음", icon:isDay === false ? "🌙" : "☀️"};
+      if(c === 1) return {text:"대체로 맑음", icon:isDay === false ? "🌙" : "🌤️"};
+      if(c === 2) return {text:"구름 조금", icon:"⛅"};
+      if(c === 3) return {text:"흐림", icon:"☁️"};
+      if(c === 45 || c === 48) return {text:"안개", icon:"🌫️"};
+      if(c === 51 || c === 53 || c === 55) return {text:"이슬비", icon:"🌦️"};
+      if(c === 56 || c === 57) return {text:"어는 이슬비", icon:"🌧️"};
+      if(c === 61 || c === 63 || c === 65) return {text:"비", icon:"🌧️"};
+      if(c === 66 || c === 67) return {text:"어는 비", icon:"🌧️"};
+      if(c === 71 || c === 73 || c === 75 || c === 77) return {text:"눈", icon:"🌨️"};
+      if(c === 80 || c === 81 || c === 82) return {text:"소나기", icon:"🌦️"};
+      if(c === 85 || c === 86) return {text:"눈 소나기", icon:"🌨️"};
+      if(c === 95) return {text:"뇌우", icon:"⛈️"};
+      if(c === 96 || c === 99) return {text:"우박 동반 뇌우", icon:"⛈️"};
+      return {text:"기상정보", icon:"🌤️"};
+    }
+
+    function windDirection(deg){
+      var dirs = ["북","북동","동","남동","남","남서","서","북서"];
+      return dirs[Math.round((Number(deg) || 0) / 45) % 8] + "풍";
+    }
+
+    function airGrade(value, type){
+      var v = Number(value);
+      if(!isFinite(v)) return "자료 없음";
+      var cuts = type === "pm10" ? [30,80,150] : [15,35,75];
+      if(v <= cuts[0]) return "좋음";
+      if(v <= cuts[1]) return "보통";
+      if(v <= cuts[2]) return "나쁨";
+      return "매우 나쁨";
+    }
+
+    function fmtDate(dateStr, idx){
+      var d = new Date(dateStr + "T00:00:00+09:00");
+      var days = ["일","월","화","수","목","금","토"];
+      if(idx === 0) return "오늘";
+      if(idx === 1) return "내일";
+      return days[d.getDay()] + "요일";
+    }
+
+    function setStatus(text, state){
+      el("statusText").textContent = text;
+      var dot = el("statusDot");
+      dot.className = "dot" + (state ? " " + state : "");
+    }
+
+    function updateClock(){
+      var now = new Date();
+      var dateFmt = new Intl.DateTimeFormat("ko-KR", {
+        timeZone:TZ, year:"numeric", month:"2-digit", day:"2-digit", weekday:"long"
+      });
+      var timeFmt = new Intl.DateTimeFormat("ko-KR", {
+        timeZone:TZ, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
+      });
+      el("date").textContent = dateFmt.format(now);
+      el("clock").textContent = timeFmt.format(now);
+    }
+
+    function currentHourIndex(hourlyTimes){
+      var now = new Date();
+      var parts = new Intl.DateTimeFormat("sv-SE", {
+        timeZone:TZ, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit"
+      }).formatToParts(now);
+      var m = {};
+      parts.forEach(function(p){ m[p.type] = p.value; });
+      var key = m.year + "-" + m.month + "-" + m.day + "T" + m.hour + ":00";
+      var idx = hourlyTimes.indexOf(key);
+      if(idx >= 0) return idx;
+
+      var best = 0, bestDiff = Infinity;
+      for(var i=0;i<hourlyTimes.length;i++){
+        var diff = Math.abs(new Date(hourlyTimes[i] + ":00+09:00").getTime() - now.getTime());
+        if(diff < bestDiff){ bestDiff = diff; best = i; }
+      }
+      return best;
+    }
+
+    function renderWeather(data){
+      var c = data.current || {};
+      var d = data.daily || {};
+      var h = data.hourly || {};
+      var info = weatherInfo(c.weather_code, true);
+
+      el("currentIcon").textContent = info.icon;
+      el("temp").textContent = Math.round(c.temperature_2m) + "°";
+      el("condition").textContent = info.text;
+      el("feels").textContent = "체감온도 " + Math.round(c.apparent_temperature) + "°C";
+      el("humidity").textContent = Math.round(c.relative_humidity_2m) + "%";
+      el("wind").textContent = (Number(c.wind_speed_10m) || 0).toFixed(1) + " m/s";
+      el("windDir").textContent = windDirection(c.wind_direction_10m) + " · " + Math.round(c.wind_direction_10m || 0) + "°";
+      el("rain").textContent = Math.round(c.precipitation_probability || 0) + "%";
+
+      if(d.temperature_2m_max && d.temperature_2m_max.length){
+        el("high").textContent = "최고 " + Math.round(d.temperature_2m_max[0]) + "°";
+        el("low").textContent = "최저 " + Math.round(d.temperature_2m_min[0]) + "°";
+        el("precipSum").textContent = Number(d.precipitation_sum[0] || 0).toFixed(1) + " mm";
+      }
+
+      var daysHtml = "";
+      var count = Math.min(6, d.time ? d.time.length : 0);
+      for(var i=0;i<count;i++){
+        var wi = weatherInfo(d.weather_code[i], true);
+        daysHtml +=
+          '<div class="day' + (i===0 ? ' today' : '') + '">' +
+            '<div class="day-name">' + fmtDate(d.time[i], i) + '</div>' +
+            '<div class="day-icon">' + wi.icon + '</div>' +
+            '<div class="day-temp">' + Math.round(d.temperature_2m_max[i]) + '° / ' + Math.round(d.temperature_2m_min[i]) + '°</div>' +
+            '<div class="day-rain">☂ ' + Math.round(d.precipitation_probability_max[i] || 0) + '%</div>' +
+          '</div>';
+      }
+      if(daysHtml) el("days").innerHTML = daysHtml;
+
+      var hourly = el("hourly");
+      hourly.innerHTML = '<div class="hourly-label">시간대별</div>';
+      if(h.time && h.time.length){
+        var start = currentHourIndex(h.time);
+        for(var j=0;j<8;j++){
+          var idx = start + j;
+          if(idx >= h.time.length) break;
+          var hh = h.time[idx].slice(11,13);
+          var hInfo = weatherInfo(h.weather_code[idx], true);
+          var div = document.createElement("div");
+          div.className = "hour";
+          div.innerHTML =
+            '<div class="hour-time">' + (j===0 ? '현재' : hh + '시') + '</div>' +
+            '<div class="hour-data">' + hInfo.icon + ' ' + Math.round(h.temperature_2m[idx]) + '°</div>' +
+            '<div class="hour-rain">☂ ' + Math.round(h.precipitation_probability[idx] || 0) + '%</div>';
+          hourly.appendChild(div);
+        }
+      }
+    }
+
+    function renderAir(data){
+      var c = data.current || {};
+      if(c.pm10 != null){
+        el("pm10").textContent = Math.round(c.pm10) + " ㎍/㎥";
+        el("pm10Grade").textContent = airGrade(c.pm10, "pm10");
+      }
+      if(c.pm2_5 != null){
+        el("pm25").textContent = Math.round(c.pm2_5) + " ㎍/㎥";
+        el("pm25Grade").textContent = airGrade(c.pm2_5, "pm25");
+      }
+    }
+
+    function refresh(){
+      setStatus("기상정보 갱신 중", "loading");
+
+      var weatherReq = fetch(weatherUrl, {cache:"no-store"})
+        .then(function(r){ if(!r.ok) throw new Error("weather"); return r.json(); })
+        .then(function(data){ renderWeather(data); return true; });
+
+      var airReq = fetch(airUrl, {cache:"no-store"})
+        .then(function(r){ if(!r.ok) throw new Error("air"); return r.json(); })
+        .then(function(data){ renderAir(data); return true; })
+        .catch(function(){
+          el("pm10Grade").textContent = "대기질 연결 실패";
+          el("pm25Grade").textContent = "대기질 연결 실패";
+          return false;
+        });
+
+      Promise.all([weatherReq, airReq]).then(function(){
+        var t = new Intl.DateTimeFormat("ko-KR", {
+          timeZone:TZ, hour:"2-digit", minute:"2-digit", hour12:false
+        }).format(new Date());
+        setStatus("정상 · 최근 갱신 " + t, "");
+      }).catch(function(){
+        setStatus("날씨 서버 연결 실패 · 자동 재시도", "error");
+      });
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    refresh();
+    setInterval(refresh, REFRESH_MS);
+  })();
+  </script>
+</body>
+</html>
