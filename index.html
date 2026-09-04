@@ -1035,8 +1035,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심시간입니다",message:"맛있는 점심 드세요!",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"퇴근시간입니다",message:"오늘도 수고하셨습니다. 좋은 저녁 되세요!",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",speech:"점심 시간입니다. 맛점하세요.",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",speech:"업무 종료 시간입니다. 고생하셨습니다",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1131,7 +1131,7 @@
   }
 
   function playChime(){
-    if(!soundEnabled||!audioCtx)return;
+    if(!soundEnabled||!audioCtx)return 0;
     if(audioCtx.state==="suspended")audioCtx.resume();
 
     var now=audioCtx.currentTime;
@@ -1144,27 +1144,56 @@
       {t:2.00,f:1318.51,d:.60}
     ];
 
-    /* 기존 대비 약 30% 크게, 같은 알림음을 2회 재생 */
-    var CHIME_GAIN=.286; /* 0.22 × 1.3 */
-    var REPEAT_GAP=3.05;
+    /* 이전 버전보다 조금 더 크게. 알림음은 1회만 재생 */
+    var CHIME_GAIN=.34;
 
-    for(var repeat=0;repeat<2;repeat++){
-      var offset=repeat*REPEAT_GAP;
-      for(var i=0;i<notes.length;i++){
-        var n=notes[i];
-        var osc=audioCtx.createOscillator();
-        var gain=audioCtx.createGain();
-        osc.type="sine";
-        osc.frequency.value=n.f;
-        gain.gain.setValueAtTime(0.0001,now+offset+n.t);
-        gain.gain.exponentialRampToValueAtTime(CHIME_GAIN,now+offset+n.t+.025);
-        gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+n.t+n.d);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now+offset+n.t);
-        osc.stop(now+offset+n.t+n.d+.05);
-      }
+    for(var i=0;i<notes.length;i++){
+      var n=notes[i];
+      var osc=audioCtx.createOscillator();
+      var gain=audioCtx.createGain();
+      osc.type="sine";
+      osc.frequency.value=n.f;
+      gain.gain.setValueAtTime(0.0001,now+n.t);
+      gain.gain.exponentialRampToValueAtTime(CHIME_GAIN,now+n.t+.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+n.t+n.d);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now+n.t);
+      osc.stop(now+n.t+n.d+.05);
     }
+
+    return 2800;
+  }
+
+  function speakAlarm(text){
+    if(!soundEnabled||!("speechSynthesis" in window)||!text)return;
+
+    window.speechSynthesis.cancel();
+
+    function makeUtterance(){
+      var u=new SpeechSynthesisUtterance(text);
+      u.lang="ko-KR";
+      u.rate=0.92;
+      u.pitch=1.0;
+      u.volume=1.0; /* 브라우저 TTS 최대 볼륨 */
+
+      var voices=window.speechSynthesis.getVoices();
+      for(var i=0;i<voices.length;i++){
+        if((voices[i].lang||"").toLowerCase().indexOf("ko")===0){
+          u.voice=voices[i];
+          break;
+        }
+      }
+      return u;
+    }
+
+    var first=makeUtterance();
+    first.onend=function(){
+      setTimeout(function(){
+        window.speechSynthesis.speak(makeUtterance());
+      },650);
+    };
+    window.speechSynthesis.speak(first);
   }
 
   function hideAlarm(){
@@ -1179,7 +1208,13 @@
     el("alarmTitle").textContent=alarm.title||"알림";
     el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"");
     el("alarmOverlay").classList.add("active");
-    playChime();
+
+    /* 알림음 1회 → 잠시 후 음성 멘트 2회 */
+    var chimeMs=playChime();
+    setTimeout(function(){
+      speakAlarm(alarm.speech||((alarm.title||"")+" "+(alarm.message||"")));
+    },chimeMs+350);
+
     alarmTimer=setTimeout(hideAlarm,ALARM_SHOW_MS);
   }
 
@@ -1361,7 +1396,13 @@
 
   el("alarmTestBtn").addEventListener("click",function(){
     ensureAudio();
-    showAlarm({time:seoulTimeKey(new Date()),title:"알람 테스트",message:"알림 화면과 소리가 정상적으로 작동하고 있습니다.",icon:"🔔"},true);
+    showAlarm({
+      time:seoulTimeKey(new Date()),
+      title:"점심 시간입니다",
+      message:"맛점하세요.",
+      speech:"점심 시간입니다. 맛점하세요.",
+      icon:"🍚"
+    },true);
   });
 
   el("alarmClose").addEventListener("click",hideAlarm);
