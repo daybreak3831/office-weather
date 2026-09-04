@@ -1012,7 +1012,7 @@
   <div class="alarm-card">
     <div id="alarmIcon" class="alarm-icon">🔔</div>
     <div class="alarm-label">창원NC파크 알림</div>
-    <div id="alarmTime" class="alarm-time">12:00</div>
+    <div id="alarmTime" class="alarm-time">11:40</div>
     <div id="alarmTitle" class="alarm-title">점심시간입니다</div>
     <div id="alarmMessage" class="alarm-message">맛있는 점심 드세요!</div>
     <button id="alarmClose" class="alarm-close" type="button">확인</button>
@@ -1033,9 +1033,9 @@
   var TZ="Asia/Seoul";
   var REFRESH_MS=10*60*1000;
 
-  /* 평일 정시 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
+  /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"12:00",title:"점심시간입니다",message:"맛있는 점심 드세요!",icon:"🍚",weekdaysOnly:true},
+    {time:"11:40",title:"점심시간입니다",message:"맛있는 점심 드세요!",icon:"🍚",weekdaysOnly:true},
     {time:"18:00",title:"퇴근시간입니다",message:"오늘도 수고하셨습니다. 좋은 저녁 되세요!",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
@@ -1144,19 +1144,26 @@
       {t:2.00,f:1318.51,d:.60}
     ];
 
-    for(var i=0;i<notes.length;i++){
-      var n=notes[i];
-      var osc=audioCtx.createOscillator();
-      var gain=audioCtx.createGain();
-      osc.type="sine";
-      osc.frequency.value=n.f;
-      gain.gain.setValueAtTime(0.0001,now+n.t);
-      gain.gain.exponentialRampToValueAtTime(.22,now+n.t+.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001,now+n.t+n.d);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now+n.t);
-      osc.stop(now+n.t+n.d+.05);
+    /* 기존 대비 약 30% 크게, 같은 알림음을 2회 재생 */
+    var CHIME_GAIN=.286; /* 0.22 × 1.3 */
+    var REPEAT_GAP=3.05;
+
+    for(var repeat=0;repeat<2;repeat++){
+      var offset=repeat*REPEAT_GAP;
+      for(var i=0;i<notes.length;i++){
+        var n=notes[i];
+        var osc=audioCtx.createOscillator();
+        var gain=audioCtx.createGain();
+        osc.type="sine";
+        osc.frequency.value=n.f;
+        gain.gain.setValueAtTime(0.0001,now+offset+n.t);
+        gain.gain.exponentialRampToValueAtTime(CHIME_GAIN,now+offset+n.t+.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+n.t+n.d);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now+offset+n.t);
+        osc.stop(now+offset+n.t+n.d+.05);
+      }
     }
   }
 
