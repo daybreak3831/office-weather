@@ -673,6 +673,138 @@
     .dot.loading{background:#ffd37a}
     .dot.error{background:#ff958b}
 
+
+    /* ----------------------------------------------------
+       점심/퇴근 알람 오버레이 + 테스트 컨트롤
+       ---------------------------------------------------- */
+    .alarm-overlay{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:5vh 5vw;
+      background:rgba(5,14,28,.64);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .35s ease,visibility .35s ease;
+    }
+
+    .alarm-overlay.active{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+
+    .alarm-card{
+      width:min(780px,78vw);
+      min-height:38vh;
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:3vh;
+      background:linear-gradient(180deg,rgba(30,67,119,.95),rgba(11,31,63,.96));
+      box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:4.5vh 4vw;
+      transform:scale(.92) translateY(10px);
+      transition:transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .alarm-overlay.active .alarm-card{transform:scale(1) translateY(0)}
+
+    .alarm-icon{
+      font-size:clamp(52px,9vh,104px);
+      line-height:1;
+      margin-bottom:1.4vh;
+      animation:alarmBounce 1.15s ease-in-out infinite;
+    }
+
+    .alarm-label{
+      color:#d8ebff;
+      font-size:clamp(14px,2.1vh,25px);
+      font-weight:700;
+      letter-spacing:.08em;
+    }
+
+    .alarm-time{
+      margin-top:.6vh;
+      font-size:clamp(46px,8.7vh,100px);
+      line-height:1;
+      font-weight:900;
+      font-variant-numeric:tabular-nums;
+      text-shadow:0 5px 20px rgba(0,0,0,.20);
+    }
+
+    .alarm-title{
+      margin-top:1.6vh;
+      font-size:clamp(25px,4.2vh,50px);
+      font-weight:900;
+    }
+
+    .alarm-message{
+      margin-top:.9vh;
+      color:#e5f1ff;
+      font-size:clamp(14px,2.2vh,26px);
+      font-weight:600;
+    }
+
+    .alarm-close{
+      margin-top:2.5vh;
+      padding:.8vh 1.4vw;
+      border:1px solid rgba(255,255,255,.28);
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      font:inherit;
+      font-size:clamp(11px,1.4vh,16px);
+      cursor:pointer;
+    }
+
+    .alarm-controls{
+      position:fixed;
+      right:1.1vw;
+      bottom:4.2vh;
+      z-index:80;
+      display:flex;
+      gap:.45vw;
+      padding:.45vh .45vw;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:1.2vh;
+      background:rgba(6,20,40,.58);
+      backdrop-filter:blur(7px);
+      -webkit-backdrop-filter:blur(7px);
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+    }
+
+    .alarm-btn{
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:.85vh;
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      padding:.55vh .65vw;
+      font-family:inherit;
+      font-size:clamp(9px,1.1vh,13px);
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .alarm-btn.enabled{
+      background:rgba(84,194,131,.24);
+      border-color:rgba(139,224,173,.48);
+    }
+
+    @keyframes alarmBounce{
+      0%,100%{transform:translateY(0) rotate(-3deg)}
+      50%{transform:translateY(-8px) rotate(3deg)}
+    }
+
     @keyframes spinSun{
       to{transform:rotate(360deg)}
     }
@@ -875,6 +1007,23 @@
 
 </main>
 
+
+<div id="alarmOverlay" class="alarm-overlay" aria-live="assertive">
+  <div class="alarm-card">
+    <div id="alarmIcon" class="alarm-icon">🔔</div>
+    <div class="alarm-label">창원NC파크 알림</div>
+    <div id="alarmTime" class="alarm-time">12:00</div>
+    <div id="alarmTitle" class="alarm-title">점심시간입니다</div>
+    <div id="alarmMessage" class="alarm-message">맛있는 점심 드세요!</div>
+    <button id="alarmClose" class="alarm-close" type="button">확인</button>
+  </div>
+</div>
+
+<div class="alarm-controls" aria-label="알람 테스트 도구">
+  <button id="soundEnableBtn" class="alarm-btn" type="button">🔊 소리 활성화</button>
+  <button id="alarmTestBtn" class="alarm-btn" type="button">🔔 알람 테스트</button>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -883,6 +1032,17 @@
   var LON=128.5823;
   var TZ="Asia/Seoul";
   var REFRESH_MS=10*60*1000;
+
+  /* 평일 정시 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
+  var ALARMS=[
+    {time:"12:00",title:"점심시간입니다",message:"맛있는 점심 드세요!",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"퇴근시간입니다",message:"오늘도 수고하셨습니다. 좋은 저녁 되세요!",icon:"🏠",weekdaysOnly:true}
+  ];
+  var ALARM_SHOW_MS=12000;
+  var audioCtx=null;
+  var alarmTimer=null;
+  var soundEnabled=false;
+  var firedAlarms={};
 
   var weatherUrl=
     "https://api.open-meteo.com/v1/forecast"+
@@ -939,6 +1099,101 @@
     el("statusDot").className="dot"+(state?" "+state:"");
   }
 
+  function seoulDateKey(now){
+    return new Intl.DateTimeFormat("sv-SE",{
+      timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"
+    }).format(now);
+  }
+
+  function seoulTimeKey(now){
+    return new Intl.DateTimeFormat("sv-SE",{
+      timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false
+    }).format(now);
+  }
+
+  function isWeekend(now){
+    var w=new Intl.DateTimeFormat("en-US",{timeZone:TZ,weekday:"short"}).format(now);
+    return w==="Sat"||w==="Sun";
+  }
+
+  function ensureAudio(){
+    var Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return false;
+    if(!audioCtx)audioCtx=new Ctx();
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    soundEnabled=true;
+    var btn=el("soundEnableBtn");
+    if(btn){
+      btn.textContent="🔊 소리 켜짐";
+      btn.classList.add("enabled");
+    }
+    return true;
+  }
+
+  function playChime(){
+    if(!soundEnabled||!audioCtx)return;
+    if(audioCtx.state==="suspended")audioCtx.resume();
+
+    var now=audioCtx.currentTime;
+    var notes=[
+      {t:0.00,f:659.25,d:.30},
+      {t:.34,f:783.99,d:.30},
+      {t:.68,f:987.77,d:.42},
+      {t:1.32,f:783.99,d:.30},
+      {t:1.66,f:987.77,d:.30},
+      {t:2.00,f:1318.51,d:.60}
+    ];
+
+    for(var i=0;i<notes.length;i++){
+      var n=notes[i];
+      var osc=audioCtx.createOscillator();
+      var gain=audioCtx.createGain();
+      osc.type="sine";
+      osc.frequency.value=n.f;
+      gain.gain.setValueAtTime(0.0001,now+n.t);
+      gain.gain.exponentialRampToValueAtTime(.22,now+n.t+.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+n.t+n.d);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now+n.t);
+      osc.stop(now+n.t+n.d+.05);
+    }
+  }
+
+  function hideAlarm(){
+    el("alarmOverlay").classList.remove("active");
+    if(alarmTimer){clearTimeout(alarmTimer);alarmTimer=null;}
+  }
+
+  function showAlarm(alarm,isTest){
+    if(alarmTimer)clearTimeout(alarmTimer);
+    el("alarmIcon").textContent=alarm.icon||"🔔";
+    el("alarmTime").textContent=alarm.time||seoulTimeKey(new Date());
+    el("alarmTitle").textContent=alarm.title||"알림";
+    el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"");
+    el("alarmOverlay").classList.add("active");
+    playChime();
+    alarmTimer=setTimeout(hideAlarm,ALARM_SHOW_MS);
+  }
+
+  function checkAlarms(now){
+    var time=seoulTimeKey(now);
+    var date=seoulDateKey(now);
+    var weekend=isWeekend(now);
+
+    for(var i=0;i<ALARMS.length;i++){
+      var alarm=ALARMS[i];
+      if(alarm.time!==time)continue;
+      if(alarm.weekdaysOnly&&weekend)continue;
+
+      var key=date+":"+alarm.time;
+      if(firedAlarms[key])continue;
+      firedAlarms[key]=true;
+      showAlarm(alarm,false);
+      break;
+    }
+  }
+
   function updateClock(){
     var now=new Date();
 
@@ -952,6 +1207,7 @@
 
     el("date").textContent=dateFmt.format(now);
     el("clock").textContent=timeFmt.format(now);
+    checkAlarms(now);
   }
 
   function currentHourIndex(times){
@@ -1091,6 +1347,21 @@
   }
 
   makeRain();
+
+  el("soundEnableBtn").addEventListener("click",function(){
+    ensureAudio();
+  });
+
+  el("alarmTestBtn").addEventListener("click",function(){
+    ensureAudio();
+    showAlarm({time:seoulTimeKey(new Date()),title:"알람 테스트",message:"알림 화면과 소리가 정상적으로 작동하고 있습니다.",icon:"🔔"},true);
+  });
+
+  el("alarmClose").addEventListener("click",hideAlarm);
+  el("alarmOverlay").addEventListener("click",function(e){
+    if(e.target===el("alarmOverlay"))hideAlarm();
+  });
+
   updateClock();
   setInterval(updateClock,1000);
 
