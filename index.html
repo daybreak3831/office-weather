@@ -1008,7 +1008,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v1.6</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v1.7</span></div>
   </footer>
 
 </main>
@@ -1041,8 +1041,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=1.7",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=1.7",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1467,7 +1467,7 @@
       time:seoulTimeKey(new Date()),
       title:"점심 시간입니다",
       message:"맛점하세요.",
-      audio:"lunch.mp3",
+      audio:"lunch.mp3?v=1.7",
       icon:"🍚"
     },true);
   });
