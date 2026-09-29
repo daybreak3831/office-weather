@@ -1008,7 +1008,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v1.7</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v1.8</span></div>
   </footer>
 
 </main>
@@ -1041,8 +1041,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=1.7",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=1.7",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=1.8",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=1.8",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1125,23 +1125,79 @@
     return w==="Sat"||w==="Sun";
   }
 
-  function ensureAudio(){
-    var Ctx=window.AudioContext||window.webkitAudioContext;
-    if(!Ctx)return false;
-    if(!audioCtx)audioCtx=new Ctx();
-    if(audioCtx.state==="suspended")audioCtx.resume();
-    soundEnabled=true;
+  /*
+     v1.8 자동 소리 활성화
+     - 페이지가 열리면 먼저 자동으로 AudioContext 활성화를 시도합니다.
+     - 브라우저가 자동재생을 허용한 환경에서는 버튼을 누르지 않아도 알람이 납니다.
+     - 자동재생이 차단된 환경에서는 화면의 아무 곳이나 한 번 클릭/터치/키 입력하면
+       그 동작을 이용해 소리를 활성화합니다. 기존 버튼은 최후의 수동 활성화용입니다.
+  */
+  function updateSoundButton(){
     var btn=el("soundEnableBtn");
-    if(btn){
-      btn.textContent="🔊 소리 켜짐";
+    if(!btn)return;
+    if(soundEnabled){
+      btn.textContent="🔊 소리 자동 활성화됨";
       btn.classList.add("enabled");
+    }else{
+      btn.textContent="🔊 소리 활성화 필요";
+      btn.classList.remove("enabled");
+    }
+  }
+
+  function preloadAllVoices(){
+    if(!audioCtx)return;
+    for(var i=0;i<ALARMS.length;i++){
+      if(ALARMS[i].audio)preloadVoice(ALARMS[i].audio).catch(function(){});
+    }
+  }
+
+  function ensureAudio(fromUser){
+    var Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx){
+      soundEnabled=false;
+      updateSoundButton();
+      return Promise.resolve(false);
     }
 
-    /* 실제 알람 전에 음성 파일을 미리 메모리에 올려둡니다. */
-    for(var i=0;i<ALARMS.length;i++){
-      if(ALARMS[i].audio)preloadVoice(ALARMS[i].audio);
+    try{
+      if(!audioCtx)audioCtx=new Ctx();
+    }catch(e){
+      soundEnabled=false;
+      updateSoundButton();
+      return Promise.resolve(false);
     }
-    return true;
+
+    preloadAllVoices();
+
+    var resumePromise;
+    try{
+      resumePromise=(audioCtx.state==="running") ? Promise.resolve() : audioCtx.resume();
+    }catch(e){
+      resumePromise=Promise.reject(e);
+    }
+
+    return Promise.resolve(resumePromise).then(function(){
+      soundEnabled=audioCtx.state==="running";
+      updateSoundButton();
+      if(soundEnabled){
+        try{localStorage.setItem("officeWeatherSoundEnabled","1");}catch(e){}
+      }
+      return soundEnabled;
+    }).catch(function(){
+      soundEnabled=false;
+      updateSoundButton();
+      return false;
+    });
+  }
+
+  function unlockOnInteraction(){
+    ensureAudio(true).then(function(ok){
+      if(ok){
+        document.removeEventListener("pointerdown",unlockOnInteraction,true);
+        document.removeEventListener("touchstart",unlockOnInteraction,true);
+        document.removeEventListener("keydown",unlockOnInteraction,true);
+      }
+    });
   }
 
   function playChime(){
@@ -1298,7 +1354,10 @@
       var key=date+":"+alarm.time;
       if(firedAlarms[key])continue;
       firedAlarms[key]=true;
-      showAlarm(alarm,false);
+      /* 정시에도 한 번 더 자동 활성화를 시도한 뒤 알람을 실행합니다. */
+      (function(a){
+        ensureAudio(false).then(function(){showAlarm(a,false);});
+      })(alarm);
       break;
     }
   }
@@ -1458,24 +1517,34 @@
   makeRain();
 
   el("soundEnableBtn").addEventListener("click",function(){
-    ensureAudio();
+    ensureAudio(true);
   });
 
   el("alarmTestBtn").addEventListener("click",function(){
-    ensureAudio();
-    showAlarm({
-      time:seoulTimeKey(new Date()),
-      title:"점심 시간입니다",
-      message:"맛점하세요.",
-      audio:"lunch.mp3?v=1.7",
-      icon:"🍚"
-    },true);
+    ensureAudio(true).then(function(){
+      showAlarm({
+        time:seoulTimeKey(new Date()),
+        title:"점심 시간입니다",
+        message:"맛점하세요.",
+        audio:"lunch.mp3?v=1.8",
+        icon:"🍚"
+      },true);
+    });
   });
 
   el("alarmClose").addEventListener("click",hideAlarm);
   el("alarmOverlay").addEventListener("click",function(e){
     if(e.target===el("alarmOverlay"))hideAlarm();
   });
+
+  /* 페이지 로드 즉시 자동 활성화를 시도합니다. */
+  updateSoundButton();
+  ensureAudio(false);
+
+  /* 자동재생이 막힌 브라우저도 별도 버튼 없이 첫 화면 조작으로 활성화 */
+  document.addEventListener("pointerdown",unlockOnInteraction,true);
+  document.addEventListener("touchstart",unlockOnInteraction,true);
+  document.addEventListener("keydown",unlockOnInteraction,true);
 
   updateClock();
   setInterval(updateClock,1000);
