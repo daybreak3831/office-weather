@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원NC파크 날씨 전광판</title>
+  <title>창원NC파크 날씨 전광판 · v3.0 Alpha 2</title>
 
   <style>
     :root{
@@ -985,7 +985,177 @@
       50%{opacity:1;transform:scale(1.25)}
     }
 
+
+    /* ----------------------------------------------------
+       v3.0 Alpha 2 · CCTV HLS 직접재생 테스트
+       ---------------------------------------------------- */
+    .cctv-open-btn{
+      margin-top:1.15vh;
+      padding:.65vh .9vw;
+      border:1px solid rgba(255,255,255,.28);
+      border-radius:999px;
+      background:rgba(7,20,38,.28);
+      color:#fff;
+      font:inherit;
+      font-size:clamp(11px,1.35vh,16px);
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 5px 16px rgba(0,0,0,.16);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      transition:transform .18s ease,background .18s ease,border-color .18s ease;
+    }
+    .cctv-open-btn:hover,
+    .cctv-open-btn:focus-visible{
+      transform:translateY(-1px);
+      background:rgba(14,36,66,.46);
+      border-color:rgba(255,255,255,.5);
+      outline:none;
+    }
+
+    .cctv-pip{
+      position:fixed;
+      right:1.3vw;
+      bottom:5.4vh;
+      z-index:12000;
+      width:min(760px,44vw);
+      height:min(620px,59vh);
+      min-width:520px;
+      min-height:390px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.34);
+      border-radius:18px;
+      background:#0b1628;
+      box-shadow:0 22px 70px rgba(0,0,0,.52),0 0 0 1px rgba(255,255,255,.06) inset;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(18px) scale(.97);
+      transition:opacity .22s ease,transform .22s ease,visibility .22s;
+    }
+    .cctv-pip.open{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0) scale(1);
+    }
+    .cctv-pip-head{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:11px 13px;
+      background:linear-gradient(180deg,#17345b,#102744);
+      border-bottom:1px solid rgba(255,255,255,.14);
+    }
+    .cctv-pip-title{
+      min-width:0;
+      flex:1 1 auto;
+      font-size:15px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .cctv-countdown{
+      flex:0 0 auto;
+      padding:5px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      color:#dcecff;
+      font-size:12px;
+      font-weight:800;
+      font-variant-numeric:tabular-nums;
+    }
+    .cctv-head-btn{
+      flex:0 0 auto;
+      min-width:34px;
+      height:31px;
+      padding:0 9px;
+      border:1px solid rgba(255,255,255,.20);
+      border-radius:9px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font:inherit;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .cctv-head-btn:hover{background:rgba(255,255,255,.15)}
+    .cctv-pip-note{
+      flex:0 0 auto;
+      padding:8px 12px;
+      color:#d9e8fb;
+      background:rgba(255,255,255,.055);
+      font-size:12px;
+      line-height:1.45;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .cctv-frame-wrap{
+      position:relative;
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#02070d;
+      overflow:hidden;
+    }
+    .cctv-video{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:#02070d;
+    }
+    .cctv-video-status{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      max-width:84%;
+      padding:10px 14px;
+      border-radius:12px;
+      background:rgba(3,12,23,.82);
+      border:1px solid rgba(255,255,255,.18);
+      color:#e6f2ff;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.5;
+      text-align:center;
+      pointer-events:none;
+      opacity:1;
+      transition:opacity .2s ease;
+    }
+    .cctv-video-status.hidden{opacity:0}
+    .cctv-video-status.error{
+      color:#ffe3e3;
+      border-color:rgba(255,126,126,.45);
+      background:rgba(54,8,12,.88);
+    }
+    .cctv-pip-foot{
+      flex:0 0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      background:#0c1b30;
+      color:#afc8e5;
+      font-size:11px;
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .cctv-external-link{
+      color:#fff;
+      text-decoration:none;
+      font-weight:800;
+      padding:5px 8px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:8px;
+      white-space:nowrap;
+    }
+
     @media (orientation:portrait){
+      .cctv-pip{right:4vw;bottom:4vh;width:92vw;height:70vh;min-width:0;min-height:360px}
       html,body{overflow:auto}
       .app{height:auto;min-height:100vh;grid-template-rows:auto auto auto auto}
       .main{grid-template-columns:1fr}
@@ -1076,6 +1246,7 @@
               &nbsp;/&nbsp;
               <span id="low">최저 --°</span>
             </div>
+            <button id="cctvOpenBtn" class="cctv-open-btn" type="button">📹 현장 CCTV 확인</button>
           </div>
 
         </div>
@@ -1133,7 +1304,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v2.0</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v3.0 α2</span></div>
   </footer>
 
 </main>
@@ -1160,6 +1331,27 @@
   <button id="rainTestBtn" class="alarm-btn climate-test-btn" type="button">🌧 우천 테스트</button>
 </div>
 
+<aside id="cctvPip" class="cctv-pip" aria-hidden="true" aria-label="창원NC파크 인근 CCTV 확인 창">
+  <div class="cctv-pip-head">
+    <div class="cctv-pip-title">📹 창원NC파크 인근 도로 CCTV</div>
+    <div id="cctvCountdown" class="cctv-countdown">자동 닫힘 01:00</div>
+    <button id="cctvReloadBtn" class="cctv-head-btn" type="button" title="CCTV 페이지 새로고침">↻</button>
+    <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
+  </div>
+  <div class="cctv-pip-note">
+    Alpha 2 테스트: <strong>창원NC파크 CCTV HLS 스트림</strong>을 PIP 플레이어에서 직접 재생합니다.
+  </div>
+  <div class="cctv-frame-wrap">
+    <video id="cctvVideo" class="cctv-video" controls muted playsinline preload="none"></video>
+    <div id="cctvVideoStatus" class="cctv-video-status">CCTV 연결 대기 중</div>
+  </div>
+  <div class="cctv-pip-foot">
+    <span>1분 후 PIP 자동 종료 · 영상 제공: 창원시 교통정보센터</span>
+    <a class="cctv-external-link" href="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8" target="_blank" rel="noopener noreferrer">원본 스트림 ↗</a>
+  </div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js"></script>
 <script>
 (function(){
   "use strict";
@@ -1171,8 +1363,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=2.0",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=2.0",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=3.0-alpha",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=3.0-alpha",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1182,10 +1374,10 @@
   var voiceBuffers={};
   var voiceLoads={};
   var VOICE_GAIN=1.70; // 음성 파일 증폭(1.0 = 원본 크기)
-  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=2.0"; // 강풍·우천 공통 경보음
+  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=3.0-alpha"; // 강풍·우천 공통 경보음
   var CLIMATE_ALERT_GAIN=1.0; // 기후 경보음 자체 음량 (과도하게 크지 않게 유지)
 
-  /* v2.0 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
+  /* v3.0 Alpha 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
   var CLIMATE_CONFIG={
     windThreshold:15,      // m/s 이상이면 강풍 경보
     testDuration:30000     // 테스트 시각효과 유지시간: 30초
@@ -1202,6 +1394,14 @@
     windTimer:null,
     rainTimer:null
   };
+
+  /* v3.0 Alpha 2 · 창원NC파크 CCTV HLS 직접 재생 PIP */
+  var CCTV_STREAM_URL="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8";
+  var CCTV_SHOW_SECONDS=60;
+  var cctvCloseTimer=null;
+  var cctvTickTimer=null;
+  var cctvSecondsLeft=CCTV_SHOW_SECONDS;
+  var cctvHls=null;
 
   var weatherUrl=
     "https://api.open-meteo.com/v1/forecast"+
@@ -1748,6 +1948,132 @@
     }
   }
 
+  function updateCctvCountdown(){
+    var n=Math.max(0,cctvSecondsLeft);
+    var mm=String(Math.floor(n/60)).padStart(2,"0");
+    var ss=String(n%60).padStart(2,"0");
+    el("cctvCountdown").textContent="자동 닫힘 "+mm+":"+ss;
+  }
+
+  function setCctvStatus(message,isError,hide){
+    var status=el("cctvVideoStatus");
+    status.textContent=message;
+    status.classList.toggle("error",!!isError);
+    status.classList.toggle("hidden",!!hide);
+  }
+
+  function stopCctvStream(){
+    var video=el("cctvVideo");
+
+    if(cctvHls){
+      try{cctvHls.destroy()}catch(e){}
+      cctvHls=null;
+    }
+
+    try{video.pause()}catch(e){}
+    video.removeAttribute("src");
+    try{video.load()}catch(e){}
+  }
+
+  function startCctvStream(){
+    var video=el("cctvVideo");
+    stopCctvStream();
+    setCctvStatus("창원NC파크 CCTV 연결 중…",false,false);
+
+    /* Safari 등 HLS를 기본 지원하는 브라우저는 스트림을 바로 연결합니다. */
+    if(video.canPlayType("application/vnd.apple.mpegurl")){
+      video.src=CCTV_STREAM_URL;
+      video.addEventListener("loadedmetadata",function nativeLoaded(){
+        video.removeEventListener("loadedmetadata",nativeLoaded);
+        video.play().catch(function(){
+          setCctvStatus("재생 버튼 ▶을 눌러 영상을 시작해 주세요.",false,false);
+        });
+      });
+      return;
+    }
+
+    /* Chrome/Edge 등은 Hls.js를 이용해 m3u8을 MediaSource로 재생합니다. */
+    if(window.Hls&&window.Hls.isSupported()){
+      cctvHls=new window.Hls({
+        enableWorker:true,
+        lowLatencyMode:true,
+        backBufferLength:15,
+        liveSyncDurationCount:2,
+        liveMaxLatencyDurationCount:5
+      });
+
+      cctvHls.on(window.Hls.Events.MEDIA_ATTACHED,function(){
+        if(cctvHls)cctvHls.loadSource(CCTV_STREAM_URL);
+      });
+
+      cctvHls.on(window.Hls.Events.MANIFEST_PARSED,function(){
+        video.play().catch(function(){
+          setCctvStatus("스트림은 연결됐습니다. 재생 버튼 ▶을 눌러 주세요.",false,false);
+        });
+      });
+
+      cctvHls.on(window.Hls.Events.ERROR,function(event,data){
+        if(!data||!data.fatal)return;
+        var detail=data.details||data.type||"unknown";
+        setCctvStatus("CCTV 스트림 연결 실패 ("+detail+"). 서버의 외부재생/CORS 제한일 수 있습니다.",true,false);
+      });
+
+      cctvHls.attachMedia(video);
+      return;
+    }
+
+    setCctvStatus("이 브라우저에서는 HLS 재생 모듈을 사용할 수 없습니다. 인터넷 연결 또는 브라우저 호환성을 확인해 주세요.",true,false);
+  }
+
+  function openCctvPip(){
+    var pip=el("cctvPip");
+
+    clearTimeout(cctvCloseTimer);
+    clearInterval(cctvTickTimer);
+    cctvSecondsLeft=CCTV_SHOW_SECONDS;
+    updateCctvCountdown();
+
+    pip.classList.add("open");
+    pip.setAttribute("aria-hidden","false");
+    startCctvStream();
+
+    cctvTickTimer=setInterval(function(){
+      cctvSecondsLeft-=1;
+      updateCctvCountdown();
+      if(cctvSecondsLeft<=0)closeCctvPip();
+    },1000);
+
+    cctvCloseTimer=setTimeout(closeCctvPip,CCTV_SHOW_SECONDS*1000+250);
+  }
+
+  function closeCctvPip(){
+    var pip=el("cctvPip");
+    clearTimeout(cctvCloseTimer);
+    clearInterval(cctvTickTimer);
+    cctvCloseTimer=null;
+    cctvTickTimer=null;
+    pip.classList.remove("open");
+    pip.setAttribute("aria-hidden","true");
+    stopCctvStream();
+    setCctvStatus("CCTV 연결 대기 중",false,false);
+  }
+
+  function reloadCctvPip(){
+    cctvSecondsLeft=CCTV_SHOW_SECONDS;
+    updateCctvCountdown();
+    clearTimeout(cctvCloseTimer);
+    cctvCloseTimer=setTimeout(closeCctvPip,CCTV_SHOW_SECONDS*1000+250);
+    startCctvStream();
+  }
+
+  /* 영상이 실제로 재생되면 안내문을 숨기고, 대기/오류 시 다시 표시합니다. */
+  el("cctvVideo").addEventListener("playing",function(){setCctvStatus("재생 중",false,true)});
+  el("cctvVideo").addEventListener("waiting",function(){setCctvStatus("실시간 영상 버퍼링 중…",false,false)});
+  el("cctvVideo").addEventListener("stalled",function(){setCctvStatus("영상 수신이 지연되고 있습니다…",false,false)});
+  el("cctvVideo").addEventListener("error",function(){
+    if(!cctvHls)setCctvStatus("브라우저가 CCTV 영상을 재생하지 못했습니다.",true,false);
+  });
+
   function makeRain(){
     var layer=el("rainLayer");
     var html="";
@@ -1787,6 +2113,10 @@
 
   makeRain();
 
+  el("cctvOpenBtn").addEventListener("click",openCctvPip);
+  el("cctvCloseBtn").addEventListener("click",closeCctvPip);
+  el("cctvReloadBtn").addEventListener("click",reloadCctvPip);
+
   el("soundEnableBtn").addEventListener("click",function(){
     ensureAudio(true);
   });
@@ -1797,7 +2127,7 @@
         time:seoulTimeKey(new Date()),
         title:"점심 시간입니다",
         message:"맛점하세요.",
-        audio:"lunch.mp3?v=2.0",
+        audio:"lunch.mp3?v=3.0-alpha",
         icon:"🍚"
       },true);
     });
