@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원NC파크 날씨 전광판 · v3.0 Alpha 3</title>
+  <title>창원시설공단 날씨 전광판 · v4.0 TEST</title>
 
   <style>
     :root{
@@ -987,7 +987,7 @@
 
 
     /* ----------------------------------------------------
-       v3.0 Alpha 3 · CCTV HLS 직접재생 테스트
+       v4.0 TEST · 사업장 맞춤 설정 + CCTV
        ---------------------------------------------------- */
     .cctv-open-btn{
       margin-top:1.15vh;
@@ -1161,8 +1161,96 @@
       white-space:nowrap;
     }
 
+
+
+    /* ----------------------------------------------------
+       v4.0 TEST · 사업장/알람 설정 패널
+       ---------------------------------------------------- */
+    .topbar-right{
+      display:flex;align-items:center;gap:.8vw;min-width:0;
+    }
+    .settings-open-btn{
+      border:1px solid rgba(255,255,255,.25);
+      border-radius:999px;
+      background:rgba(7,20,38,.34);
+      color:#fff;
+      padding:.6vh .8vw;
+      font-family:inherit;
+      font-size:clamp(10px,1.25vh,15px);
+      font-weight:800;
+      cursor:pointer;
+      white-space:nowrap;
+      box-shadow:0 5px 16px rgba(0,0,0,.15);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+    }
+    .settings-open-btn:hover,.settings-open-btn:focus-visible{
+      background:rgba(255,255,255,.16);outline:none;
+    }
+    .settings-overlay{
+      position:fixed;inset:0;z-index:15000;
+      display:none;align-items:center;justify-content:center;
+      padding:4vh 4vw;
+      background:rgba(2,10,23,.72);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+    }
+    .settings-overlay.open{display:flex}
+    .settings-card{
+      width:min(720px,92vw);max-height:90vh;overflow:auto;
+      padding:2.2vh 1.5vw 1.6vh;
+      border:1px solid rgba(255,255,255,.24);
+      border-radius:2.2vh;
+      background:linear-gradient(180deg,rgba(20,46,79,.98),rgba(7,21,42,.98));
+      box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
+      color:#fff;
+    }
+    .settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1vw;margin-bottom:1.7vh}
+    .settings-title{font-size:clamp(19px,2.6vh,30px);font-weight:900}
+    .settings-subtitle{margin-top:.35vh;color:rgba(230,242,255,.72);font-size:clamp(10px,1.2vh,14px);line-height:1.5}
+    .settings-x{
+      flex:none;width:38px;height:38px;border:1px solid rgba(255,255,255,.2);border-radius:50%;
+      background:rgba(255,255,255,.08);color:#fff;font-size:18px;cursor:pointer;
+    }
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh 1vw}
+    .settings-field{display:flex;flex-direction:column;gap:.5vh}
+    .settings-field.full{grid-column:1/-1}
+    .settings-field label,.settings-toggle-label{font-size:clamp(10px,1.15vh,14px);font-weight:800;color:rgba(239,247,255,.86)}
+    .settings-input{
+      width:100%;min-height:44px;padding:.7vh .75vw;
+      border:1px solid rgba(255,255,255,.19);border-radius:1vh;
+      background:rgba(255,255,255,.095);color:#fff;font:inherit;font-size:clamp(12px,1.45vh,16px);
+      outline:none;
+    }
+    .settings-input:focus{border-color:rgba(142,205,255,.62);box-shadow:0 0 0 3px rgba(80,170,255,.12)}
+    .settings-input option{color:#101925;background:#fff}
+    .settings-detail{
+      padding:.8vh .8vw;border:1px dashed rgba(255,255,255,.16);border-radius:1vh;
+      color:rgba(224,239,255,.76);font-size:clamp(9px,1.08vh,13px);line-height:1.55;
+      background:rgba(0,0,0,.10);
+    }
+    .settings-toggles{display:flex;flex-wrap:wrap;gap:.7vh 1.1vw;margin-top:.2vh}
+    .settings-toggle{
+      display:flex;align-items:center;gap:.45vw;padding:.65vh .7vw;border:1px solid rgba(255,255,255,.14);
+      border-radius:1vh;background:rgba(255,255,255,.065);cursor:pointer;
+    }
+    .settings-toggle input{width:18px;height:18px;accent-color:#79c5ff}
+    .settings-actions{display:flex;justify-content:flex-end;gap:.55vw;margin-top:1.7vh}
+    .settings-action{
+      border:1px solid rgba(255,255,255,.2);border-radius:.9vh;background:rgba(255,255,255,.09);
+      color:#fff;padding:.7vh 1vw;font:inherit;font-size:clamp(10px,1.2vh,14px);font-weight:800;cursor:pointer;
+    }
+    .settings-action.primary{background:rgba(70,154,225,.42);border-color:rgba(132,203,255,.48)}
+    .settings-action.dangerless{margin-right:auto;color:rgba(235,243,255,.74)}
+    .settings-save-note{margin-top:1vh;color:rgba(222,238,255,.66);font-size:clamp(9px,1vh,12px);line-height:1.45}
+    .cctv-open-btn:disabled{opacity:.42;cursor:not-allowed;transform:none;background:rgba(7,20,38,.20)}
+
     @media (orientation:portrait){
       .cctv-pip{right:4vw;bottom:4vh;width:92vw;height:70vh;min-width:0;min-height:360px}
+      .settings-grid{grid-template-columns:1fr}
+      .settings-field.full{grid-column:auto}
+      .topbar-right{gap:2vw}
+      .settings-open-btn{padding:.8vh 2.2vw}
       html,body{overflow:auto}
       .app{height:auto;min-height:100vh;grid-template-rows:auto auto auto auto}
       .main{grid-template-columns:1fr}
@@ -1183,12 +1271,15 @@
 
   <header class="topbar">
     <div>
-      <div class="place">창원NC파크 날씨</div>
-      <div class="subplace">경남 창원시 마산회원구 · 사무실 기상 전광판</div>
+      <div id="placeName" class="place">창원NC파크 날씨</div>
+      <div id="subplaceName" class="subplace">경남 창원시 마산회원구 · 사무실 기상 전광판</div>
     </div>
-    <div class="datetime">
-      <div id="date" class="date">날짜 불러오는 중</div>
-      <div id="clock" class="clock">--:--:--</div>
+    <div class="topbar-right">
+      <button id="settingsOpenBtn" class="settings-open-btn" type="button" title="사업장 및 알람 설정">⚙ 설정</button>
+      <div class="datetime">
+        <div id="date" class="date">날짜 불러오는 중</div>
+        <div id="clock" class="clock">--:--:--</div>
+      </div>
     </div>
   </header>
 
@@ -1311,16 +1402,69 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v3.0 α2</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v4.0 TEST</span></div>
   </footer>
 
 </main>
 
 
+
+<div id="settingsOverlay" class="settings-overlay" aria-hidden="true">
+  <section class="settings-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-head">
+      <div>
+        <div id="settingsTitle" class="settings-title">⚙ 날씨 전광판 설정</div>
+        <div class="settings-subtitle">사업장을 선택하면 해당 시설 좌표 기준으로 날씨가 즉시 변경됩니다.</div>
+      </div>
+      <button id="settingsCloseBtn" class="settings-x" type="button" aria-label="설정 닫기">✕</button>
+    </div>
+
+    <div class="settings-grid">
+      <div class="settings-field">
+        <label for="settingDistrict">지역(구)</label>
+        <select id="settingDistrict" class="settings-input"></select>
+      </div>
+      <div class="settings-field">
+        <label for="settingFacility">사업장</label>
+        <select id="settingFacility" class="settings-input"></select>
+      </div>
+      <div class="settings-field full">
+        <div id="settingFacilityDetail" class="settings-detail">사업장 정보를 불러오는 중입니다.</div>
+      </div>
+      <div class="settings-field">
+        <label for="settingLunchTime">점심 알람</label>
+        <input id="settingLunchTime" class="settings-input" type="time" value="11:40">
+      </div>
+      <div class="settings-field">
+        <label for="settingLeaveTime">퇴근 알람</label>
+        <input id="settingLeaveTime" class="settings-input" type="time" value="18:00">
+      </div>
+      <div class="settings-field">
+        <label for="settingWindThreshold">강풍 경보 기준</label>
+        <input id="settingWindThreshold" class="settings-input" type="number" min="5" max="40" step="0.5" value="15">
+      </div>
+      <div class="settings-field">
+        <label>기후 경보 사용</label>
+        <div class="settings-toggles">
+          <label class="settings-toggle"><input id="settingWindEnabled" type="checkbox" checked><span class="settings-toggle-label">강풍 경보</span></label>
+          <label class="settings-toggle"><input id="settingRainEnabled" type="checkbox" checked><span class="settings-toggle-label">우천 시작 알림</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-actions">
+      <button id="settingsResetBtn" class="settings-action dangerless" type="button">기본값</button>
+      <button id="settingsCancelBtn" class="settings-action" type="button">취소</button>
+      <button id="settingsSaveBtn" class="settings-action primary" type="button">설정 저장</button>
+    </div>
+    <div class="settings-save-note">설정은 이 TV/브라우저에만 저장됩니다. 다른 사업장에서는 같은 주소에 접속한 뒤 각자 한 번만 설정하면 됩니다.</div>
+  </section>
+</div>
+
 <div id="alarmOverlay" class="alarm-overlay" aria-live="assertive">
   <div class="alarm-card">
     <div id="alarmIcon" class="alarm-icon">🔔</div>
-    <div class="alarm-label">창원NC파크 알림</div>
+    <div id="alarmSiteLabel" class="alarm-label">창원NC파크 알림</div>
     <div id="alarmTime" class="alarm-time">11:40</div>
     <div id="alarmTitle" class="alarm-title">점심시간입니다</div>
     <div id="alarmMessage" class="alarm-message">맛있는 점심 드세요!</div>
@@ -1338,15 +1482,15 @@
   <button id="rainTestBtn" class="alarm-btn climate-test-btn" type="button">🌧 우천 테스트</button>
 </div>
 
-<aside id="cctvPip" class="cctv-pip" aria-hidden="true" aria-label="창원NC파크 인근 CCTV 확인 창">
+<aside id="cctvPip" class="cctv-pip" aria-hidden="true" aria-label="현장 CCTV 확인 창">
   <div class="cctv-pip-head">
-    <div class="cctv-pip-title">📹 창원NC파크 인근 도로 CCTV</div>
+    <div id="cctvPipTitle" class="cctv-pip-title">📹 창원NC파크 인근 도로 CCTV</div>
     <div id="cctvCountdown" class="cctv-countdown">자동 닫힘 01:00</div>
     <button id="cctvReloadBtn" class="cctv-head-btn" type="button" title="CCTV 페이지 새로고침">↻</button>
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    Alpha 3 테스트: <strong>CCTV 자동재생 · 지연 감지 · 자동 재연결</strong>을 적용했습니다.
+    v4.0: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -1354,7 +1498,7 @@
   </div>
   <div class="cctv-pip-foot">
     <span>1분 후 PIP 자동 종료 · 영상 제공: 창원시 교통정보센터</span>
-    <a class="cctv-external-link" href="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8" target="_blank" rel="noopener noreferrer">원본 스트림 ↗</a>
+    <a id="cctvExternalLink" class="cctv-external-link" href="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8" target="_blank" rel="noopener noreferrer">원본 스트림 ↗</a>
   </div>
 </aside>
 
@@ -1363,6 +1507,53 @@
 (function(){
   "use strict";
 
+  /* v4.0 TEST · 창원시설공단 사업장 좌표 데이터
+     - 정식 배포 전 시설 목록/좌표는 한 번 더 최종 검증할 예정입니다.
+     - CCTV는 현재 스트림이 확인된 창원NC파크만 우선 연결합니다. */
+  var DISTRICTS=["의창구","성산구","마산합포구","마산회원구","진해구"];
+  var FACILITIES=[
+    {id:"uichang_sports",district:"의창구",name:"의창스포츠센터",address:"창원시 의창구",lat:35.2559744,lon:128.6338277},
+    {id:"shooting",district:"의창구",name:"창원국제사격장",address:"창원시 의창구 사림로99번길 63",lat:35.2509660,lon:128.68399215},
+    {id:"bus_terminal",district:"의창구",name:"창원종합버스터미널",address:"창원시 의창구 창원대로 371",lat:35.2370545,lon:128.6403000},
+
+    {id:"sportspark",district:"성산구",name:"창원스포츠파크",address:"창원시 성산구 원이대로 450",lat:35.2323000,lon:128.6628902},
+    {id:"indoor_pool",district:"성산구",name:"창원실내수영장",address:"창원스포츠파크 내",lat:35.2323000,lon:128.6628902},
+    {id:"soccer",district:"성산구",name:"창원축구센터",address:"창원시 성산구 비음로 97",lat:35.2236893371,lon:128.7072706108},
+    {id:"citizen_gym",district:"성산구",name:"시민생활체육관",address:"창원시 성산구 원이대로 692",lat:35.2223473,lon:128.6879803},
+    {id:"seongsan_sports",district:"성산구",name:"성산스포츠센터",address:"창원시 성산구",lat:35.2061843,lon:128.7060228},
+    {id:"city_tennis",district:"성산구",name:"창원시립테니스장",address:"창원시 성산구 비음로25번길 17",lat:35.23079881,lon:128.6984643},
+    {id:"greenhall",district:"성산구",name:"늘푸른전당",address:"창원시 성산구 두대로 97",lat:35.2298940,lon:128.6538360},
+    {id:"sangbok",district:"성산구",name:"창원시립상복공원",address:"창원시 성산구 공단로474번길 160",lat:35.1929280,lon:128.6605890},
+    {id:"hq",district:"성산구",name:"창원시설공단 본부",address:"창원시 성산구 원이대로 450",lat:35.2323000,lon:128.6628902},
+
+    {id:"happo_sports",district:"마산합포구",name:"마산합포스포츠센터",address:"창원시 마산합포구",lat:35.17630159,lon:128.5686509},
+    {id:"masan_marine",district:"마산합포구",name:"(마산)해양레포츠센터",address:"창원시 마산합포구",lat:35.19529973,lon:128.5738199},
+    {id:"jindong_welfare",district:"마산합포구",name:"진동종합복지관",address:"창원시 마산합포구 진동면 신서촌로 15",lat:35.1158146,lon:128.4825157},
+    {id:"masan_crematory",district:"마산합포구",name:"마산화장장",address:"창원시 마산합포구 진동면 공원묘원로 232",lat:35.1394460,lon:128.5312720},
+    {id:"masan_bongan",district:"마산합포구",name:"마산영생원",address:"창원시 마산합포구 진동면 공원묘원로 136-106",lat:35.1415340,lon:128.5226420},
+
+    {id:"ncpark",district:"마산회원구",name:"창원NC파크",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
+    {id:"masan_member",district:"마산회원구",name:"마산회원체육센터",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
+    {id:"masan_baseball",district:"마산회원구",name:"마산야구장",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
+    {id:"urinuri",district:"마산회원구",name:"우리누리청소년문화센터",address:"창원시 마산회원구 팔용로 128",lat:35.2404676,lon:128.5902831},
+
+    {id:"jinhae_stadium",district:"진해구",name:"진해공설운동장",address:"창원시 진해구",lat:35.1478560,lon:128.6558830},
+    {id:"jinhae_sports",district:"진해구",name:"진해국민체육센터",address:"창원시 진해구",lat:35.15519178,lon:128.7065968},
+    {id:"yongwon_sports",district:"진해구",name:"용원국민체육센터",address:"창원시 진해구",lat:35.1067509,lon:128.8029135},
+    {id:"jinhae_marine",district:"진해구",name:"(진해)해양레포츠센터",address:"창원시 진해구 천자로 160",lat:35.14129989,lon:128.6883002},
+    {id:"jinhae_yeojwa",district:"진해구",name:"진해여좌국민체육센터",address:"창원시 진해구 연구단지로 29",lat:35.1577,lon:128.6609},
+    {id:"jinhae_park",district:"진해구",name:"진해해양공원",address:"창원시 진해구",lat:35.09218171,lon:128.7193475},
+    {id:"jehwang",district:"진해구",name:"제황산모노레일",address:"창원시 진해구",lat:35.1494030,lon:128.6616100},
+    {id:"jinhae_bongan",district:"진해구",name:"진해천자원",address:"창원시 진해구 진해대로 1426-51",lat:35.1060670,lon:128.7555080}
+  ];
+
+  var SETTINGS_KEY="cwsisulOfficeWeatherV4";
+  var SETTINGS_DEFAULTS={
+    district:"마산회원구",facilityId:"ncpark",lunchTime:"11:40",leaveTime:"18:00",
+    windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true
+  };
+  var CURRENT_SETTINGS=null;
+  var CURRENT_FACILITY=null;
   var LAT=35.2220;
   var LON=128.5823;
   var TZ="Asia/Seoul";
@@ -1370,8 +1561,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=3.0-alpha",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=3.0-alpha",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=4.0",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=4.0",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1381,10 +1572,10 @@
   var voiceBuffers={};
   var voiceLoads={};
   var VOICE_GAIN=1.70; // 음성 파일 증폭(1.0 = 원본 크기)
-  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=3.0-alpha"; // 강풍·우천 공통 경보음
+  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=4.0"; // 강풍·우천 공통 경보음
   var CLIMATE_ALERT_GAIN=1.0; // 기후 경보음 자체 음량 (과도하게 크지 않게 유지)
 
-  /* v3.0 Alpha 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
+  /* v4.0 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
   var CLIMATE_CONFIG={
     windThreshold:15,      // m/s 이상이면 강풍 경보
     testDuration:30000     // 테스트 시각효과 유지시간: 30초
@@ -1402,8 +1593,8 @@
     rainTimer:null
   };
 
-  /* v3.0 Alpha 3 · 창원NC파크 CCTV HLS 직접 재생 PIP */
-  var CCTV_STREAM_URL="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8";
+  /* v4.0 · 선택 사업장의 CCTV가 등록된 경우에만 PIP 버튼 활성화 */
+  var CCTV_STREAM_URL=null;
   var CCTV_SHOW_SECONDS=60;
   var cctvCloseTimer=null;
   var cctvTickTimer=null;
@@ -1415,20 +1606,162 @@
   var cctvLastVideoTime=-1;
   var cctvReconnectCount=0;
 
-  var weatherUrl=
-    "https://api.open-meteo.com/v1/forecast"+
-    "?latitude="+LAT+
-    "&longitude="+LON+
-    "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,is_day"+
-    "&hourly=temperature_2m,precipitation_probability,weather_code,is_day"+
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"+
-    "&temperature_unit=celsius"+
-    "&wind_speed_unit=ms"+
-    "&precipitation_unit=mm"+
-    "&timezone="+encodeURIComponent(TZ)+
-    "&forecast_days=7";
+  function buildWeatherUrl(){
+    return "https://api.open-meteo.com/v1/forecast"+
+      "?latitude="+LAT+
+      "&longitude="+LON+
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,is_day"+
+      "&hourly=temperature_2m,precipitation_probability,weather_code,is_day"+
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"+
+      "&temperature_unit=celsius"+
+      "&wind_speed_unit=ms"+
+      "&precipitation_unit=mm"+
+      "&timezone="+encodeURIComponent(TZ)+
+      "&forecast_days=7";
+  }
 
   function el(id){return document.getElementById(id)}
+
+  function copyObj(obj){
+    var o={};for(var k in obj)if(Object.prototype.hasOwnProperty.call(obj,k))o[k]=obj[k];return o;
+  }
+
+  function getFacilityById(id){
+    for(var i=0;i<FACILITIES.length;i++)if(FACILITIES[i].id===id)return FACILITIES[i];
+    return null;
+  }
+
+  function normalizeSettings(raw){
+    var s=copyObj(SETTINGS_DEFAULTS);
+    raw=raw||{};
+    if(DISTRICTS.indexOf(raw.district)>=0)s.district=raw.district;
+    if(typeof raw.facilityId==="string")s.facilityId=raw.facilityId;
+    if(/^\d{2}:\d{2}$/.test(raw.lunchTime||""))s.lunchTime=raw.lunchTime;
+    if(/^\d{2}:\d{2}$/.test(raw.leaveTime||""))s.leaveTime=raw.leaveTime;
+    var wt=Number(raw.windThreshold);
+    if(isFinite(wt)&&wt>=5&&wt<=40)s.windThreshold=Math.round(wt*10)/10;
+    if(typeof raw.windAlertEnabled==="boolean")s.windAlertEnabled=raw.windAlertEnabled;
+    if(typeof raw.rainAlertEnabled==="boolean")s.rainAlertEnabled=raw.rainAlertEnabled;
+    var f=getFacilityById(s.facilityId);
+    if(!f||f.district!==s.district){
+      f=null;
+      for(var i=0;i<FACILITIES.length;i++)if(FACILITIES[i].district===s.district){f=FACILITIES[i];break;}
+      if(!f){s.district=SETTINGS_DEFAULTS.district;f=getFacilityById(SETTINGS_DEFAULTS.facilityId);}
+      s.facilityId=f.id;
+    }
+    return s;
+  }
+
+  function loadSettings(){
+    try{
+      var raw=localStorage.getItem(SETTINGS_KEY);
+      return normalizeSettings(raw?JSON.parse(raw):SETTINGS_DEFAULTS);
+    }catch(e){return normalizeSettings(SETTINGS_DEFAULTS);}
+  }
+
+  function saveSettingsLocal(s){
+    try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}catch(e){}
+  }
+
+  function facilityListForDistrict(district){
+    var list=[];
+    for(var i=0;i<FACILITIES.length;i++)if(FACILITIES[i].district===district)list.push(FACILITIES[i]);
+    return list;
+  }
+
+  function populateDistrictSelect(selected){
+    var sel=el("settingDistrict");
+    sel.innerHTML="";
+    for(var i=0;i<DISTRICTS.length;i++){
+      var op=document.createElement("option");op.value=DISTRICTS[i];op.textContent=DISTRICTS[i];
+      if(DISTRICTS[i]===selected)op.selected=true;sel.appendChild(op);
+    }
+  }
+
+  function populateFacilitySelect(district,selectedId){
+    var sel=el("settingFacility");
+    var list=facilityListForDistrict(district);
+    sel.innerHTML="";
+    for(var i=0;i<list.length;i++){
+      var op=document.createElement("option");op.value=list[i].id;op.textContent=list[i].name;
+      if(list[i].id===selectedId)op.selected=true;sel.appendChild(op);
+    }
+    if(!sel.value&&list.length)sel.value=list[0].id;
+    updateFacilityDetail();
+  }
+
+  function updateFacilityDetail(){
+    var f=getFacilityById(el("settingFacility").value);
+    if(!f){el("settingFacilityDetail").textContent="등록된 사업장이 없습니다.";return;}
+    var cctv=f.cctv?" · CCTV 연동됨":" · CCTV 미등록";
+    el("settingFacilityDetail").textContent=(f.address||f.district)+" · 좌표 "+f.lat.toFixed(5)+", "+f.lon.toFixed(5)+cctv;
+  }
+
+  function fillSettingsForm(s){
+    s=normalizeSettings(s||CURRENT_SETTINGS||SETTINGS_DEFAULTS);
+    populateDistrictSelect(s.district);
+    populateFacilitySelect(s.district,s.facilityId);
+    el("settingLunchTime").value=s.lunchTime;
+    el("settingLeaveTime").value=s.leaveTime;
+    el("settingWindThreshold").value=String(s.windThreshold);
+    el("settingWindEnabled").checked=!!s.windAlertEnabled;
+    el("settingRainEnabled").checked=!!s.rainAlertEnabled;
+  }
+
+  function openSettings(){
+    fillSettingsForm(CURRENT_SETTINGS);
+    closeCctvPip();
+    el("settingsOverlay").classList.add("open");
+    el("settingsOverlay").setAttribute("aria-hidden","false");
+  }
+
+  function closeSettings(){
+    el("settingsOverlay").classList.remove("open");
+    el("settingsOverlay").setAttribute("aria-hidden","true");
+  }
+
+  function readSettingsForm(){
+    return normalizeSettings({
+      district:el("settingDistrict").value,facilityId:el("settingFacility").value,
+      lunchTime:el("settingLunchTime").value,leaveTime:el("settingLeaveTime").value,
+      windThreshold:Number(el("settingWindThreshold").value),
+      windAlertEnabled:el("settingWindEnabled").checked,rainAlertEnabled:el("settingRainEnabled").checked
+    });
+  }
+
+  function applySettings(next,doRefresh){
+    next=normalizeSettings(next);
+    var prevId=CURRENT_FACILITY?CURRENT_FACILITY.id:null;
+    var f=getFacilityById(next.facilityId)||getFacilityById(SETTINGS_DEFAULTS.facilityId);
+    CURRENT_SETTINGS=next;CURRENT_FACILITY=f;LAT=f.lat;LON=f.lon;
+    ALARMS[0].time=next.lunchTime;ALARMS[1].time=next.leaveTime;
+    CLIMATE_CONFIG.windThreshold=next.windThreshold;
+
+    el("placeName").textContent=f.name+" 날씨";
+    el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
+    el("alarmSiteLabel").textContent=f.name+" 알림";
+    document.title=f.name+" 날씨 전광판 · v4.0 TEST";
+
+    CCTV_STREAM_URL=f.cctv&&f.cctv.stream?f.cctv.stream:null;
+    var cbtn=el("cctvOpenBtn");
+    cbtn.disabled=!CCTV_STREAM_URL;
+    cbtn.textContent=CCTV_STREAM_URL?"📹 현장 CCTV 확인":"📹 CCTV 미등록";
+    el("cctvPipTitle").textContent="📹 "+(f.cctv?f.cctv.name:(f.name+" 인근 도로 CCTV"));
+    var link=el("cctvExternalLink");
+    if(CCTV_STREAM_URL){link.href=CCTV_STREAM_URL;link.style.display="inline";}else{link.removeAttribute("href");link.style.display="none";}
+
+    if(prevId!==f.id){
+      closeCctvPip();
+      climateState.initialized=false;climateState.windy=false;climateState.raining=false;climateState.lastWind=0;
+      applyClimateVisuals();
+    }
+    if(doRefresh)refresh();
+  }
+
+  function saveSettingsFromForm(){
+    var s=readSettingsForm();saveSettingsLocal(s);applySettings(s,true);closeSettings();
+  }
+
 
   function weatherInfo(code,isDay){
     var c=Number(code);
@@ -1713,8 +2046,10 @@
   }
 
   function applyClimateVisuals(){
-    var windActive=climateState.windy||climateTest.wind;
-    var rainActive=climateState.raining||climateTest.rain;
+    var windEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled;
+    var rainEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.rainAlertEnabled;
+    var windActive=(windEnabled&&climateState.windy)||climateTest.wind;
+    var rainActive=(rainEnabled&&climateState.raining)||climateTest.rain;
     var wm=el("windMetric");
     var rm=el("rainMetric");
     if(wm)wm.classList.toggle("wind-active",windActive);
@@ -1775,12 +2110,12 @@
       climateState.raining=rainNow;
       applyClimateVisuals();
       /* 첫 로드부터 강풍이면 즉시 알림. 우천은 '비가 시작되는 변화'만 알림. */
-      if(windNow)showClimateAlarm("wind",false);
+      if((!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled)&&windNow)showClimateAlarm("wind",false);
       return;
     }
 
-    if(windNow&&!climateState.windy)showClimateAlarm("wind",false);
-    if(rainNow&&!climateState.raining)showClimateAlarm("rain",false);
+    if((!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled)&&windNow&&!climateState.windy)showClimateAlarm("wind",false);
+    if((!CURRENT_SETTINGS||CURRENT_SETTINGS.rainAlertEnabled)&&rainNow&&!climateState.raining)showClimateAlarm("rain",false);
 
     climateState.windy=windNow;
     climateState.raining=rainNow;
@@ -2069,6 +2404,7 @@
 
   function startCctvStream(isReconnect){
     var video=el("cctvVideo");
+    if(!CCTV_STREAM_URL){setCctvStatus("⚠ 이 사업장은 CCTV가 아직 등록되지 않았습니다.",true,false);return;}
 
     /* 전체 재연결 시 기존 인스턴스만 정리하고 PIP 타이머는 유지 */
     clearCctvRecoveryTimers();
@@ -2165,6 +2501,7 @@
   }
 
   function openCctvPip(){
+    if(!CCTV_STREAM_URL)return;
     var pip=el("cctvPip");
 
     clearTimeout(cctvCloseTimer);
@@ -2241,7 +2578,7 @@
   function refresh(){
     setStatus("기상정보 갱신 중","loading");
 
-    fetch(weatherUrl,{cache:"no-store"})
+    fetch(buildWeatherUrl(),{cache:"no-store"})
       .then(function(r){
         if(!r.ok)throw new Error("weather");
         return r.json();
@@ -2266,6 +2603,15 @@
   el("cctvCloseBtn").addEventListener("click",closeCctvPip);
   el("cctvReloadBtn").addEventListener("click",reloadCctvPip);
 
+  el("settingsOpenBtn").addEventListener("click",openSettings);
+  el("settingsCloseBtn").addEventListener("click",closeSettings);
+  el("settingsCancelBtn").addEventListener("click",closeSettings);
+  el("settingsSaveBtn").addEventListener("click",saveSettingsFromForm);
+  el("settingsResetBtn").addEventListener("click",function(){fillSettingsForm(SETTINGS_DEFAULTS);});
+  el("settingDistrict").addEventListener("change",function(){populateFacilitySelect(this.value,null);});
+  el("settingFacility").addEventListener("change",updateFacilityDetail);
+  el("settingsOverlay").addEventListener("click",function(e){if(e.target===el("settingsOverlay"))closeSettings();});
+
   el("soundEnableBtn").addEventListener("click",function(){
     ensureAudio(true);
   });
@@ -2276,7 +2622,7 @@
         time:seoulTimeKey(new Date()),
         title:"점심 시간입니다",
         message:"맛점하세요.",
-        audio:"lunch.mp3?v=3.0-alpha",
+        audio:"lunch.mp3?v=4.0",
         icon:"🍚"
       },true);
     });
@@ -2307,6 +2653,8 @@
   updateClock();
   setInterval(updateClock,1000);
 
+  CURRENT_SETTINGS=loadSettings();
+  applySettings(CURRENT_SETTINGS,false);
   refresh();
   setInterval(refresh,REFRESH_MS);
 })();
