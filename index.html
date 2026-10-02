@@ -518,6 +518,127 @@
       white-space:nowrap;
     }
 
+    /* ----------------------------------------------------
+       v2.0 기후 경보 시각효과
+       ---------------------------------------------------- */
+    .metric.climate-alert{
+      position:relative;
+      overflow:hidden;
+      transition:border-color .3s ease,background .3s ease,box-shadow .3s ease,transform .3s ease;
+    }
+
+    .metric.climate-alert.wind-active{
+      border-color:rgba(255,104,91,.78);
+      background:linear-gradient(180deg,rgba(255,84,66,.24),rgba(104,27,24,.16));
+      box-shadow:0 0 0 1px rgba(255,120,100,.16),0 0 24px rgba(255,72,54,.24),inset 0 1px 0 rgba(255,255,255,.10);
+      animation:windCardPulse 1.25s ease-in-out infinite;
+    }
+
+    .metric.climate-alert.rain-active{
+      border-color:rgba(105,190,255,.68);
+      background:linear-gradient(180deg,rgba(70,157,232,.22),rgba(22,69,119,.14));
+      box-shadow:0 0 20px rgba(67,160,238,.18),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .climate-beacon{
+      position:absolute;
+      right:.48vw;
+      top:.45vh;
+      display:none;
+      font-size:clamp(15px,2.25vh,27px);
+      line-height:1;
+      filter:drop-shadow(0 0 8px rgba(255,74,60,.65));
+      transform-origin:50% 80%;
+    }
+
+    .wind-active .climate-beacon{
+      display:block;
+      animation:beaconWiggle .72s ease-in-out infinite,beaconFlash .95s ease-in-out infinite;
+    }
+
+    .rain-active .rain-beacon{
+      display:block;
+      filter:drop-shadow(0 0 8px rgba(90,180,255,.60));
+      animation:rainBob 1.1s ease-in-out infinite;
+    }
+
+    .climate-status{
+      display:none;
+      margin-top:.22vh;
+      font-size:clamp(8px,1.02vh,12px);
+      font-weight:900;
+      letter-spacing:.03em;
+      white-space:nowrap;
+    }
+
+    .wind-active .wind-status{
+      display:block;
+      color:#ffd3ce;
+      animation:warningTextPulse 1.05s ease-in-out infinite;
+    }
+
+    .rain-active .rain-status{
+      display:block;
+      color:#d6efff;
+    }
+
+    .climate-test-controls{
+      position:fixed;
+      left:1.1vw;
+      bottom:4.2vh;
+      z-index:80;
+      display:flex;
+      gap:.45vw;
+      padding:.45vh .45vw;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:1.2vh;
+      background:rgba(6,20,40,.58);
+      backdrop-filter:blur(7px);
+      -webkit-backdrop-filter:blur(7px);
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+    }
+
+    .climate-test-btn.active{
+      background:rgba(255,128,89,.26);
+      border-color:rgba(255,173,143,.55);
+      box-shadow:0 0 14px rgba(255,104,74,.18);
+    }
+
+    .alarm-overlay.climate-wind .alarm-card{
+      border-color:rgba(255,148,125,.42);
+      background:linear-gradient(180deg,rgba(132,51,44,.97),rgba(50,20,31,.97));
+    }
+
+    .alarm-overlay.climate-rain .alarm-card{
+      border-color:rgba(133,202,255,.40);
+      background:linear-gradient(180deg,rgba(31,89,146,.97),rgba(11,39,79,.97));
+    }
+
+    @keyframes windCardPulse{
+      0%,100%{transform:translateY(0);box-shadow:0 0 0 1px rgba(255,120,100,.16),0 0 18px rgba(255,72,54,.18),inset 0 1px 0 rgba(255,255,255,.10)}
+      50%{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(255,120,100,.22),0 0 34px rgba(255,72,54,.34),inset 0 1px 0 rgba(255,255,255,.12)}
+    }
+
+    @keyframes beaconWiggle{
+      0%,100%{transform:rotate(-7deg) scale(1)}
+      50%{transform:rotate(7deg) scale(1.08)}
+    }
+
+    @keyframes beaconFlash{
+      0%,100%{opacity:.45}
+      50%{opacity:1}
+    }
+
+    @keyframes rainBob{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-3px)}
+    }
+
+    @keyframes warningTextPulse{
+      0%,100%{opacity:.62}
+      50%{opacity:1}
+    }
+
     .forecast-panel{
       display:flex;
       flex-direction:column;
@@ -966,15 +1087,19 @@
           <div id="humidity" class="metric-value">--%</div>
         </div>
 
-        <div class="metric">
+        <div id="windMetric" class="metric climate-alert">
+          <span id="windBeacon" class="climate-beacon" aria-hidden="true">🚨</span>
           <div class="metric-label">바람</div>
           <div id="wind" class="metric-value">-- m/s</div>
           <div id="windDir" class="metric-sub">--</div>
+          <div class="climate-status wind-status">⚠ 강풍 주의</div>
         </div>
 
-        <div class="metric">
+        <div id="rainMetric" class="metric climate-alert">
+          <span id="rainBeacon" class="climate-beacon rain-beacon" aria-hidden="true">☔</span>
           <div class="metric-label">현재 강수확률</div>
           <div id="rain" class="metric-value">--%</div>
+          <div class="climate-status rain-status">우천 감지</div>
         </div>
 
         <div class="metric">
@@ -1008,7 +1133,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v1.8</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v2.0</span></div>
   </footer>
 
 </main>
@@ -1030,6 +1155,11 @@
   <button id="alarmTestBtn" class="alarm-btn" type="button">🔔 알람 테스트</button>
 </div>
 
+<div class="climate-test-controls" aria-label="기후 경보 테스트 도구">
+  <button id="windTestBtn" class="alarm-btn climate-test-btn" type="button">🌬 강풍 테스트</button>
+  <button id="rainTestBtn" class="alarm-btn climate-test-btn" type="button">🌧 우천 테스트</button>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -1041,8 +1171,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=1.8",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=1.8",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=2.0",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=2.0",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1052,6 +1182,26 @@
   var voiceBuffers={};
   var voiceLoads={};
   var VOICE_GAIN=1.70; // 음성 파일 증폭(1.0 = 원본 크기)
+  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=2.0"; // 강풍·우천 공통 경보음
+  var CLIMATE_ALERT_GAIN=1.0; // 기후 경보음 자체 음량 (과도하게 크지 않게 유지)
+
+  /* v2.0 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
+  var CLIMATE_CONFIG={
+    windThreshold:15,      // m/s 이상이면 강풍 경보
+    testDuration:30000     // 테스트 시각효과 유지시간: 30초
+  };
+  var climateState={
+    initialized:false,
+    windy:false,
+    raining:false,
+    lastWind:0
+  };
+  var climateTest={
+    wind:false,
+    rain:false,
+    windTimer:null,
+    rainTimer:null
+  };
 
   var weatherUrl=
     "https://api.open-meteo.com/v1/forecast"+
@@ -1126,7 +1276,7 @@
   }
 
   /*
-     v1.8 자동 소리 활성화
+     v2.0 자동 소리 활성화
      - 페이지가 열리면 먼저 자동으로 AudioContext 활성화를 시도합니다.
      - 브라우저가 자동재생을 허용한 환경에서는 버튼을 누르지 않아도 알람이 납니다.
      - 자동재생이 차단된 환경에서는 화면의 아무 곳이나 한 번 클릭/터치/키 입력하면
@@ -1149,6 +1299,7 @@
     for(var i=0;i<ALARMS.length;i++){
       if(ALARMS[i].audio)preloadVoice(ALARMS[i].audio).catch(function(){});
     }
+    preloadVoice(CLIMATE_ALERT_AUDIO).catch(function(){});
   }
 
   function ensureAudio(fromUser){
@@ -1319,24 +1470,142 @@
     });
   }
 
+  function playClimateAlertSound(){
+    if(!soundEnabled||!audioCtx)return;
+    preloadVoice(CLIMATE_ALERT_AUDIO).then(function(buffer){
+      if(audioCtx.state==="suspended")audioCtx.resume();
+
+      var source=audioCtx.createBufferSource();
+      var gain=audioCtx.createGain();
+      source.buffer=buffer;
+      gain.gain.value=CLIMATE_ALERT_GAIN;
+      source.connect(gain);
+      gain.connect(audioCtx.destination);
+      source.onended=function(){
+        try{source.disconnect();gain.disconnect();}catch(e){}
+      };
+      source.start(0);
+    }).catch(function(){
+      console.error("기후 경보음을 재생하지 못했습니다:",CLIMATE_ALERT_AUDIO);
+    });
+  }
+
+  function isRainWeatherCode(code){
+    code=Number(code);
+    return (
+      code===51||code===53||code===55||code===56||code===57||
+      code===61||code===63||code===65||code===66||code===67||
+      code===80||code===81||code===82||
+      code===95||code===96||code===99
+    );
+  }
+
+  function applyClimateVisuals(){
+    var windActive=climateState.windy||climateTest.wind;
+    var rainActive=climateState.raining||climateTest.rain;
+    var wm=el("windMetric");
+    var rm=el("rainMetric");
+    if(wm)wm.classList.toggle("wind-active",windActive);
+    if(rm)rm.classList.toggle("rain-active",rainActive);
+  }
+
+  function climateAlarmData(type,isTest){
+    var nowTime=seoulTimeKey(new Date());
+    if(type==="wind"){
+      var speed=climateTest.wind ? Math.max(CLIMATE_CONFIG.windThreshold,17.2) : climateState.lastWind;
+      return {
+        time:nowTime,
+        title:"강풍 주의",
+        message:"현재 풍속 "+Number(speed||0).toFixed(1)+" m/s · 시설물 및 외부 작업에 주의하세요.",
+        icon:"🚨",
+        climateType:"wind"
+      };
+    }
+    return {
+      time:nowTime,
+      title:"우천 감지",
+      message:"비가 내리기 시작했습니다. 외부 시설 및 이동 시 주의하세요.",
+      icon:"🌧️",
+      climateType:"rain"
+    };
+  }
+
+  function showClimateAlarm(type,isTest){
+    ensureAudio(!!isTest).then(function(){
+      showAlarm(climateAlarmData(type,isTest),!!isTest);
+    });
+  }
+
+  function startClimateTest(type){
+    var btn=el(type==="wind"?"windTestBtn":"rainTestBtn");
+    var timerKey=type+"Timer";
+    climateTest[type]=true;
+    if(climateTest[timerKey])clearTimeout(climateTest[timerKey]);
+    if(btn)btn.classList.add("active");
+    applyClimateVisuals();
+    showClimateAlarm(type,true);
+    climateTest[timerKey]=setTimeout(function(){
+      climateTest[type]=false;
+      climateTest[timerKey]=null;
+      if(btn)btn.classList.remove("active");
+      applyClimateVisuals();
+    },CLIMATE_CONFIG.testDuration);
+  }
+
+  function evaluateClimateAlerts(c){
+    var windNow=(Number(c.wind_speed_10m)||0)>=CLIMATE_CONFIG.windThreshold;
+    var rainNow=isRainWeatherCode(c.weather_code);
+    climateState.lastWind=Number(c.wind_speed_10m)||0;
+
+    if(!climateState.initialized){
+      climateState.initialized=true;
+      climateState.windy=windNow;
+      climateState.raining=rainNow;
+      applyClimateVisuals();
+      /* 첫 로드부터 강풍이면 즉시 알림. 우천은 '비가 시작되는 변화'만 알림. */
+      if(windNow)showClimateAlarm("wind",false);
+      return;
+    }
+
+    if(windNow&&!climateState.windy)showClimateAlarm("wind",false);
+    if(rainNow&&!climateState.raining)showClimateAlarm("rain",false);
+
+    climateState.windy=windNow;
+    climateState.raining=rainNow;
+    applyClimateVisuals();
+  }
+
   function hideAlarm(){
-    el("alarmOverlay").classList.remove("active");
+    var overlay=el("alarmOverlay");
+    overlay.classList.remove("active","climate-wind","climate-rain");
     if(alarmTimer){clearTimeout(alarmTimer);alarmTimer=null;}
   }
 
   function showAlarm(alarm,isTest){
     if(alarmTimer)clearTimeout(alarmTimer);
+    var overlay=el("alarmOverlay");
+    overlay.classList.remove("climate-wind","climate-rain");
+    if(alarm.climateType)overlay.classList.add("climate-"+alarm.climateType);
+
     el("alarmIcon").textContent=alarm.icon||"🔔";
     el("alarmTime").textContent=alarm.time||seoulTimeKey(new Date());
     el("alarmTitle").textContent=alarm.title||"알림";
     el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"");
-    el("alarmOverlay").classList.add("active");
+    overlay.classList.add("active");
 
-    /* 알림음 1회 → 잠시 후 고정 음성 파일 2회 */
-    var chimeMs=playChime();
-    setTimeout(function(){
-      playVoiceFile(alarm.audio,2);
-    },chimeMs+350);
+    /* 시간 알람과 기후 경보의 소리를 구분합니다.
+       - 점심/퇴근: 기존 벨소리 + 안내 음성 2회
+       - 강풍/우천: 부드러운 전용 경보음 1회 */
+    if(alarm.climateType){
+      playClimateAlertSound();
+    }else{
+      var chimeMs=playChime();
+      if(alarm.audio){
+        setTimeout(function(){
+          playVoiceFile(alarm.audio,2);
+        },chimeMs+350);
+      }
+    }
 
     alarmTimer=setTimeout(hideAlarm,ALARM_SHOW_MS);
   }
@@ -1426,6 +1695,8 @@
     el("wind").textContent=(Number(c.wind_speed_10m)||0).toFixed(1)+" m/s";
     el("windDir").textContent=windDirection(c.wind_direction_10m)+" · "+Math.round(c.wind_direction_10m||0)+"°";
     el("rain").textContent=Math.round(c.precipitation_probability||0)+"%";
+
+    evaluateClimateAlerts(c);
 
     if(d.temperature_2m_max&&d.temperature_2m_max.length){
       el("high").textContent="최고 "+Math.round(d.temperature_2m_max[0])+"°";
@@ -1526,10 +1797,18 @@
         time:seoulTimeKey(new Date()),
         title:"점심 시간입니다",
         message:"맛점하세요.",
-        audio:"lunch.mp3?v=1.8",
+        audio:"lunch.mp3?v=2.0",
         icon:"🍚"
       },true);
     });
+  });
+
+  el("windTestBtn").addEventListener("click",function(){
+    startClimateTest("wind");
+  });
+
+  el("rainTestBtn").addEventListener("click",function(){
+    startClimateTest("rain");
   });
 
   el("alarmClose").addEventListener("click",hideAlarm);
