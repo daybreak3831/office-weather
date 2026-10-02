@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원NC파크 날씨 전광판 · v3.0 Alpha 2</title>
+  <title>창원NC파크 날씨 전광판 · v3.0 Alpha 3</title>
 
   <style>
     :root{
@@ -987,7 +987,7 @@
 
 
     /* ----------------------------------------------------
-       v3.0 Alpha 2 · CCTV HLS 직접재생 테스트
+       v3.0 Alpha 3 · CCTV HLS 직접재생 테스트
        ---------------------------------------------------- */
     .cctv-open-btn{
       margin-top:1.15vh;
@@ -1109,28 +1109,35 @@
     }
     .cctv-video-status{
       position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      max-width:84%;
-      padding:10px 14px;
-      border-radius:12px;
-      background:rgba(3,12,23,.82);
+      right:10px;
+      top:10px;
+      left:auto;
+      transform:none;
+      max-width:62%;
+      padding:5px 9px;
+      border-radius:999px;
+      background:rgba(3,12,23,.72);
       border:1px solid rgba(255,255,255,.18);
       color:#e6f2ff;
-      font-size:13px;
-      font-weight:800;
-      line-height:1.5;
-      text-align:center;
+      font-size:11px;
+      font-weight:900;
+      line-height:1.25;
+      text-align:right;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
       pointer-events:none;
       opacity:1;
       transition:opacity .2s ease;
+      box-shadow:0 4px 14px rgba(0,0,0,.24);
+      backdrop-filter:blur(5px);
+      -webkit-backdrop-filter:blur(5px);
     }
     .cctv-video-status.hidden{opacity:0}
     .cctv-video-status.error{
       color:#ffe3e3;
       border-color:rgba(255,126,126,.45);
-      background:rgba(54,8,12,.88);
+      background:rgba(54,8,12,.82);
     }
     .cctv-pip-foot{
       flex:0 0 auto;
@@ -1339,10 +1346,10 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    Alpha 2 테스트: <strong>창원NC파크 CCTV HLS 스트림</strong>을 PIP 플레이어에서 직접 재생합니다.
+    Alpha 3 테스트: <strong>CCTV 자동재생 · 지연 감지 · 자동 재연결</strong>을 적용했습니다.
   </div>
   <div class="cctv-frame-wrap">
-    <video id="cctvVideo" class="cctv-video" controls muted playsinline preload="none"></video>
+    <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
     <div id="cctvVideoStatus" class="cctv-video-status">CCTV 연결 대기 중</div>
   </div>
   <div class="cctv-pip-foot">
@@ -1395,13 +1402,18 @@
     rainTimer:null
   };
 
-  /* v3.0 Alpha 2 · 창원NC파크 CCTV HLS 직접 재생 PIP */
+  /* v3.0 Alpha 3 · 창원NC파크 CCTV HLS 직접 재생 PIP */
   var CCTV_STREAM_URL="https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8";
   var CCTV_SHOW_SECONDS=60;
   var cctvCloseTimer=null;
   var cctvTickTimer=null;
   var cctvSecondsLeft=CCTV_SHOW_SECONDS;
   var cctvHls=null;
+  var cctvWatchdogTimer=null;
+  var cctvRetryTimer=null;
+  var cctvLastProgressAt=0;
+  var cctvLastVideoTime=-1;
+  var cctvReconnectCount=0;
 
   var weatherUrl=
     "https://api.open-meteo.com/v1/forecast"+
@@ -1962,8 +1974,33 @@
     status.classList.toggle("hidden",!!hide);
   }
 
+  function cctvIsOpen(){
+    return el("cctvPip").classList.contains("open");
+  }
+
+  function tryCctvPlay(){
+    var video=el("cctvVideo");
+    video.muted=true;
+    video.defaultMuted=true;
+    video.autoplay=true;
+    video.playsInline=true;
+    var p;
+    try{p=video.play()}catch(e){p=null}
+    if(p&&typeof p.catch==="function")p.catch(function(){
+      /* 음소거 자동재생은 대부분의 브라우저에서 허용됩니다. 실패 시 watchdog이 재시도합니다. */
+    });
+  }
+
+  function clearCctvRecoveryTimers(){
+    clearInterval(cctvWatchdogTimer);
+    clearTimeout(cctvRetryTimer);
+    cctvWatchdogTimer=null;
+    cctvRetryTimer=null;
+  }
+
   function stopCctvStream(){
     var video=el("cctvVideo");
+    clearCctvRecoveryTimers();
 
     if(cctvHls){
       try{cctvHls.destroy()}catch(e){}
@@ -1973,33 +2010,108 @@
     try{video.pause()}catch(e){}
     video.removeAttribute("src");
     try{video.load()}catch(e){}
+    cctvLastProgressAt=0;
+    cctvLastVideoTime=-1;
   }
 
-  function startCctvStream(){
-    var video=el("cctvVideo");
-    stopCctvStream();
-    setCctvStatus("창원NC파크 CCTV 연결 중…",false,false);
+  function scheduleCctvReconnect(reason,delay){
+    if(!cctvIsOpen())return;
+    clearTimeout(cctvRetryTimer);
+    setCctvStatus("↻ 재연결",false,false);
+    cctvRetryTimer=setTimeout(function(){
+      if(!cctvIsOpen())return;
+      cctvReconnectCount+=1;
+      startCctvStream(true);
+    },typeof delay==="number"?delay:1200);
+  }
 
-    /* Safari 등 HLS를 기본 지원하는 브라우저는 스트림을 바로 연결합니다. */
+  function startCctvWatchdog(){
+    clearInterval(cctvWatchdogTimer);
+    cctvLastProgressAt=Date.now();
+    cctvLastVideoTime=-1;
+
+    cctvWatchdogTimer=setInterval(function(){
+      if(!cctvIsOpen())return;
+      var video=el("cctvVideo");
+      var now=Date.now();
+      var current=Number(video.currentTime||0);
+
+      if(!video.paused&&video.readyState>=2&&current>cctvLastVideoTime+.10){
+        cctvLastVideoTime=current;
+        cctvLastProgressAt=now;
+        setCctvStatus("재생 중",false,true);
+        return;
+      }
+
+      if(now-cctvLastProgressAt>6500){
+        setCctvStatus("⏳ 영상 지연",false,false);
+        cctvLastProgressAt=now;
+
+        /* 먼저 가볍게 스트림을 다시 당겨보고, 그래도 안 풀리면 전체 연결을 새로 만듭니다. */
+        if(cctvHls){
+          try{cctvHls.startLoad(-1)}catch(e){}
+          tryCctvPlay();
+        }else{
+          tryCctvPlay();
+        }
+
+        clearTimeout(cctvRetryTimer);
+        cctvRetryTimer=setTimeout(function(){
+          if(!cctvIsOpen())return;
+          var v=el("cctvVideo");
+          if(v.paused||v.readyState<2||Number(v.currentTime||0)<=cctvLastVideoTime+.10){
+            scheduleCctvReconnect("watchdog",0);
+          }
+        },3500);
+      }
+    },2000);
+  }
+
+  function startCctvStream(isReconnect){
+    var video=el("cctvVideo");
+
+    /* 전체 재연결 시 기존 인스턴스만 정리하고 PIP 타이머는 유지 */
+    clearCctvRecoveryTimers();
+    if(cctvHls){
+      try{cctvHls.destroy()}catch(e){}
+      cctvHls=null;
+    }
+    try{video.pause()}catch(e){}
+    video.removeAttribute("src");
+    try{video.load()}catch(e){}
+
+    video.muted=true;
+    video.defaultMuted=true;
+    video.autoplay=true;
+    video.playsInline=true;
+    cctvLastProgressAt=Date.now();
+    cctvLastVideoTime=-1;
+    setCctvStatus(isReconnect?"↻ 재연결 중":"● CCTV 연결 중",false,false);
+
+    /* Safari 등 HLS 기본 지원 브라우저 */
     if(video.canPlayType("application/vnd.apple.mpegurl")){
       video.src=CCTV_STREAM_URL;
+      tryCctvPlay();
       video.addEventListener("loadedmetadata",function nativeLoaded(){
         video.removeEventListener("loadedmetadata",nativeLoaded);
-        video.play().catch(function(){
-          setCctvStatus("재생 버튼 ▶을 눌러 영상을 시작해 주세요.",false,false);
-        });
+        tryCctvPlay();
       });
+      startCctvWatchdog();
       return;
     }
 
-    /* Chrome/Edge 등은 Hls.js를 이용해 m3u8을 MediaSource로 재생합니다. */
+    /* Chrome/Edge 등은 Hls.js 이용 */
     if(window.Hls&&window.Hls.isSupported()){
       cctvHls=new window.Hls({
         enableWorker:true,
         lowLatencyMode:true,
-        backBufferLength:15,
+        backBufferLength:10,
         liveSyncDurationCount:2,
-        liveMaxLatencyDurationCount:5
+        liveMaxLatencyDurationCount:4,
+        maxBufferHole:.5,
+        manifestLoadingMaxRetry:3,
+        levelLoadingMaxRetry:3,
+        fragLoadingMaxRetry:4
       });
 
       cctvHls.on(window.Hls.Events.MEDIA_ATTACHED,function(){
@@ -2007,22 +2119,49 @@
       });
 
       cctvHls.on(window.Hls.Events.MANIFEST_PARSED,function(){
-        video.play().catch(function(){
-          setCctvStatus("스트림은 연결됐습니다. 재생 버튼 ▶을 눌러 주세요.",false,false);
-        });
+        tryCctvPlay();
       });
 
       cctvHls.on(window.Hls.Events.ERROR,function(event,data){
-        if(!data||!data.fatal)return;
-        var detail=data.details||data.type||"unknown";
-        setCctvStatus("CCTV 스트림 연결 실패 ("+detail+"). 서버의 외부재생/CORS 제한일 수 있습니다.",true,false);
+        if(!data)return;
+
+        if(!data.fatal){
+          if(data.details&&String(data.details).toLowerCase().indexOf("buffer")>=0){
+            setCctvStatus("⏳ 영상 지연",false,false);
+          }
+          return;
+        }
+
+        if(data.type===window.Hls.ErrorTypes.NETWORK_ERROR){
+          setCctvStatus("↻ 네트워크 재연결",false,false);
+          try{if(cctvHls)cctvHls.startLoad()}catch(e){}
+          clearTimeout(cctvRetryTimer);
+          cctvRetryTimer=setTimeout(function(){
+            if(cctvIsOpen())scheduleCctvReconnect("network",0);
+          },4500);
+          return;
+        }
+
+        if(data.type===window.Hls.ErrorTypes.MEDIA_ERROR){
+          setCctvStatus("↻ 영상 복구 중",false,false);
+          try{if(cctvHls)cctvHls.recoverMediaError()}catch(e){}
+          clearTimeout(cctvRetryTimer);
+          cctvRetryTimer=setTimeout(function(){
+            if(cctvIsOpen())tryCctvPlay();
+          },1200);
+          return;
+        }
+
+        setCctvStatus("↻ 스트림 재연결",true,false);
+        scheduleCctvReconnect("fatal",1200);
       });
 
       cctvHls.attachMedia(video);
+      startCctvWatchdog();
       return;
     }
 
-    setCctvStatus("이 브라우저에서는 HLS 재생 모듈을 사용할 수 없습니다. 인터넷 연결 또는 브라우저 호환성을 확인해 주세요.",true,false);
+    setCctvStatus("⚠ HLS 미지원",true,false);
   }
 
   function openCctvPip(){
@@ -2031,11 +2170,12 @@
     clearTimeout(cctvCloseTimer);
     clearInterval(cctvTickTimer);
     cctvSecondsLeft=CCTV_SHOW_SECONDS;
+    cctvReconnectCount=0;
     updateCctvCountdown();
 
     pip.classList.add("open");
     pip.setAttribute("aria-hidden","false");
-    startCctvStream();
+    startCctvStream(false);
 
     cctvTickTimer=setInterval(function(){
       cctvSecondsLeft-=1;
@@ -2063,15 +2203,24 @@
     updateCctvCountdown();
     clearTimeout(cctvCloseTimer);
     cctvCloseTimer=setTimeout(closeCctvPip,CCTV_SHOW_SECONDS*1000+250);
-    startCctvStream();
+    cctvReconnectCount=0;
+    startCctvStream(true);
   }
 
-  /* 영상이 실제로 재생되면 안내문을 숨기고, 대기/오류 시 다시 표시합니다. */
-  el("cctvVideo").addEventListener("playing",function(){setCctvStatus("재생 중",false,true)});
-  el("cctvVideo").addEventListener("waiting",function(){setCctvStatus("실시간 영상 버퍼링 중…",false,false)});
-  el("cctvVideo").addEventListener("stalled",function(){setCctvStatus("영상 수신이 지연되고 있습니다…",false,false)});
+  /* 상태 표시는 화면 중앙을 가리지 않고 우측 상단의 작은 배지로만 표시합니다. */
+  el("cctvVideo").addEventListener("playing",function(){
+    cctvLastProgressAt=Date.now();
+    cctvLastVideoTime=Number(this.currentTime||0);
+    setCctvStatus("재생 중",false,true);
+  });
+  el("cctvVideo").addEventListener("canplay",function(){tryCctvPlay()});
+  el("cctvVideo").addEventListener("waiting",function(){setCctvStatus("⏳ 영상 지연",false,false)});
+  el("cctvVideo").addEventListener("stalled",function(){setCctvStatus("⏳ 영상 지연",false,false)});
   el("cctvVideo").addEventListener("error",function(){
-    if(!cctvHls)setCctvStatus("브라우저가 CCTV 영상을 재생하지 못했습니다.",true,false);
+    if(!cctvHls&&cctvIsOpen()){
+      setCctvStatus("↻ 영상 재연결",true,false);
+      scheduleCctvReconnect("native-error",1000);
+    }
   });
 
   function makeRain(){
