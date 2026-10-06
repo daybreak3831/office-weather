@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 날씨 전광판 · v4.0 TEST</title>
+  <title>창원시설공단 날씨 전광판 · v4.1</title>
 
   <style>
     :root{
@@ -199,6 +199,12 @@
 
     .hero-text{text-align:left}
 
+    .temp-alert-wrap{
+      display:flex;
+      align-items:flex-start;
+      gap:.75vw;
+    }
+
     .temp{
       font-size:clamp(52px,10.8vh,118px);
       line-height:.82;
@@ -206,6 +212,31 @@
       letter-spacing:-.07em;
       font-variant-numeric:tabular-nums;
       text-shadow:0 4px 14px rgba(0,0,0,.16);
+    }
+
+    .heat-warning-badge{
+      display:none;
+      margin-top:.35vh;
+      padding:.55vh .62vw;
+      border:1px solid rgba(255,194,108,.62);
+      border-radius:999px;
+      background:linear-gradient(180deg,rgba(255,136,55,.30),rgba(157,54,24,.24));
+      box-shadow:0 0 18px rgba(255,118,47,.22),inset 0 1px 0 rgba(255,255,255,.10);
+      font-size:clamp(9px,1.25vh,14px);
+      font-weight:900;
+      letter-spacing:.02em;
+      white-space:nowrap;
+      color:#fff1dc;
+    }
+
+    .temp-alert-wrap.heat-active .heat-warning-badge{
+      display:block;
+      animation:heatBadgePulse 1.15s ease-in-out infinite;
+    }
+
+    @keyframes heatBadgePulse{
+      0%,100%{transform:scale(1);opacity:.78;box-shadow:0 0 12px rgba(255,118,47,.16)}
+      50%{transform:scale(1.035);opacity:1;box-shadow:0 0 24px rgba(255,118,47,.34)}
     }
 
     .condition{
@@ -540,6 +571,13 @@
       box-shadow:0 0 20px rgba(67,160,238,.18),inset 0 1px 0 rgba(255,255,255,.08);
     }
 
+    .metric.climate-alert.heavy-rain-active{
+      border-color:rgba(151,191,255,.82);
+      background:linear-gradient(180deg,rgba(61,106,198,.30),rgba(21,46,104,.24));
+      box-shadow:0 0 0 1px rgba(126,171,255,.14),0 0 28px rgba(54,102,214,.28),inset 0 1px 0 rgba(255,255,255,.10);
+      animation:heavyRainCardPulse 1.2s ease-in-out infinite;
+    }
+
     .climate-beacon{
       position:absolute;
       right:.48vw;
@@ -562,6 +600,12 @@
       animation:rainBob 1.1s ease-in-out infinite;
     }
 
+    .heavy-rain-active .heavy-rain-beacon{
+      display:block;
+      filter:drop-shadow(0 0 9px rgba(126,171,255,.72));
+      animation:beaconWiggle .72s ease-in-out infinite,beaconFlash .95s ease-in-out infinite;
+    }
+
     .climate-status{
       display:none;
       margin-top:.22vh;
@@ -582,12 +626,19 @@
       color:#d6efff;
     }
 
+    .heavy-rain-active .heavy-rain-status{
+      display:block;
+      color:#e1ecff;
+      animation:warningTextPulse 1.05s ease-in-out infinite;
+    }
+
     .climate-test-controls{
       position:fixed;
       left:1.1vw;
       bottom:4.2vh;
       z-index:80;
       display:flex;
+      flex-wrap:wrap;
       gap:.45vw;
       padding:.45vh .45vw;
       border:1px solid rgba(255,255,255,.16);
@@ -612,6 +663,21 @@
     .alarm-overlay.climate-rain .alarm-card{
       border-color:rgba(133,202,255,.40);
       background:linear-gradient(180deg,rgba(31,89,146,.97),rgba(11,39,79,.97));
+    }
+
+    .alarm-overlay.climate-heat .alarm-card{
+      border-color:rgba(255,190,111,.50);
+      background:linear-gradient(180deg,rgba(156,73,31,.97),rgba(68,28,31,.97));
+    }
+
+    .alarm-overlay.climate-heavy-rain .alarm-card{
+      border-color:rgba(151,191,255,.50);
+      background:linear-gradient(180deg,rgba(42,72,145,.97),rgba(12,30,77,.97));
+    }
+
+    @keyframes heavyRainCardPulse{
+      0%,100%{transform:translateY(0);box-shadow:0 0 0 1px rgba(126,171,255,.14),0 0 18px rgba(54,102,214,.18),inset 0 1px 0 rgba(255,255,255,.10)}
+      50%{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(126,171,255,.22),0 0 34px rgba(54,102,214,.36),inset 0 1px 0 rgba(255,255,255,.12)}
     }
 
     @keyframes windCardPulse{
@@ -987,7 +1053,7 @@
 
 
     /* ----------------------------------------------------
-       v4.0 TEST · 사업장 맞춤 설정 + CCTV
+       v4.1 · 사업장 맞춤 설정 + CCTV
        ---------------------------------------------------- */
     .cctv-open-btn{
       margin-top:1.15vh;
@@ -1164,7 +1230,7 @@
 
 
     /* ----------------------------------------------------
-       v4.0 TEST · 사업장/알람 설정 패널
+       v4.1 · 사업장/알람 설정 패널
        ---------------------------------------------------- */
     .topbar-right{
       display:flex;align-items:center;gap:.8vw;min-width:0;
@@ -1336,7 +1402,10 @@
           </div>
 
           <div class="hero-text">
-            <div id="temp" class="temp">--°</div>
+            <div id="tempAlertWrap" class="temp-alert-wrap">
+              <div id="temp" class="temp">--°</div>
+              <div id="heatWarningBadge" class="heat-warning-badge">🔥 폭염경보 기준</div>
+            </div>
             <div id="condition" class="condition">날씨 불러오는 중</div>
             <div id="feels" class="feels">체감온도 --°C</div>
             <div class="range">
@@ -1371,9 +1440,12 @@
           <div class="climate-status rain-status">우천 감지</div>
         </div>
 
-        <div class="metric">
+        <div id="precipMetric" class="metric climate-alert">
+          <span id="heavyRainBeacon" class="climate-beacon heavy-rain-beacon" aria-hidden="true">⚠️</span>
           <div class="metric-label">오늘 예상 강수량</div>
           <div id="precipSum" class="metric-value">-- mm</div>
+          <div id="heavyRainDetail" class="metric-sub"></div>
+          <div class="climate-status heavy-rain-status">호우경보 기준</div>
         </div>
       </div>
     </article>
@@ -1402,7 +1474,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · <span class="version-tag">v4.0 TEST</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 폭염/호우는 기상청 경보 기준 적용 · <span class="version-tag">v4.1</span></div>
   </footer>
 
 </main>
@@ -1448,6 +1520,8 @@
         <div class="settings-toggles">
           <label class="settings-toggle"><input id="settingWindEnabled" type="checkbox" checked><span class="settings-toggle-label">강풍 경보</span></label>
           <label class="settings-toggle"><input id="settingRainEnabled" type="checkbox" checked><span class="settings-toggle-label">우천 시작 알림</span></label>
+          <label class="settings-toggle"><input id="settingHeatEnabled" type="checkbox" checked><span class="settings-toggle-label">폭염경보 기준 알림 (35℃·2일)</span></label>
+          <label class="settings-toggle"><input id="settingHeavyRainEnabled" type="checkbox" checked><span class="settings-toggle-label">호우경보 기준 알림 (3h 90 / 12h 180mm)</span></label>
         </div>
       </div>
     </div>
@@ -1480,6 +1554,8 @@
 <div class="climate-test-controls" aria-label="기후 경보 테스트 도구">
   <button id="windTestBtn" class="alarm-btn climate-test-btn" type="button">🌬 강풍 테스트</button>
   <button id="rainTestBtn" class="alarm-btn climate-test-btn" type="button">🌧 우천 테스트</button>
+  <button id="heatTestBtn" class="alarm-btn climate-test-btn" type="button">🔥 폭염 테스트</button>
+  <button id="heavyRainTestBtn" class="alarm-btn climate-test-btn" type="button">⛈ 호우 테스트</button>
 </div>
 
 <aside id="cctvPip" class="cctv-pip" aria-hidden="true" aria-label="현장 CCTV 확인 창">
@@ -1490,7 +1566,7 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    v4.0: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
+    v4.1: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -1507,7 +1583,7 @@
 (function(){
   "use strict";
 
-  /* v4.0 TEST · 창원시설공단 사업장 좌표 데이터
+  /* v4.1 · 창원시설공단 사업장 좌표 데이터
      - 정식 배포 전 시설 목록/좌표는 한 번 더 최종 검증할 예정입니다.
      - CCTV는 현재 스트림이 확인된 창원NC파크만 우선 연결합니다. */
   var DISTRICTS=["의창구","성산구","마산합포구","마산회원구","진해구"];
@@ -1550,7 +1626,8 @@
   var SETTINGS_KEY="cwsisulOfficeWeatherV4";
   var SETTINGS_DEFAULTS={
     district:"마산회원구",facilityId:"ncpark",lunchTime:"11:40",leaveTime:"18:00",
-    windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true
+    windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true,
+    heatAlertEnabled:true,heavyRainAlertEnabled:true
   };
   var CURRENT_SETTINGS=null;
   var CURRENT_FACILITY=null;
@@ -1561,8 +1638,8 @@
 
   /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
   var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=4.0",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=4.0",icon:"🏠",weekdaysOnly:true}
+    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=4.1",icon:"🍚",weekdaysOnly:true},
+    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=4.1",icon:"🏠",weekdaysOnly:true}
   ];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
@@ -1572,28 +1649,41 @@
   var voiceBuffers={};
   var voiceLoads={};
   var VOICE_GAIN=1.70; // 음성 파일 증폭(1.0 = 원본 크기)
-  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=4.0"; // 강풍·우천 공통 경보음
+  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=4.1"; // 강풍·우천 공통 경보음
   var CLIMATE_ALERT_GAIN=1.0; // 기후 경보음 자체 음량 (과도하게 크지 않게 유지)
 
-  /* v4.0 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
+  /* v4.1 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
   var CLIMATE_CONFIG={
-    windThreshold:15,      // m/s 이상이면 강풍 경보
-    testDuration:30000     // 테스트 시각효과 유지시간: 30초
+    windThreshold:15,          // m/s 이상이면 강풍 경보
+    heatThreshold:35,          // 기상청 폭염경보: 일 최고 체감온도 35℃ 이상
+    heatConsecutiveDays:2,     // 위 기준이 2일 이상 지속 예상
+    heavyRain3h:90,            // 기상청 호우경보: 3시간 누적 90mm 이상 예상
+    heavyRain12h:180,          // 또는 12시간 누적 180mm 이상 예상
+    heavyRainLookaheadHours:24,// 가까운 24시간 예보에서 기준 충족 여부 확인
+    testDuration:30000         // 테스트 시각효과 유지시간: 30초
   };
   var climateState={
     initialized:false,
     windy:false,
     raining:false,
-    lastWind:0
+    heatWarning:false,
+    heavyRainWarning:false,
+    lastWind:0,
+    heatDetail:"",
+    heavyRainDetail:""
   };
   var climateTest={
     wind:false,
     rain:false,
+    heat:false,
+    heavyRain:false,
     windTimer:null,
-    rainTimer:null
+    rainTimer:null,
+    heatTimer:null,
+    heavyRainTimer:null
   };
 
-  /* v4.0 · 선택 사업장의 CCTV가 등록된 경우에만 PIP 버튼 활성화 */
+  /* v4.1 · 선택 사업장의 CCTV가 등록된 경우에만 PIP 버튼 활성화 */
   var CCTV_STREAM_URL=null;
   var CCTV_SHOW_SECONDS=60;
   var cctvCloseTimer=null;
@@ -1611,8 +1701,8 @@
       "?latitude="+LAT+
       "&longitude="+LON+
       "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,is_day"+
-      "&hourly=temperature_2m,precipitation_probability,weather_code,is_day"+
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"+
+      "&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,is_day"+
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum"+
       "&temperature_unit=celsius"+
       "&wind_speed_unit=ms"+
       "&precipitation_unit=mm"+
@@ -1642,6 +1732,8 @@
     if(isFinite(wt)&&wt>=5&&wt<=40)s.windThreshold=Math.round(wt*10)/10;
     if(typeof raw.windAlertEnabled==="boolean")s.windAlertEnabled=raw.windAlertEnabled;
     if(typeof raw.rainAlertEnabled==="boolean")s.rainAlertEnabled=raw.rainAlertEnabled;
+    if(typeof raw.heatAlertEnabled==="boolean")s.heatAlertEnabled=raw.heatAlertEnabled;
+    if(typeof raw.heavyRainAlertEnabled==="boolean")s.heavyRainAlertEnabled=raw.heavyRainAlertEnabled;
     var f=getFacilityById(s.facilityId);
     if(!f||f.district!==s.district){
       f=null;
@@ -1706,6 +1798,8 @@
     el("settingWindThreshold").value=String(s.windThreshold);
     el("settingWindEnabled").checked=!!s.windAlertEnabled;
     el("settingRainEnabled").checked=!!s.rainAlertEnabled;
+    el("settingHeatEnabled").checked=!!s.heatAlertEnabled;
+    el("settingHeavyRainEnabled").checked=!!s.heavyRainAlertEnabled;
   }
 
   function openSettings(){
@@ -1725,7 +1819,8 @@
       district:el("settingDistrict").value,facilityId:el("settingFacility").value,
       lunchTime:el("settingLunchTime").value,leaveTime:el("settingLeaveTime").value,
       windThreshold:Number(el("settingWindThreshold").value),
-      windAlertEnabled:el("settingWindEnabled").checked,rainAlertEnabled:el("settingRainEnabled").checked
+      windAlertEnabled:el("settingWindEnabled").checked,rainAlertEnabled:el("settingRainEnabled").checked,
+      heatAlertEnabled:el("settingHeatEnabled").checked,heavyRainAlertEnabled:el("settingHeavyRainEnabled").checked
     });
   }
 
@@ -1740,7 +1835,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 날씨 전광판 · v4.0 TEST";
+    document.title=f.name+" 날씨 전광판 · v4.1";
 
     CCTV_STREAM_URL=f.cctv&&f.cctv.stream?f.cctv.stream:null;
     var cbtn=el("cctvOpenBtn");
@@ -1752,7 +1847,9 @@
 
     if(prevId!==f.id){
       closeCctvPip();
-      climateState.initialized=false;climateState.windy=false;climateState.raining=false;climateState.lastWind=0;
+      climateState.initialized=false;climateState.windy=false;climateState.raining=false;
+      climateState.heatWarning=false;climateState.heavyRainWarning=false;climateState.lastWind=0;
+      climateState.heatDetail="";climateState.heavyRainDetail="";
       applyClimateVisuals();
     }
     if(doRefresh)refresh();
@@ -2048,12 +2145,29 @@
   function applyClimateVisuals(){
     var windEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled;
     var rainEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.rainAlertEnabled;
+    var heatEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.heatAlertEnabled;
+    var heavyRainEnabled=!CURRENT_SETTINGS||CURRENT_SETTINGS.heavyRainAlertEnabled;
+
     var windActive=(windEnabled&&climateState.windy)||climateTest.wind;
     var rainActive=(rainEnabled&&climateState.raining)||climateTest.rain;
+    var heatActive=(heatEnabled&&climateState.heatWarning)||climateTest.heat;
+    var heavyRainActive=(heavyRainEnabled&&climateState.heavyRainWarning)||climateTest.heavyRain;
+
     var wm=el("windMetric");
     var rm=el("rainMetric");
+    var tm=el("tempAlertWrap");
+    var pm=el("precipMetric");
     if(wm)wm.classList.toggle("wind-active",windActive);
     if(rm)rm.classList.toggle("rain-active",rainActive);
+    if(tm)tm.classList.toggle("heat-active",heatActive);
+    if(pm)pm.classList.toggle("heavy-rain-active",heavyRainActive);
+
+    var hd=el("heavyRainDetail");
+    if(hd){
+      if(climateTest.heavyRain)hd.textContent="3시간 90mm 이상 예상";
+      else if(heavyRainActive&&climateState.heavyRainDetail)hd.textContent=climateState.heavyRainDetail;
+      else hd.textContent="";
+    }
   }
 
   function climateAlarmData(type,isTest){
@@ -2068,12 +2182,30 @@
         climateType:"wind"
       };
     }
+    if(type==="rain"){
+      return {
+        time:nowTime,
+        title:"우천 감지",
+        message:"비가 내리기 시작했습니다. 외부 시설 및 이동 시 주의하세요.",
+        icon:"🌧️",
+        climateType:"rain"
+      };
+    }
+    if(type==="heat"){
+      return {
+        time:nowTime,
+        title:"폭염경보 기준 도달 예상",
+        message:climateTest.heat ? "일 최고 체감온도 35℃ 이상이 2일 이상 예상되는 상황을 테스트 중입니다." : (climateState.heatDetail||"향후 일 최고 체감온도 35℃ 이상이 2일 이상 예상됩니다."),
+        icon:"🔥",
+        climateType:"heat"
+      };
+    }
     return {
       time:nowTime,
-      title:"우천 감지",
-      message:"비가 내리기 시작했습니다. 외부 시설 및 이동 시 주의하세요.",
-      icon:"🌧️",
-      climateType:"rain"
+      title:"호우경보 기준 도달 예상",
+      message:climateTest.heavyRain ? "3시간 90mm 이상 또는 12시간 180mm 이상 강수가 예상되는 상황을 테스트 중입니다." : (climateState.heavyRainDetail||"단시간 많은 비가 예상됩니다. 배수 및 외부 시설을 확인하세요."),
+      icon:"⛈️",
+      climateType:"heavy-rain"
     };
   }
 
@@ -2084,7 +2216,8 @@
   }
 
   function startClimateTest(type){
-    var btn=el(type==="wind"?"windTestBtn":"rainTestBtn");
+    var idMap={wind:"windTestBtn",rain:"rainTestBtn",heat:"heatTestBtn",heavyRain:"heavyRainTestBtn"};
+    var btn=el(idMap[type]);
     var timerKey=type+"Timer";
     climateTest[type]=true;
     if(climateTest[timerKey])clearTimeout(climateTest[timerKey]);
@@ -2099,39 +2232,96 @@
     },CLIMATE_CONFIG.testDuration);
   }
 
-  function evaluateClimateAlerts(c){
+  function evaluateHeatWarning(d){
+    var arr=d&&d.apparent_temperature_max;
+    if(!arr||arr.length<CLIMATE_CONFIG.heatConsecutiveDays)return {active:false,detail:""};
+    /* 기상청 폭염경보 기준을 현재 위치의 Open-Meteo 예보값에 적용합니다.
+       실제 기상청 특보 발효 여부를 조회하는 기능은 아닙니다. */
+    for(var i=0;i<=Math.min(arr.length-CLIMATE_CONFIG.heatConsecutiveDays,1);i++){
+      var ok=true;
+      var vals=[];
+      for(var j=0;j<CLIMATE_CONFIG.heatConsecutiveDays;j++){
+        var v=Number(arr[i+j]); vals.push(v);
+        if(!isFinite(v)||v<CLIMATE_CONFIG.heatThreshold){ok=false;break;}
+      }
+      if(ok){
+        return {active:true,detail:"향후 "+CLIMATE_CONFIG.heatConsecutiveDays+"일 일 최고 체감온도 "+vals.map(function(v){return Math.round(v)+"℃";}).join(" / ")+" 예상"};
+      }
+    }
+    return {active:false,detail:""};
+  }
+
+  function evaluateHeavyRainWarning(h){
+    var times=h&&h.time, p=h&&h.precipitation;
+    if(!times||!p||!times.length||times.length!==p.length)return {active:false,detail:""};
+    var start=currentHourIndex(times);
+    if(start<0)start=0;
+    var end=Math.min(p.length,start+CLIMATE_CONFIG.heavyRainLookaheadHours);
+    var best3=0,best12=0;
+    for(var i=start;i<end;i++){
+      var sum3=0,sum12=0;
+      for(var j=i;j<Math.min(i+3,end);j++)sum3+=Number(p[j])||0;
+      for(var k=i;k<Math.min(i+12,end);k++)sum12+=Number(p[k])||0;
+      if(sum3>best3)best3=sum3;
+      if(sum12>best12)best12=sum12;
+    }
+    if(best3>=CLIMATE_CONFIG.heavyRain3h){
+      return {active:true,detail:"3시간 최대 "+best3.toFixed(1)+"mm 예상"};
+    }
+    if(best12>=CLIMATE_CONFIG.heavyRain12h){
+      return {active:true,detail:"12시간 최대 "+best12.toFixed(1)+"mm 예상"};
+    }
+    return {active:false,detail:""};
+  }
+
+  function evaluateClimateAlerts(c,d,h){
     var windNow=(Number(c.wind_speed_10m)||0)>=CLIMATE_CONFIG.windThreshold;
     var rainNow=isRainWeatherCode(c.weather_code);
+    var heatResult=evaluateHeatWarning(d);
+    var heavyRainResult=evaluateHeavyRainWarning(h);
+    var heatNow=heatResult.active;
+    var heavyRainNow=heavyRainResult.active;
+
     climateState.lastWind=Number(c.wind_speed_10m)||0;
+    climateState.heatDetail=heatResult.detail;
+    climateState.heavyRainDetail=heavyRainResult.detail;
 
     if(!climateState.initialized){
       climateState.initialized=true;
       climateState.windy=windNow;
       climateState.raining=rainNow;
+      climateState.heatWarning=heatNow;
+      climateState.heavyRainWarning=heavyRainNow;
       applyClimateVisuals();
-      /* 첫 로드부터 강풍이면 즉시 알림. 우천은 '비가 시작되는 변화'만 알림. */
+      /* 첫 로드: 강풍·폭염·호우 기준 충족은 즉시 알림. 우천은 '비가 시작되는 변화'만 알림. */
       if((!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled)&&windNow)showClimateAlarm("wind",false);
+      if((!CURRENT_SETTINGS||CURRENT_SETTINGS.heatAlertEnabled)&&heatNow)showClimateAlarm("heat",false);
+      if((!CURRENT_SETTINGS||CURRENT_SETTINGS.heavyRainAlertEnabled)&&heavyRainNow)showClimateAlarm("heavyRain",false);
       return;
     }
 
     if((!CURRENT_SETTINGS||CURRENT_SETTINGS.windAlertEnabled)&&windNow&&!climateState.windy)showClimateAlarm("wind",false);
     if((!CURRENT_SETTINGS||CURRENT_SETTINGS.rainAlertEnabled)&&rainNow&&!climateState.raining)showClimateAlarm("rain",false);
+    if((!CURRENT_SETTINGS||CURRENT_SETTINGS.heatAlertEnabled)&&heatNow&&!climateState.heatWarning)showClimateAlarm("heat",false);
+    if((!CURRENT_SETTINGS||CURRENT_SETTINGS.heavyRainAlertEnabled)&&heavyRainNow&&!climateState.heavyRainWarning)showClimateAlarm("heavyRain",false);
 
     climateState.windy=windNow;
     climateState.raining=rainNow;
+    climateState.heatWarning=heatNow;
+    climateState.heavyRainWarning=heavyRainNow;
     applyClimateVisuals();
   }
 
   function hideAlarm(){
     var overlay=el("alarmOverlay");
-    overlay.classList.remove("active","climate-wind","climate-rain");
+    overlay.classList.remove("active","climate-wind","climate-rain","climate-heat","climate-heavy-rain");
     if(alarmTimer){clearTimeout(alarmTimer);alarmTimer=null;}
   }
 
   function showAlarm(alarm,isTest){
     if(alarmTimer)clearTimeout(alarmTimer);
     var overlay=el("alarmOverlay");
-    overlay.classList.remove("climate-wind","climate-rain");
+    overlay.classList.remove("climate-wind","climate-rain","climate-heat","climate-heavy-rain");
     if(alarm.climateType)overlay.classList.add("climate-"+alarm.climateType);
 
     el("alarmIcon").textContent=alarm.icon||"🔔";
@@ -2142,7 +2332,7 @@
 
     /* 시간 알람과 기후 경보의 소리를 구분합니다.
        - 점심/퇴근: 기존 벨소리 + 안내 음성 2회
-       - 강풍/우천: 부드러운 전용 경보음 1회 */
+       - 강풍/우천/폭염/호우: 부드러운 전용 경보음 1회 */
     if(alarm.climateType){
       playClimateAlertSound();
     }else{
@@ -2243,7 +2433,7 @@
     el("windDir").textContent=windDirection(c.wind_direction_10m)+" · "+Math.round(c.wind_direction_10m||0)+"°";
     el("rain").textContent=Math.round(c.precipitation_probability||0)+"%";
 
-    evaluateClimateAlerts(c);
+    evaluateClimateAlerts(c,d,h);
 
     if(d.temperature_2m_max&&d.temperature_2m_max.length){
       el("high").textContent="최고 "+Math.round(d.temperature_2m_max[0])+"°";
@@ -2622,7 +2812,7 @@
         time:seoulTimeKey(new Date()),
         title:"점심 시간입니다",
         message:"맛점하세요.",
-        audio:"lunch.mp3?v=4.0",
+        audio:"lunch.mp3?v=4.1",
         icon:"🍚"
       },true);
     });
@@ -2634,6 +2824,14 @@
 
   el("rainTestBtn").addEventListener("click",function(){
     startClimateTest("rain");
+  });
+
+  el("heatTestBtn").addEventListener("click",function(){
+    startClimateTest("heat");
+  });
+
+  el("heavyRainTestBtn").addEventListener("click",function(){
+    startClimateTest("heavyRain");
   });
 
   el("alarmClose").addEventListener("click",hideAlarm);
