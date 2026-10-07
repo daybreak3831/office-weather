@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 날씨 전광판 · v4.3</title>
+  <title>창원시설공단 날씨 전광판 · v4.4 후보</title>
 
   <style>
     :root{
@@ -1568,7 +1568,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.3</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.4 후보</span></div>
   </footer>
 
 </main>
@@ -1721,7 +1721,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v4.4 후보</div><div class="info-version-text">2026-10-07 · 창원시 공식 CCTV 143개 좌표와 등록 사업장 29곳의 최단 직선거리 대조 · 스트림 확인 완료 28곳 기본 CCTV 자동 등록 · 상복공원 최인접 CCTV는 재생목록 오류로 자동 등록 보류 · 기존 사용자 CCTV 설정 우선 적용 유지.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.2</div><div class="info-version-text">설정을 일반/알람/로그 탭으로 분리하고, 최대 10개의 사용자 시간 알람과 기상경보 기준 사용자 설정, 알림 발생 로그 기능을 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.1</div><div class="info-version-text">폭염 및 호우 경보 기준 감지와 화면 경고 효과, 테스트 기능을 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.0</div><div class="info-version-text">창원특례시 구·사업장 선택 기능과 사업장별 위치 저장을 추가하여 여러 사업장에서 사용할 수 있는 범용 설정 구조로 확장.</div></div>
@@ -1775,7 +1776,7 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    v4.3: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
+    v4.4 후보: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -1797,40 +1798,583 @@
      - 기본 CCTV 외에도 일반 설정에서 사업장별 HLS 스트림 주소를 직접 등록할 수 있습니다. */
   var DISTRICTS=["의창구","성산구","마산합포구","마산회원구","진해구"];
   var FACILITIES=[
-    {id:"uichang_sports",district:"의창구",name:"의창스포츠센터",address:"창원시 의창구",lat:35.2559744,lon:128.6338277},
-    {id:"shooting",district:"의창구",name:"창원국제사격장",address:"창원시 의창구 사림로99번길 63",lat:35.2509660,lon:128.68399215},
-    {id:"bus_terminal",district:"의창구",name:"창원종합버스터미널",address:"창원시 의창구 창원대로 371",lat:35.2370545,lon:128.6403000},
-
-    {id:"sportspark",district:"성산구",name:"창원스포츠파크",address:"창원시 성산구 원이대로 450",lat:35.2323000,lon:128.6628902},
-    {id:"indoor_pool",district:"성산구",name:"창원실내수영장",address:"창원스포츠파크 내",lat:35.2323000,lon:128.6628902},
-    {id:"soccer",district:"성산구",name:"창원축구센터",address:"창원시 성산구 비음로 97",lat:35.2236893371,lon:128.7072706108},
-    {id:"citizen_gym",district:"성산구",name:"시민생활체육관",address:"창원시 성산구 원이대로 692",lat:35.2223473,lon:128.6879803},
-    {id:"seongsan_sports",district:"성산구",name:"성산스포츠센터",address:"창원시 성산구",lat:35.2061843,lon:128.7060228},
-    {id:"city_tennis",district:"성산구",name:"창원시립테니스장",address:"창원시 성산구 비음로25번길 17",lat:35.23079881,lon:128.6984643},
-    {id:"greenhall",district:"성산구",name:"늘푸른전당",address:"창원시 성산구 두대로 97",lat:35.2298940,lon:128.6538360},
-    {id:"sangbok",district:"성산구",name:"창원시립상복공원",address:"창원시 성산구 공단로474번길 160",lat:35.1929280,lon:128.6605890},
-    {id:"hq",district:"성산구",name:"창원시설공단 본부",address:"창원시 성산구 원이대로 450",lat:35.2323000,lon:128.6628902},
-
-    {id:"happo_sports",district:"마산합포구",name:"마산합포스포츠센터",address:"창원시 마산합포구",lat:35.17630159,lon:128.5686509},
-    {id:"masan_marine",district:"마산합포구",name:"(마산)해양레포츠센터",address:"창원시 마산합포구",lat:35.19529973,lon:128.5738199},
-    {id:"jindong_welfare",district:"마산합포구",name:"진동종합복지관",address:"창원시 마산합포구 진동면 신서촌로 15",lat:35.1158146,lon:128.4825157},
-    {id:"masan_crematory",district:"마산합포구",name:"마산화장장",address:"창원시 마산합포구 진동면 공원묘원로 232",lat:35.1394460,lon:128.5312720},
-    {id:"masan_bongan",district:"마산합포구",name:"마산영생원",address:"창원시 마산합포구 진동면 공원묘원로 136-106",lat:35.1415340,lon:128.5226420},
-
-    {id:"ncpark",district:"마산회원구",name:"창원NC파크",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
-    {id:"masan_member",district:"마산회원구",name:"마산회원체육센터",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
-    {id:"masan_baseball",district:"마산회원구",name:"마산야구장",address:"창원시 마산회원구 삼호로 63",lat:35.2220,lon:128.5823,cctv:{name:"창원NC파크 인근 도로 CCTV",stream:"https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"}},
-    {id:"urinuri",district:"마산회원구",name:"우리누리청소년문화센터",address:"창원시 마산회원구 팔용로 128",lat:35.2404676,lon:128.5902831},
-
-    {id:"jinhae_stadium",district:"진해구",name:"진해공설운동장",address:"창원시 진해구",lat:35.1478560,lon:128.6558830},
-    {id:"jinhae_sports",district:"진해구",name:"진해국민체육센터",address:"창원시 진해구",lat:35.15519178,lon:128.7065968},
-    {id:"yongwon_sports",district:"진해구",name:"용원국민체육센터",address:"창원시 진해구",lat:35.1067509,lon:128.8029135},
-    {id:"jinhae_marine",district:"진해구",name:"(진해)해양레포츠센터",address:"창원시 진해구 천자로 160",lat:35.14129989,lon:128.6883002},
-    {id:"jinhae_yeojwa",district:"진해구",name:"진해여좌국민체육센터",address:"창원시 진해구 연구단지로 29",lat:35.1577,lon:128.6609},
-    {id:"jinhae_park",district:"진해구",name:"진해해양공원",address:"창원시 진해구",lat:35.09218171,lon:128.7193475},
-    {id:"jehwang",district:"진해구",name:"제황산모노레일",address:"창원시 진해구",lat:35.1494030,lon:128.6616100},
-    {id:"jinhae_bongan",district:"진해구",name:"진해천자원",address:"창원시 진해구 진해대로 1426-51",lat:35.1060670,lon:128.7555080}
-  ];
+  {
+    "id": "uichang_sports",
+    "district": "의창구",
+    "name": "의창스포츠센터",
+    "address": "창원시 의창구",
+    "lat": 35.2559744,
+    "lon": 128.6338277,
+    "nearestCctv": {
+      "name": "서부경찰서사거리",
+      "lat": 35.2521,
+      "lon": 128.639,
+      "distanceMeters": 637,
+      "stream": "https://utis.changwon.go.kr/live/video53.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "서부경찰서사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video53.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "shooting",
+    "district": "의창구",
+    "name": "창원국제사격장",
+    "address": "창원시 의창구 사림로99번길 63",
+    "lat": 35.250966,
+    "lon": 128.68399215,
+    "nearestCctv": {
+      "name": "퇴촌사거리",
+      "lat": 35.2424,
+      "lon": 128.682,
+      "distanceMeters": 970,
+      "stream": "https://utis.changwon.go.kr/live/video57.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "퇴촌사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video57.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "bus_terminal",
+    "district": "의창구",
+    "name": "창원종합버스터미널",
+    "address": "창원시 의창구 창원대로 371",
+    "lat": 35.2370545,
+    "lon": 128.6403,
+    "nearestCctv": {
+      "name": "용원교차로",
+      "lat": 35.2332797,
+      "lon": 128.6437463,
+      "distanceMeters": 524,
+      "stream": "https://utis.changwon.go.kr/live/video2.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "용원교차로 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video2.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "sportspark",
+    "district": "성산구",
+    "name": "창원스포츠파크",
+    "address": "창원시 성산구 원이대로 450",
+    "lat": 35.2323,
+    "lon": 128.6628902,
+    "nearestCctv": {
+      "name": "창원종합운동장",
+      "lat": 35.2356,
+      "lon": 128.663,
+      "distanceMeters": 367,
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "창원종합운동장 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "indoor_pool",
+    "district": "성산구",
+    "name": "창원실내수영장",
+    "address": "창원스포츠파크 내",
+    "lat": 35.2323,
+    "lon": 128.6628902,
+    "nearestCctv": {
+      "name": "창원종합운동장",
+      "lat": 35.2356,
+      "lon": 128.663,
+      "distanceMeters": 367,
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "창원종합운동장 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "soccer",
+    "district": "성산구",
+    "name": "창원축구센터",
+    "address": "창원시 성산구 비음로 97",
+    "lat": 35.2236893371,
+    "lon": 128.7072706108,
+    "nearestCctv": {
+      "name": "법원사거리",
+      "lat": 35.222666,
+      "lon": 128.699905,
+      "distanceMeters": 679,
+      "stream": "https://utis.changwon.go.kr/live/video56.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "법원사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video56.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "citizen_gym",
+    "district": "성산구",
+    "name": "시민생활체육관",
+    "address": "창원시 성산구 원이대로 692",
+    "lat": 35.2223473,
+    "lon": 128.6879803,
+    "nearestCctv": {
+      "name": "상남사거리",
+      "lat": 35.2203,
+      "lon": 128.692,
+      "distanceMeters": 430,
+      "stream": "https://utis.changwon.go.kr/live/video67.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "상남사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video67.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "seongsan_sports",
+    "district": "성산구",
+    "name": "성산스포츠센터",
+    "address": "창원시 성산구",
+    "lat": 35.2061843,
+    "lon": 128.7060228,
+    "nearestCctv": {
+      "name": "대방중사거리",
+      "lat": 35.209185,
+      "lon": 128.705974,
+      "distanceMeters": 334,
+      "stream": "https://utis.changwon.go.kr/live2/video121.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "대방중사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video121.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "city_tennis",
+    "district": "성산구",
+    "name": "창원시립테니스장",
+    "address": "창원시 성산구 비음로25번길 17",
+    "lat": 35.23079881,
+    "lon": 128.6984643,
+    "nearestCctv": {
+      "name": "토월지하차도사거리",
+      "lat": 35.230216,
+      "lon": 128.695545,
+      "distanceMeters": 273,
+      "stream": "https://utis.changwon.go.kr/live2/video123.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "토월지하차도사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video123.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "greenhall",
+    "district": "성산구",
+    "name": "늘푸른전당",
+    "address": "창원시 성산구 두대로 97",
+    "lat": 35.229894,
+    "lon": 128.653836,
+    "nearestCctv": {
+      "name": "삼동교차로",
+      "lat": 35.225928,
+      "lon": 128.6564334,
+      "distanceMeters": 500,
+      "stream": "https://utis.changwon.go.kr/live/video3.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "삼동교차로 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video3.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "sangbok",
+    "district": "성산구",
+    "name": "창원시립상복공원",
+    "address": "창원시 성산구 공단로474번길 160",
+    "lat": 35.192928,
+    "lon": 128.660589,
+    "nearestCctv": {
+      "name": "남창원역사거리",
+      "lat": 35.2071,
+      "lon": 128.663,
+      "distanceMeters": 1591,
+      "stream": "https://utis.changwon.go.kr/live2/video122.stream/playlist.m3u8",
+      "verified": true
+    }
+  },
+  {
+    "id": "hq",
+    "district": "성산구",
+    "name": "창원시설공단 본부",
+    "address": "창원시 성산구 원이대로 450",
+    "lat": 35.2323,
+    "lon": 128.6628902,
+    "nearestCctv": {
+      "name": "창원종합운동장",
+      "lat": 35.2356,
+      "lon": 128.663,
+      "distanceMeters": 367,
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "창원종합운동장 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video10.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "happo_sports",
+    "district": "마산합포구",
+    "name": "마산합포스포츠센터",
+    "address": "창원시 마산합포구",
+    "lat": 35.17630159,
+    "lon": 128.5686509,
+    "nearestCctv": {
+      "name": "가포터널사거리",
+      "lat": 35.175584,
+      "lon": 128.569141,
+      "distanceMeters": 91,
+      "stream": "https://utis.changwon.go.kr/live2/video132.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "가포터널사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video132.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "masan_marine",
+    "district": "마산합포구",
+    "name": "(마산)해양레포츠센터",
+    "address": "창원시 마산합포구",
+    "lat": 35.19529973,
+    "lon": 128.5738199,
+    "nearestCctv": {
+      "name": "해안로삼거리",
+      "lat": 35.1971723,
+      "lon": 128.5703692,
+      "distanceMeters": 376,
+      "stream": "https://utis.changwon.go.kr/live/video23.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "해안로삼거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video23.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jindong_welfare",
+    "district": "마산합포구",
+    "name": "진동종합복지관",
+    "address": "창원시 마산합포구 진동면 신서촌로 15",
+    "lat": 35.1158146,
+    "lon": 128.4825157,
+    "nearestCctv": {
+      "name": "진동사거리",
+      "lat": 35.114632,
+      "lon": 128.485368,
+      "distanceMeters": 291,
+      "stream": "https://utis.changwon.go.kr/live2/video131.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "진동사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video131.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "masan_crematory",
+    "district": "마산합포구",
+    "name": "마산화장장",
+    "address": "창원시 마산합포구 진동면 공원묘원로 232",
+    "lat": 35.139446,
+    "lon": 128.531272,
+    "nearestCctv": {
+      "name": "신동전터널현동측",
+      "lat": 35.145641,
+      "lon": 128.539824,
+      "distanceMeters": 1039,
+      "stream": "https://utis.changwon.go.kr/live2/video150-hls.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "신동전터널현동측 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video150-hls.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "masan_bongan",
+    "district": "마산합포구",
+    "name": "마산영생원",
+    "address": "창원시 마산합포구 진동면 공원묘원로 136-106",
+    "lat": 35.141534,
+    "lon": 128.522642,
+    "nearestCctv": {
+      "name": "신동전터널현동측",
+      "lat": 35.145641,
+      "lon": 128.539824,
+      "distanceMeters": 1628,
+      "stream": "https://utis.changwon.go.kr/live2/video150-hls.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "신동전터널현동측 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video150-hls.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "ncpark",
+    "district": "마산회원구",
+    "name": "창원NC파크",
+    "address": "창원시 마산회원구 삼호로 63",
+    "lat": 35.222,
+    "lon": 128.5823,
+    "cctv": {
+      "name": "창원NC파크 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"
+    },
+    "nearestCctv": {
+      "name": "창원NC파크",
+      "lat": 35.221132,
+      "lon": 128.582968,
+      "distanceMeters": 114,
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8",
+      "verified": true
+    }
+  },
+  {
+    "id": "masan_member",
+    "district": "마산회원구",
+    "name": "마산회원체육센터",
+    "address": "창원시 마산회원구 삼호로 63",
+    "lat": 35.222,
+    "lon": 128.5823,
+    "cctv": {
+      "name": "창원NC파크 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"
+    },
+    "nearestCctv": {
+      "name": "창원NC파크",
+      "lat": 35.221132,
+      "lon": 128.582968,
+      "distanceMeters": 114,
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8",
+      "verified": true
+    }
+  },
+  {
+    "id": "masan_baseball",
+    "district": "마산회원구",
+    "name": "마산야구장",
+    "address": "창원시 마산회원구 삼호로 63",
+    "lat": 35.222,
+    "lon": 128.5823,
+    "cctv": {
+      "name": "창원NC파크 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8"
+    },
+    "nearestCctv": {
+      "name": "창원NC파크",
+      "lat": 35.221132,
+      "lon": 128.582968,
+      "distanceMeters": 114,
+      "stream": "https://utis.changwon.go.kr/live2/video141.stream/playlist.m3u8",
+      "verified": true
+    }
+  },
+  {
+    "id": "urinuri",
+    "district": "마산회원구",
+    "name": "우리누리청소년문화센터",
+    "address": "창원시 마산회원구 팔용로 128",
+    "lat": 35.2404676,
+    "lon": 128.5902831,
+    "nearestCctv": {
+      "name": "양덕동경남아파트",
+      "lat": 35.2355,
+      "lon": 128.589,
+      "distanceMeters": 565,
+      "stream": "https://utis.changwon.go.kr/live/video87.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "양덕동경남아파트 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video87.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_stadium",
+    "district": "진해구",
+    "name": "진해공설운동장",
+    "address": "창원시 진해구",
+    "lat": 35.147856,
+    "lon": 128.655883,
+    "nearestCctv": {
+      "name": "북원로타리",
+      "lat": 35.1535,
+      "lon": 128.655,
+      "distanceMeters": 633,
+      "stream": "https://utis.changwon.go.kr/live/video89.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "북원로타리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video89.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_sports",
+    "district": "진해구",
+    "name": "진해국민체육센터",
+    "address": "창원시 진해구",
+    "lat": 35.15519178,
+    "lon": 128.7065968,
+    "nearestCctv": {
+      "name": "냉천사거리",
+      "lat": 35.152677,
+      "lon": 128.705663,
+      "distanceMeters": 292,
+      "stream": "https://utis.changwon.go.kr/live2/video137.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "냉천사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video137.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "yongwon_sports",
+    "district": "진해구",
+    "name": "용원국민체육센터",
+    "address": "창원시 진해구",
+    "lat": 35.1067509,
+    "lon": 128.8029135,
+    "nearestCctv": {
+      "name": "용원택지삼거리",
+      "lat": 35.1038,
+      "lon": 128.81,
+      "distanceMeters": 723,
+      "stream": "https://utis.changwon.go.kr/live/video91.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "용원택지삼거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video91.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_marine",
+    "district": "진해구",
+    "name": "(진해)해양레포츠센터",
+    "address": "창원시 진해구 천자로 160",
+    "lat": 35.14129989,
+    "lon": 128.6883002,
+    "nearestCctv": {
+      "name": "시설전대삼거리",
+      "lat": 35.146537,
+      "lon": 128.678309,
+      "distanceMeters": 1079,
+      "stream": "https://utis.changwon.go.kr/live2/_definst_/video110.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "시설전대삼거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/_definst_/video110.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_yeojwa",
+    "district": "진해구",
+    "name": "진해여좌국민체육센터",
+    "address": "창원시 진해구 연구단지로 29",
+    "lat": 35.1577,
+    "lon": 128.6609,
+    "nearestCctv": {
+      "name": "북원로타리",
+      "lat": 35.1535,
+      "lon": 128.655,
+      "distanceMeters": 711,
+      "stream": "https://utis.changwon.go.kr/live/video89.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "북원로타리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video89.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_park",
+    "district": "진해구",
+    "name": "진해해양공원",
+    "address": "창원시 진해구",
+    "lat": 35.09218171,
+    "lon": 128.7193475,
+    "nearestCctv": {
+      "name": "신남문교",
+      "lat": 35.107202,
+      "lon": 128.748145,
+      "distanceMeters": 3107,
+      "stream": "https://utis.changwon.go.kr/live2/video154-hls.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "신남문교 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video154-hls.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jehwang",
+    "district": "진해구",
+    "name": "제황산모노레일",
+    "address": "창원시 진해구",
+    "lat": 35.149403,
+    "lon": 128.66161,
+    "nearestCctv": {
+      "name": "태평사거리",
+      "lat": 35.1459,
+      "lon": 128.663,
+      "distanceMeters": 410,
+      "stream": "https://utis.changwon.go.kr/live/video98.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "태평사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live/video98.stream/playlist.m3u8"
+    }
+  },
+  {
+    "id": "jinhae_bongan",
+    "district": "진해구",
+    "name": "진해천자원",
+    "address": "창원시 진해구 진해대로 1426-51",
+    "lat": 35.106067,
+    "lon": 128.755508,
+    "nearestCctv": {
+      "name": "남문웅천초교사거리",
+      "lat": 35.105083,
+      "lon": 128.755632,
+      "distanceMeters": 110,
+      "stream": "https://utis.changwon.go.kr/live2/video140.stream/playlist.m3u8",
+      "verified": true
+    },
+    "cctv": {
+      "name": "남문웅천초교사거리 인근 도로 CCTV",
+      "stream": "https://utis.changwon.go.kr/live2/video140.stream/playlist.m3u8"
+    }
+  }
+];
 
   var SETTINGS_KEY="cwsisulOfficeWeatherV4";
   var LOG_KEY="cwsisulOfficeWeatherV4Logs";
@@ -2108,7 +2652,8 @@
     el("settingCctvUrl").value=src.stream||"";
     var note=el("settingCctvNote");
     if(custom&&custom.stream)note.textContent="이 사업장에는 사용자 등록 CCTV 주소가 적용됩니다. HLS(.m3u8) 직접 영상 주소를 권장합니다.";
-    else if(f.cctv&&f.cctv.stream)note.textContent="기본 등록 CCTV 주소가 있습니다. 다른 주소를 입력하면 이 브라우저에서 해당 주소가 우선 적용됩니다.";
+    else if(f.cctv&&f.cctv.stream)note.textContent="기본 CCTV: "+f.nearestCctv.name+" · 등록 좌표 기준 직선거리 약 "+f.nearestCctv.distanceMeters+"m. 다른 주소를 입력하면 이 브라우저에서 해당 주소가 우선 적용됩니다.";
+    else if(f.nearestCctv)note.textContent="가장 가까운 CCTV: "+f.nearestCctv.name+" · 직선거리 약 "+f.nearestCctv.distanceMeters+"m. 스트림 검증 실패로 기본 등록을 보류했습니다. 정상 영상 주소를 직접 등록할 수 있습니다.";
     else note.textContent="등록된 CCTV가 없습니다. HLS(.m3u8) 직접 영상 주소를 입력하면 메인 화면의 CCTV 버튼이 활성화됩니다.";
   }
 
@@ -2288,7 +2833,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 날씨 전광판 · v4.3";
+    document.title=f.name+" 날씨 전광판 · v4.4 후보";
 
     var activeCctv=effectiveCctvForFacility(f,next);
     CCTV_STREAM_URL=activeCctv&&activeCctv.stream?activeCctv.stream:null;
