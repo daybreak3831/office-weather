@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 날씨 전광판 · v4.1</title>
+  <title>창원시설공단 날씨 전광판 · v4.3</title>
 
   <style>
     :root{
@@ -1053,7 +1053,7 @@
 
 
     /* ----------------------------------------------------
-       v4.1 · 사업장 맞춤 설정 + CCTV
+       v4.3 · 사업장 맞춤 설정 + 사용자 알람 + CCTV
        ---------------------------------------------------- */
     .cctv-open-btn{
       margin-top:1.15vh;
@@ -1230,7 +1230,7 @@
 
 
     /* ----------------------------------------------------
-       v4.1 · 사업장/알람 설정 패널
+       v4.3 · 사업장/알람 설정 패널
        ---------------------------------------------------- */
     .topbar-right{
       display:flex;align-items:center;gap:.8vw;min-width:0;
@@ -1310,6 +1310,100 @@
     .settings-action.dangerless{margin-right:auto;color:rgba(235,243,255,.74)}
     .settings-save-note{margin-top:1vh;color:rgba(222,238,255,.66);font-size:clamp(9px,1vh,12px);line-height:1.45}
     .cctv-open-btn:disabled{opacity:.42;cursor:not-allowed;transform:none;background:rgba(7,20,38,.20)}
+
+
+    /* ----------------------------------------------------
+       v4.3 · 4탭 설정 / 사용자 알람 / 로그 / 정보
+       ---------------------------------------------------- */
+    .settings-card{width:min(1040px,95vw);}
+    .settings-tabs{
+      display:flex;gap:.45vw;margin:-.2vh 0 1.4vh;padding:.35vh;
+      border:1px solid rgba(255,255,255,.13);border-radius:1.15vh;
+      background:rgba(0,0,0,.12);
+    }
+    .settings-tab{
+      flex:1;border:0;border-radius:.85vh;background:transparent;color:rgba(228,240,255,.68);
+      padding:.8vh .8vw;font:inherit;font-size:clamp(11px,1.28vh,15px);font-weight:900;cursor:pointer;
+    }
+    .settings-tab.active{background:rgba(91,171,236,.28);color:#fff;box-shadow:inset 0 0 0 1px rgba(147,209,255,.25)}
+    .settings-pane{display:none;min-height:34vh}
+    .settings-pane.active{display:block}
+    .settings-section{
+      margin-bottom:1.35vh;padding:1.15vh 1vw;border:1px solid rgba(255,255,255,.13);
+      border-radius:1.15vh;background:rgba(255,255,255,.045);
+    }
+    .settings-section-head{display:flex;align-items:center;justify-content:space-between;gap:1vw;margin-bottom:.9vh}
+    .settings-section-title{font-size:clamp(12px,1.45vh,17px);font-weight:900}
+    .settings-section-note{color:rgba(220,236,255,.65);font-size:clamp(9px,1.02vh,12px);line-height:1.5}
+    .alarm-editor-list{display:flex;flex-direction:column;gap:.72vh;max-height:36vh;overflow:auto;padding-right:.25vw}
+    .alarm-editor-row{
+      display:grid;grid-template-columns:42px 110px 145px minmax(130px,.8fr) minmax(180px,1.4fr) 88px 70px;
+      gap:.5vw;align-items:center;padding:.72vh .58vw;border:1px solid rgba(255,255,255,.12);
+      border-radius:1vh;background:rgba(0,0,0,.12);
+    }
+    .alarm-editor-row .settings-input{min-height:38px;padding:.45vh .5vw;font-size:clamp(10px,1.15vh,14px)}
+    .alarm-enabled-wrap,.alarm-weekday-wrap{display:flex;align-items:center;justify-content:center;gap:.25vw;color:rgba(236,246,255,.85);font-size:11px;font-weight:800}
+    .alarm-enabled-wrap input,.alarm-weekday-wrap input{width:17px;height:17px;accent-color:#79c5ff}
+    .alarm-row-actions{display:flex;gap:4px;justify-content:flex-end}
+    .alarm-mini-btn{
+      border:1px solid rgba(255,255,255,.16);border-radius:.75vh;background:rgba(255,255,255,.08);color:#fff;
+      min-width:31px;height:34px;padding:0 7px;font:inherit;font-size:12px;font-weight:900;cursor:pointer;
+    }
+    .alarm-mini-btn:hover{background:rgba(255,255,255,.16)}
+    .alarm-mini-btn.delete{color:#ffd1d1;border-color:rgba(255,130,130,.25)}
+    .alarm-add-line{display:flex;align-items:center;justify-content:space-between;gap:1vw;margin-top:.8vh}
+    .alarm-count{color:rgba(220,236,255,.66);font-size:clamp(9px,1.05vh,12px)}
+    .climate-threshold-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75vh .7vw;margin-top:.85vh}
+    .threshold-box{padding:.72vh .65vw;border:1px solid rgba(255,255,255,.11);border-radius:.9vh;background:rgba(0,0,0,.1)}
+    .threshold-box label{display:block;margin-bottom:.42vh;font-size:clamp(9px,1.02vh,12px);font-weight:800;color:rgba(235,245,255,.78)}
+    .threshold-inline{display:flex;align-items:center;gap:.38vw}
+    .threshold-inline .settings-input{min-width:0;min-height:38px}
+    .threshold-unit{white-space:nowrap;color:rgba(230,241,255,.67);font-size:11px;font-weight:800}
+    .kma-reset-line{display:flex;align-items:center;justify-content:space-between;gap:1vw;margin-top:.8vh}
+    .kma-note{color:rgba(220,236,255,.64);font-size:clamp(9px,1vh,12px);line-height:1.45}
+    .log-toolbar{display:flex;justify-content:space-between;align-items:center;gap:1vw;margin-bottom:.8vh}
+    .log-list{display:flex;flex-direction:column;gap:.55vh;max-height:45vh;overflow:auto;padding-right:.2vw}
+    .log-entry{display:grid;grid-template-columns:145px 88px 1fr;gap:.75vw;align-items:start;padding:.72vh .7vw;border:1px solid rgba(255,255,255,.11);border-radius:.9vh;background:rgba(0,0,0,.1)}
+    .log-time{font-variant-numeric:tabular-nums;color:rgba(224,238,255,.67);font-size:clamp(9px,1.04vh,12px)}
+    .log-type{display:inline-flex;justify-content:center;padding:.2vh .42vw;border-radius:999px;background:rgba(83,168,235,.20);color:#dff3ff;font-size:clamp(9px,1vh,12px);font-weight:900}
+    .log-main{min-width:0;font-size:clamp(10px,1.13vh,13px);line-height:1.45}
+    .log-main strong{display:block;color:#fff;margin-bottom:.12vh}
+    .log-main span{color:rgba(225,238,255,.67)}
+    .log-empty{padding:4vh 1vw;text-align:center;color:rgba(220,236,255,.55);font-size:13px}
+    .settings-hint-box{padding:.72vh .75vw;border-radius:.9vh;background:rgba(73,139,195,.10);border:1px solid rgba(118,190,246,.14);color:rgba(225,240,255,.72);font-size:clamp(9px,1.04vh,12px);line-height:1.55}
+    /* ----------------------------------------------------
+       v4.3 · CCTV 사용자 등록 / 알람 입력 안내 / 정보 탭
+       ---------------------------------------------------- */
+    .alarm-overlay{z-index:22000}
+    .settings-input::placeholder{color:rgba(210,222,236,.46);opacity:1}
+    .alarm-field-guide{
+      display:grid;grid-template-columns:42px 110px 145px minmax(130px,.8fr) minmax(180px,1.4fr) 88px 70px;
+      gap:.5vw;align-items:end;margin:0 0 .42vh;padding:0 .58vw;
+      color:rgba(211,227,244,.56);font-size:clamp(8px,.92vh,11px);font-weight:800;
+    }
+    .alarm-field-guide span:nth-child(4),.alarm-field-guide span:nth-child(5){padding-left:.1vw}
+    .cctv-register-grid{display:grid;grid-template-columns:minmax(180px,.7fr) minmax(300px,1.6fr);gap:.8vh .8vw}
+    .cctv-register-note{margin-top:.6vh;color:rgba(220,236,255,.62);font-size:clamp(9px,1vh,12px);line-height:1.5}
+    .info-list{display:flex;flex-direction:column;gap:.62vh;max-height:47vh;overflow:auto;padding-right:.2vw}
+    .info-version{
+      display:grid;grid-template-columns:92px 1fr;gap:.8vw;align-items:start;
+      padding:.78vh .72vw;border:1px solid rgba(255,255,255,.11);border-radius:.9vh;background:rgba(0,0,0,.10);
+    }
+    .info-version-tag{font-weight:950;color:#dff3ff;font-size:clamp(10px,1.12vh,13px);white-space:nowrap}
+    .info-version-text{color:rgba(230,241,255,.75);font-size:clamp(9px,1.08vh,13px);line-height:1.5}
+    .info-current{border-color:rgba(121,197,255,.28);background:rgba(74,151,214,.10)}
+    @media (max-width:900px){
+      .alarm-field-guide{display:none}
+      .cctv-register-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:900px){
+      .alarm-editor-row{grid-template-columns:42px 98px 125px 1fr;}
+      .alarm-editor-row .alarm-message-input{grid-column:1/-2}
+      .alarm-editor-row .alarm-weekday-wrap{grid-column:auto}
+      .climate-threshold-grid{grid-template-columns:1fr 1fr}
+      .log-entry{grid-template-columns:120px 80px 1fr}
+    }
 
     @media (orientation:portrait){
       .cctv-pip{right:4vw;bottom:4vh;width:92vw;height:70vh;min-width:0;min-height:360px}
@@ -1474,7 +1568,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 폭염/호우는 기상청 경보 기준 적용 · <span class="version-tag">v4.1</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.3</span></div>
   </footer>
 
 </main>
@@ -1486,52 +1580,167 @@
     <div class="settings-head">
       <div>
         <div id="settingsTitle" class="settings-title">⚙ 날씨 전광판 설정</div>
-        <div class="settings-subtitle">사업장을 선택하면 해당 시설 좌표 기준으로 날씨가 즉시 변경됩니다.</div>
+        <div class="settings-subtitle">사업장별 일반 설정, 사용자 알람, 기상경보 기준, 발생 로그와 버전 정보를 관리합니다.</div>
       </div>
       <button id="settingsCloseBtn" class="settings-x" type="button" aria-label="설정 닫기">✕</button>
     </div>
 
-    <div class="settings-grid">
-      <div class="settings-field">
-        <label for="settingDistrict">지역(구)</label>
-        <select id="settingDistrict" class="settings-input"></select>
+    <div class="settings-tabs" role="tablist" aria-label="설정 분류">
+      <button class="settings-tab active" type="button" data-settings-tab="general" role="tab" aria-selected="true">일반</button>
+      <button class="settings-tab" type="button" data-settings-tab="alarm" role="tab" aria-selected="false">알람</button>
+      <button class="settings-tab" type="button" data-settings-tab="log" role="tab" aria-selected="false">로그</button>
+      <button class="settings-tab" type="button" data-settings-tab="info" role="tab" aria-selected="false">정보</button>
+    </div>
+
+    <div id="settingsPaneGeneral" class="settings-pane active" data-settings-pane="general">
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <div class="settings-section-title">📍 사업장 위치</div>
+            <div class="settings-section-note">사업장을 선택하면 해당 시설 좌표를 기준으로 현재 날씨와 예보가 제공됩니다.</div>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-field">
+            <label for="settingDistrict">지역(구)</label>
+            <select id="settingDistrict" class="settings-input"></select>
+          </div>
+          <div class="settings-field">
+            <label for="settingFacility">사업장</label>
+            <select id="settingFacility" class="settings-input"></select>
+          </div>
+          <div class="settings-field full">
+            <div id="settingFacilityDetail" class="settings-detail">사업장 정보를 불러오는 중입니다.</div>
+          </div>
+        </div>
       </div>
-      <div class="settings-field">
-        <label for="settingFacility">사업장</label>
-        <select id="settingFacility" class="settings-input"></select>
+
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <div class="settings-section-title">📹 현장 CCTV 등록</div>
+            <div class="settings-section-note">선택한 사업장에서 사용할 실시간 CCTV 스트림 주소를 직접 등록할 수 있습니다.</div>
+          </div>
+        </div>
+        <div class="cctv-register-grid">
+          <div class="settings-field">
+            <label for="settingCctvName">CCTV 표시 이름</label>
+            <input id="settingCctvName" class="settings-input" type="text" maxlength="60" placeholder="예: 사업장 인근 도로 CCTV">
+          </div>
+          <div class="settings-field">
+            <label for="settingCctvUrl">CCTV 스트림 주소</label>
+            <input id="settingCctvUrl" class="settings-input" type="url" maxlength="500" spellcheck="false" placeholder="https://.../playlist.m3u8">
+          </div>
+        </div>
+        <div id="settingCctvNote" class="cctv-register-note">HLS(.m3u8) 형식의 직접 영상 주소를 권장합니다. 주소는 현재 브라우저의 해당 사업장 설정에만 저장됩니다.</div>
       </div>
-      <div class="settings-field full">
-        <div id="settingFacilityDetail" class="settings-detail">사업장 정보를 불러오는 중입니다.</div>
+
+      <div class="settings-hint-box">설정은 각 TV/브라우저에 개별 저장됩니다. 같은 웹주소를 여러 사업장에서 사용해도 각 사업장의 설정은 서로 영향을 주지 않습니다.</div>
+    </div>
+
+    <div id="settingsPaneAlarm" class="settings-pane" data-settings-pane="alarm">
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <div class="settings-section-title">🔔 사용자 시간 알람</div>
+            <div class="settings-section-note">점심·퇴근에 한정하지 않고 원하는 알람을 최대 10개까지 등록할 수 있습니다.</div>
+          </div>
+          <button id="alarmAddBtn" class="settings-action" type="button">＋ 알람 추가</button>
+        </div>
+        <div class="alarm-field-guide" aria-hidden="true">
+          <span>사용</span><span>시간</span><span>알람음</span><span>알람 제목</span><span>알람 내용</span><span>요일</span><span>동작</span>
+        </div>
+        <div id="alarmEditorList" class="alarm-editor-list"></div>
+        <div class="alarm-add-line">
+          <div id="alarmCountLabel" class="alarm-count">0 / 10개 등록</div>
+          <div class="alarm-count">알람음: 기본 차임 · 부드러운 벨 · 짧은 경보 · 무음</div>
+        </div>
       </div>
-      <div class="settings-field">
-        <label for="settingLunchTime">점심 알람</label>
-        <input id="settingLunchTime" class="settings-input" type="time" value="11:40">
-      </div>
-      <div class="settings-field">
-        <label for="settingLeaveTime">퇴근 알람</label>
-        <input id="settingLeaveTime" class="settings-input" type="time" value="18:00">
-      </div>
-      <div class="settings-field">
-        <label for="settingWindThreshold">강풍 경보 기준</label>
-        <input id="settingWindThreshold" class="settings-input" type="number" min="5" max="40" step="0.5" value="15">
-      </div>
-      <div class="settings-field">
-        <label>기후 경보 사용</label>
+
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <div class="settings-section-title">🌦 기상 알람</div>
+            <div class="settings-section-note">Open-Meteo 예보값에 아래 기준을 적용합니다. 기상청의 실제 특보 발효 여부를 직접 조회하는 기능은 아닙니다.</div>
+          </div>
+        </div>
         <div class="settings-toggles">
-          <label class="settings-toggle"><input id="settingWindEnabled" type="checkbox" checked><span class="settings-toggle-label">강풍 경보</span></label>
+          <label class="settings-toggle"><input id="settingWindEnabled" type="checkbox" checked><span class="settings-toggle-label">강풍 알림</span></label>
           <label class="settings-toggle"><input id="settingRainEnabled" type="checkbox" checked><span class="settings-toggle-label">우천 시작 알림</span></label>
-          <label class="settings-toggle"><input id="settingHeatEnabled" type="checkbox" checked><span class="settings-toggle-label">폭염경보 기준 알림 (35℃·2일)</span></label>
-          <label class="settings-toggle"><input id="settingHeavyRainEnabled" type="checkbox" checked><span class="settings-toggle-label">호우경보 기준 알림 (3h 90 / 12h 180mm)</span></label>
+          <label class="settings-toggle"><input id="settingHeatEnabled" type="checkbox" checked><span class="settings-toggle-label">폭염경보 기준 알림</span></label>
+          <label class="settings-toggle"><input id="settingHeavyRainEnabled" type="checkbox" checked><span class="settings-toggle-label">호우경보 기준 알림</span></label>
+        </div>
+        <div class="climate-threshold-grid">
+          <div class="threshold-box">
+            <label for="settingWindThreshold">강풍 알림 풍속</label>
+            <div class="threshold-inline"><input id="settingWindThreshold" class="settings-input" type="number" min="5" max="40" step="0.5"><span class="threshold-unit">m/s 이상</span></div>
+          </div>
+          <div class="threshold-box">
+            <label for="settingHeatThreshold">폭염 체감온도</label>
+            <div class="threshold-inline"><input id="settingHeatThreshold" class="settings-input" type="number" min="30" max="45" step="0.5"><span class="threshold-unit">℃ 이상</span></div>
+          </div>
+          <div class="threshold-box">
+            <label for="settingHeatDays">폭염 지속 예상</label>
+            <div class="threshold-inline"><input id="settingHeatDays" class="settings-input" type="number" min="1" max="7" step="1"><span class="threshold-unit">일 이상</span></div>
+          </div>
+          <div class="threshold-box">
+            <label for="settingHeavyRain3h">호우 3시간 누적</label>
+            <div class="threshold-inline"><input id="settingHeavyRain3h" class="settings-input" type="number" min="10" max="300" step="5"><span class="threshold-unit">mm 이상</span></div>
+          </div>
+          <div class="threshold-box">
+            <label for="settingHeavyRain12h">호우 12시간 누적</label>
+            <div class="threshold-inline"><input id="settingHeavyRain12h" class="settings-input" type="number" min="20" max="500" step="5"><span class="threshold-unit">mm 이상</span></div>
+          </div>
+        </div>
+        <div class="kma-reset-line">
+          <div class="kma-note">기상청 폭염경보 기본값: 일 최고 체감온도 35℃ 이상이 2일 이상 · 호우경보: 3시간 90mm 또는 12시간 180mm 이상 예상</div>
+          <button id="kmaResetBtn" class="settings-action" type="button">기상청 기준 복원</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settingsPaneLog" class="settings-pane" data-settings-pane="log">
+      <div class="settings-section">
+        <div class="log-toolbar">
+          <div>
+            <div class="settings-section-title">🧾 알림 로그</div>
+            <div class="settings-section-note">실제 시간 알람과 기상 알람 발생 이력을 최근 순으로 최대 100건 보관합니다.</div>
+          </div>
+          <button id="logClearBtn" class="settings-action" type="button">로그 비우기</button>
+        </div>
+        <div id="settingsLogList" class="log-list"></div>
+      </div>
+    </div>
+
+    <div id="settingsPaneInfo" class="settings-pane" data-settings-pane="info">
+      <div class="settings-section">
+        <div class="settings-section-head">
+          <div>
+            <div class="settings-section-title">ℹ️ 버전 정보 · 패치노트</div>
+            <div class="settings-section-note">날씨 전광판을 개선해 온 주요 변경사항을 간략히 기록합니다.</div>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-version info-current"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.2</div><div class="info-version-text">설정을 일반/알람/로그 탭으로 분리하고, 최대 10개의 사용자 시간 알람과 기상경보 기준 사용자 설정, 알림 발생 로그 기능을 추가.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.1</div><div class="info-version-text">폭염 및 호우 경보 기준 감지와 화면 경고 효과, 테스트 기능을 추가.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.0</div><div class="info-version-text">창원특례시 구·사업장 선택 기능과 사업장별 위치 저장을 추가하여 여러 사업장에서 사용할 수 있는 범용 설정 구조로 확장.</div></div>
+          <div class="info-version"><div class="info-version-tag">v3.0</div><div class="info-version-text">현장 도로 CCTV HLS 영상을 PIP 창에서 직접 재생하도록 구현하고 자동재생, 지연 감지, 자동 재연결, 60초 자동 종료를 적용.</div></div>
+          <div class="info-version"><div class="info-version-tag">v2.0</div><div class="info-version-text">강풍·우천 자동 알림과 지속 시각 경고 효과, 기상상황 테스트 기능을 추가.</div></div>
+          <div class="info-version"><div class="info-version-tag">v1.8</div><div class="info-version-text">페이지 실행 시 소리 자동 활성화를 시도하고 사용자 첫 조작으로 오디오가 자동 해제되도록 개선.</div></div>
+          <div class="info-version"><div class="info-version-tag">v1.7</div><div class="info-version-text">알람 음원 캐시 문제를 줄이기 위한 버전 쿼리를 적용.</div></div>
+          <div class="info-version"><div class="info-version-tag">v1.6</div><div class="info-version-text">GitHub Pages 파일 구조에 맞춘 알람 음원 경로 정리와 화면 버전 표시를 도입.</div></div>
+          <div class="info-version"><div class="info-version-tag">v1.x 초기</div><div class="info-version-text">창원NC파크 사무실용 현재날씨·시간대별·주간예보 전광판과 기본 시간 알람 기능을 구축.</div></div>
         </div>
       </div>
     </div>
 
     <div class="settings-actions">
-      <button id="settingsResetBtn" class="settings-action dangerless" type="button">기본값</button>
+      <button id="settingsResetBtn" class="settings-action dangerless" type="button">전체 기본값</button>
       <button id="settingsCancelBtn" class="settings-action" type="button">취소</button>
       <button id="settingsSaveBtn" class="settings-action primary" type="button">설정 저장</button>
     </div>
-    <div class="settings-save-note">설정은 이 TV/브라우저에만 저장됩니다. 다른 사업장에서는 같은 주소에 접속한 뒤 각자 한 번만 설정하면 됩니다.</div>
+    <div class="settings-save-note">변경한 설정은 현재 TV/브라우저에 저장되며 다른 사업장의 설정에는 영향을 주지 않습니다.</div>
   </section>
 </div>
 
@@ -1540,8 +1749,8 @@
     <div id="alarmIcon" class="alarm-icon">🔔</div>
     <div id="alarmSiteLabel" class="alarm-label">창원NC파크 알림</div>
     <div id="alarmTime" class="alarm-time">11:40</div>
-    <div id="alarmTitle" class="alarm-title">점심시간입니다</div>
-    <div id="alarmMessage" class="alarm-message">맛있는 점심 드세요!</div>
+    <div id="alarmTitle" class="alarm-title">사용자 알람</div>
+    <div id="alarmMessage" class="alarm-message">설정한 문구가 표시됩니다.</div>
     <button id="alarmClose" class="alarm-close" type="button">확인</button>
   </div>
 </div>
@@ -1566,7 +1775,7 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    v4.1: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
+    v4.3: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -1583,9 +1792,9 @@
 (function(){
   "use strict";
 
-  /* v4.1 · 창원시설공단 사업장 좌표 데이터
+  /* v4.3 · 창원시설공단 사업장 좌표 데이터
      - 정식 배포 전 시설 목록/좌표는 한 번 더 최종 검증할 예정입니다.
-     - CCTV는 현재 스트림이 확인된 창원NC파크만 우선 연결합니다. */
+     - 기본 CCTV 외에도 일반 설정에서 사업장별 HLS 스트림 주소를 직접 등록할 수 있습니다. */
   var DISTRICTS=["의창구","성산구","마산합포구","마산회원구","진해구"];
   var FACILITIES=[
     {id:"uichang_sports",district:"의창구",name:"의창스포츠센터",address:"창원시 의창구",lat:35.2559744,lon:128.6338277},
@@ -1624,10 +1833,19 @@
   ];
 
   var SETTINGS_KEY="cwsisulOfficeWeatherV4";
+  var LOG_KEY="cwsisulOfficeWeatherV4Logs";
+  var MAX_CUSTOM_ALARMS=10;
+  var KMA_DEFAULTS={heatThreshold:35,heatConsecutiveDays:2,heavyRain3h:90,heavyRain12h:180};
+  var DEFAULT_CUSTOM_ALARMS=[
+    {id:"default_lunch",enabled:true,time:"11:40",sound:"chime",title:"점심 시간입니다",message:"맛점하세요.",weekdaysOnly:true},
+    {id:"default_leave",enabled:true,time:"18:00",sound:"chime",title:"업무 종료 시간입니다",message:"고생하셨습니다.",weekdaysOnly:true}
+  ];
   var SETTINGS_DEFAULTS={
-    district:"마산회원구",facilityId:"ncpark",lunchTime:"11:40",leaveTime:"18:00",
+    district:"마산회원구",facilityId:"ncpark",
+    customAlarms:DEFAULT_CUSTOM_ALARMS,
     windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true,
-    heatAlertEnabled:true,heavyRainAlertEnabled:true
+    heatThreshold:35,heatConsecutiveDays:2,heatAlertEnabled:true,
+    heavyRain3h:90,heavyRain12h:180,heavyRainAlertEnabled:true
   };
   var CURRENT_SETTINGS=null;
   var CURRENT_FACILITY=null;
@@ -1636,31 +1854,25 @@
   var TZ="Asia/Seoul";
   var REFRESH_MS=10*60*1000;
 
-  /* 평일 시간 알람. 시간/문구를 바꾸려면 여기만 수정하면 됩니다. */
-  var ALARMS=[
-    {time:"11:40",title:"점심 시간입니다",message:"맛점하세요.",audio:"lunch.mp3?v=4.1",icon:"🍚",weekdaysOnly:true},
-    {time:"18:00",title:"업무 종료 시간입니다",message:"고생하셨습니다.",audio:"leave.mp3?v=4.1",icon:"🏠",weekdaysOnly:true}
-  ];
+  var ALARMS=[];
   var ALARM_SHOW_MS=12000;
   var audioCtx=null;
   var alarmTimer=null;
   var soundEnabled=false;
   var firedAlarms={};
-  var voiceBuffers={};
-  var voiceLoads={};
-  var VOICE_GAIN=1.70; // 음성 파일 증폭(1.0 = 원본 크기)
-  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=4.1"; // 강풍·우천 공통 경보음
-  var CLIMATE_ALERT_GAIN=1.0; // 기후 경보음 자체 음량 (과도하게 크지 않게 유지)
+  var audioBuffers={};
+  var audioLoads={};
+  var CLIMATE_ALERT_AUDIO="climate_alert.mp3?v=4.2";
+  var CLIMATE_ALERT_GAIN=1.0;
 
-  /* v4.1 기후 경보 설정: 나중에 기준값은 여기만 바꾸면 됩니다. */
   var CLIMATE_CONFIG={
-    windThreshold:15,          // m/s 이상이면 강풍 경보
-    heatThreshold:35,          // 기상청 폭염경보: 일 최고 체감온도 35℃ 이상
-    heatConsecutiveDays:2,     // 위 기준이 2일 이상 지속 예상
-    heavyRain3h:90,            // 기상청 호우경보: 3시간 누적 90mm 이상 예상
-    heavyRain12h:180,          // 또는 12시간 누적 180mm 이상 예상
-    heavyRainLookaheadHours:24,// 가까운 24시간 예보에서 기준 충족 여부 확인
-    testDuration:30000         // 테스트 시각효과 유지시간: 30초
+    windThreshold:15,
+    heatThreshold:35,
+    heatConsecutiveDays:2,
+    heavyRain3h:90,
+    heavyRain12h:180,
+    heavyRainLookaheadHours:24,
+    testDuration:30000
   };
   var climateState={
     initialized:false,
@@ -1682,8 +1894,11 @@
     heatTimer:null,
     heavyRainTimer:null
   };
+  var settingsAlarmDrafts=[];
+  var settingsCctvDrafts={};
+  var activeSettingsTab="general";
 
-  /* v4.1 · 선택 사업장의 CCTV가 등록된 경우에만 PIP 버튼 활성화 */
+  /* v4.3 · 선택 사업장의 CCTV가 등록된 경우에만 PIP 버튼 활성화 */
   var CCTV_STREAM_URL=null;
   var CCTV_SHOW_SECONDS=60;
   var cctvCloseTimer=null;
@@ -1721,19 +1936,80 @@
     return null;
   }
 
-  function normalizeSettings(raw){
-    var s=copyObj(SETTINGS_DEFAULTS);
+  function cloneAlarm(a){
+    return {id:a.id,enabled:a.enabled!==false,time:a.time,sound:a.sound,title:a.title,message:a.message,weekdaysOnly:a.weekdaysOnly!==false};
+  }
+
+  function defaultAlarmCopies(){
+    return DEFAULT_CUSTOM_ALARMS.map(cloneAlarm);
+  }
+
+  function validTime(v){
+    if(!/^\d{2}:\d{2}$/.test(v||""))return false;
+    var p=v.split(":");return Number(p[0])>=0&&Number(p[0])<=23&&Number(p[1])>=0&&Number(p[1])<=59;
+  }
+
+  function normalizeAlarm(raw,index){
     raw=raw||{};
+    var allowedSounds=["chime","soft","alert","none"];
+    return {
+      id:(typeof raw.id==="string"&&raw.id)?raw.id:("alarm_"+Date.now()+"_"+index),
+      enabled:raw.enabled!==false,
+      time:validTime(raw.time)?raw.time:"09:00",
+      sound:allowedSounds.indexOf(raw.sound)>=0?raw.sound:"chime",
+      title:(raw.title==null?"":String(raw.title)).slice(0,40),
+      message:(raw.message==null?"":String(raw.message)).slice(0,100),
+      weekdaysOnly:raw.weekdaysOnly!==false
+    };
+  }
+
+  function normalizeSettings(raw){
+    raw=raw||{};
+    var s={
+      district:SETTINGS_DEFAULTS.district,facilityId:SETTINGS_DEFAULTS.facilityId,
+      cctvOverrides:{},
+      customAlarms:defaultAlarmCopies(),
+      windThreshold:SETTINGS_DEFAULTS.windThreshold,windAlertEnabled:true,rainAlertEnabled:true,
+      heatThreshold:KMA_DEFAULTS.heatThreshold,heatConsecutiveDays:KMA_DEFAULTS.heatConsecutiveDays,heatAlertEnabled:true,
+      heavyRain3h:KMA_DEFAULTS.heavyRain3h,heavyRain12h:KMA_DEFAULTS.heavyRain12h,heavyRainAlertEnabled:true
+    };
     if(DISTRICTS.indexOf(raw.district)>=0)s.district=raw.district;
     if(typeof raw.facilityId==="string")s.facilityId=raw.facilityId;
-    if(/^\d{2}:\d{2}$/.test(raw.lunchTime||""))s.lunchTime=raw.lunchTime;
-    if(/^\d{2}:\d{2}$/.test(raw.leaveTime||""))s.leaveTime=raw.leaveTime;
+    if(raw.cctvOverrides&&typeof raw.cctvOverrides==="object"){
+      for(var ck in raw.cctvOverrides){
+        if(!Object.prototype.hasOwnProperty.call(raw.cctvOverrides,ck)||!getFacilityById(ck))continue;
+        var cv=raw.cctvOverrides[ck]||{};
+        var stream=(cv.stream==null?"":String(cv.stream)).trim().slice(0,500);
+        var name=(cv.name==null?"":String(cv.name)).trim().slice(0,60);
+        if(/^https?:\/\//i.test(stream))s.cctvOverrides[ck]={name:name,stream:stream};
+      }
+    }
+
+    if(Array.isArray(raw.customAlarms)){
+      s.customAlarms=raw.customAlarms.slice(0,MAX_CUSTOM_ALARMS).map(normalizeAlarm);
+    }else if(validTime(raw.lunchTime)||validTime(raw.leaveTime)){
+      /* v4.0~4.1 저장값 자동 마이그레이션 */
+      s.customAlarms=defaultAlarmCopies();
+      if(validTime(raw.lunchTime))s.customAlarms[0].time=raw.lunchTime;
+      if(validTime(raw.leaveTime))s.customAlarms[1].time=raw.leaveTime;
+    }
+
     var wt=Number(raw.windThreshold);
     if(isFinite(wt)&&wt>=5&&wt<=40)s.windThreshold=Math.round(wt*10)/10;
+    var ht=Number(raw.heatThreshold);
+    if(isFinite(ht)&&ht>=30&&ht<=45)s.heatThreshold=Math.round(ht*10)/10;
+    var hd=Math.round(Number(raw.heatConsecutiveDays));
+    if(isFinite(hd)&&hd>=1&&hd<=7)s.heatConsecutiveDays=hd;
+    var hr3=Number(raw.heavyRain3h);
+    if(isFinite(hr3)&&hr3>=10&&hr3<=300)s.heavyRain3h=Math.round(hr3*10)/10;
+    var hr12=Number(raw.heavyRain12h);
+    if(isFinite(hr12)&&hr12>=20&&hr12<=500)s.heavyRain12h=Math.round(hr12*10)/10;
+
     if(typeof raw.windAlertEnabled==="boolean")s.windAlertEnabled=raw.windAlertEnabled;
     if(typeof raw.rainAlertEnabled==="boolean")s.rainAlertEnabled=raw.rainAlertEnabled;
     if(typeof raw.heatAlertEnabled==="boolean")s.heatAlertEnabled=raw.heatAlertEnabled;
     if(typeof raw.heavyRainAlertEnabled==="boolean")s.heavyRainAlertEnabled=raw.heavyRainAlertEnabled;
+
     var f=getFacilityById(s.facilityId);
     if(!f||f.district!==s.district){
       f=null;
@@ -1753,6 +2029,87 @@
 
   function saveSettingsLocal(s){
     try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}catch(e){}
+  }
+
+  function loadLogs(){
+    try{
+      var raw=JSON.parse(localStorage.getItem(LOG_KEY)||"[]");
+      return Array.isArray(raw)?raw.slice(0,100):[];
+    }catch(e){return [];}
+  }
+
+  function saveLogs(logs){
+    try{localStorage.setItem(LOG_KEY,JSON.stringify(logs.slice(0,100)));}catch(e){}
+  }
+
+  function logTimestamp(){
+    return new Intl.DateTimeFormat("ko-KR",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date());
+  }
+
+  function addLog(type,title,detail){
+    var logs=loadLogs();
+    logs.unshift({time:logTimestamp(),type:type,title:title||"알림",detail:detail||""});
+    saveLogs(logs);
+    renderLogs();
+  }
+
+  function renderLogs(){
+    var box=el("settingsLogList");
+    if(!box)return;
+    var logs=loadLogs();
+    box.innerHTML="";
+    if(!logs.length){
+      var empty=document.createElement("div");empty.className="log-empty";empty.textContent="아직 기록된 알림이 없습니다.";box.appendChild(empty);return;
+    }
+    logs.forEach(function(item){
+      var row=document.createElement("div");row.className="log-entry";
+      var t=document.createElement("div");t.className="log-time";t.textContent=item.time||"";
+      var ty=document.createElement("div");ty.className="log-type";ty.textContent=item.type||"알림";
+      var main=document.createElement("div");main.className="log-main";
+      var strong=document.createElement("strong");strong.textContent=item.title||"알림";
+      var span=document.createElement("span");span.textContent=item.detail||"";
+      main.appendChild(strong);main.appendChild(span);row.appendChild(t);row.appendChild(ty);row.appendChild(main);box.appendChild(row);
+    });
+  }
+
+  function cloneCctvOverrides(map){
+    var out={};map=map||{};
+    for(var k in map)if(Object.prototype.hasOwnProperty.call(map,k))out[k]={name:String(map[k].name||""),stream:String(map[k].stream||"")};
+    return out;
+  }
+
+  function effectiveCctvForFacility(f,settings){
+    if(!f)return null;
+    var map=settings&&settings.cctvOverrides?settings.cctvOverrides:{};
+    var custom=map[f.id];
+    if(custom&&custom.stream)return {name:custom.name||((f.name||"사업장")+" 인근 CCTV"),stream:custom.stream,custom:true};
+    if(f.cctv&&f.cctv.stream)return {name:f.cctv.name||((f.name||"사업장")+" 인근 CCTV"),stream:f.cctv.stream,custom:false};
+    return null;
+  }
+
+  function syncCctvDraftFromFields(facilityId){
+    if(!facilityId||!el("settingCctvUrl"))return;
+    var stream=el("settingCctvUrl").value.trim();
+    var name=el("settingCctvName").value.trim();
+    var f=getFacilityById(facilityId);
+    var built=f&&f.cctv&&f.cctv.stream?f.cctv:null;
+    if(!stream){delete settingsCctvDrafts[facilityId];return;}
+    if(built&&stream===built.stream&&(!name||name===built.name)){
+      delete settingsCctvDrafts[facilityId];return;
+    }
+    if(/^https?:\/\//i.test(stream))settingsCctvDrafts[facilityId]={name:name,stream:stream};
+  }
+
+  function loadCctvFields(facilityId){
+    var f=getFacilityById(facilityId);if(!f)return;
+    var custom=settingsCctvDrafts[facilityId];
+    var src=custom||(f.cctv||{});
+    el("settingCctvName").value=src.name||"";
+    el("settingCctvUrl").value=src.stream||"";
+    var note=el("settingCctvNote");
+    if(custom&&custom.stream)note.textContent="이 사업장에는 사용자 등록 CCTV 주소가 적용됩니다. HLS(.m3u8) 직접 영상 주소를 권장합니다.";
+    else if(f.cctv&&f.cctv.stream)note.textContent="기본 등록 CCTV 주소가 있습니다. 다른 주소를 입력하면 이 브라우저에서 해당 주소가 우선 적용됩니다.";
+    else note.textContent="등록된 CCTV가 없습니다. HLS(.m3u8) 직접 영상 주소를 입력하면 메인 화면의 CCTV 버튼이 활성화됩니다.";
   }
 
   function facilityListForDistrict(district){
@@ -1779,32 +2136,118 @@
       if(list[i].id===selectedId)op.selected=true;sel.appendChild(op);
     }
     if(!sel.value&&list.length)sel.value=list[0].id;
+    sel.setAttribute("data-prev-id",sel.value||"");
     updateFacilityDetail();
   }
 
   function updateFacilityDetail(){
     var f=getFacilityById(el("settingFacility").value);
     if(!f){el("settingFacilityDetail").textContent="등록된 사업장이 없습니다.";return;}
-    var cctv=f.cctv?" · CCTV 연동됨":" · CCTV 미등록";
+    var custom=settingsCctvDrafts[f.id];
+    var cctv=custom&&custom.stream?" · 사용자 CCTV 등록됨":(f.cctv?" · 기본 CCTV 연동됨":" · CCTV 미등록");
     el("settingFacilityDetail").textContent=(f.address||f.district)+" · 좌표 "+f.lat.toFixed(5)+", "+f.lon.toFixed(5)+cctv;
+    loadCctvFields(f.id);
+  }
+
+  function setSettingsTab(name){
+    activeSettingsTab=name||"general";
+    var tabs=document.querySelectorAll("[data-settings-tab]");
+    for(var i=0;i<tabs.length;i++){
+      var on=tabs[i].getAttribute("data-settings-tab")===activeSettingsTab;
+      tabs[i].classList.toggle("active",on);tabs[i].setAttribute("aria-selected",on?"true":"false");
+    }
+    var panes=document.querySelectorAll("[data-settings-pane]");
+    for(var j=0;j<panes.length;j++)panes[j].classList.toggle("active",panes[j].getAttribute("data-settings-pane")===activeSettingsTab);
+    if(activeSettingsTab==="log")renderLogs();
   }
 
   function fillSettingsForm(s){
     s=normalizeSettings(s||CURRENT_SETTINGS||SETTINGS_DEFAULTS);
+    settingsCctvDrafts=cloneCctvOverrides(s.cctvOverrides);
     populateDistrictSelect(s.district);
     populateFacilitySelect(s.district,s.facilityId);
-    el("settingLunchTime").value=s.lunchTime;
-    el("settingLeaveTime").value=s.leaveTime;
+    settingsAlarmDrafts=s.customAlarms.map(cloneAlarm);
+    renderAlarmEditor();
     el("settingWindThreshold").value=String(s.windThreshold);
+    el("settingHeatThreshold").value=String(s.heatThreshold);
+    el("settingHeatDays").value=String(s.heatConsecutiveDays);
+    el("settingHeavyRain3h").value=String(s.heavyRain3h);
+    el("settingHeavyRain12h").value=String(s.heavyRain12h);
     el("settingWindEnabled").checked=!!s.windAlertEnabled;
     el("settingRainEnabled").checked=!!s.rainAlertEnabled;
     el("settingHeatEnabled").checked=!!s.heatAlertEnabled;
     el("settingHeavyRainEnabled").checked=!!s.heavyRainAlertEnabled;
   }
 
+  function soundName(v){
+    return v==="soft"?"부드러운 벨":v==="alert"?"짧은 경보":v==="none"?"무음":"기본 차임";
+  }
+
+  function syncAlarmDraftsFromDom(){
+    var rows=document.querySelectorAll(".alarm-editor-row");
+    var next=[];
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i];
+      next.push(normalizeAlarm({
+        id:r.getAttribute("data-alarm-id"),
+        enabled:r.querySelector(".alarm-enabled").checked,
+        time:r.querySelector(".alarm-time-input").value,
+        sound:r.querySelector(".alarm-sound-input").value,
+        title:r.querySelector(".alarm-title-input").value,
+        message:r.querySelector(".alarm-message-input").value,
+        weekdaysOnly:r.querySelector(".alarm-weekday-input").checked
+      },i));
+    }
+    settingsAlarmDrafts=next.slice(0,MAX_CUSTOM_ALARMS);
+  }
+
+  function renderAlarmEditor(){
+    var list=el("alarmEditorList");if(!list)return;
+    list.innerHTML="";
+    settingsAlarmDrafts.forEach(function(a,index){
+      var row=document.createElement("div");row.className="alarm-editor-row";row.setAttribute("data-alarm-id",a.id);
+
+      var en=document.createElement("label");en.className="alarm-enabled-wrap";en.title="알람 사용";
+      var enC=document.createElement("input");enC.type="checkbox";enC.className="alarm-enabled";enC.checked=a.enabled!==false;en.appendChild(enC);en.appendChild(document.createTextNode("ON"));
+
+      var time=document.createElement("input");time.type="time";time.className="settings-input alarm-time-input";time.value=a.time;
+      var sound=document.createElement("select");sound.className="settings-input alarm-sound-input";
+      [["chime","기본 차임"],["soft","부드러운 벨"],["alert","짧은 경보"],["none","무음"]].forEach(function(o){var op=document.createElement("option");op.value=o[0];op.textContent=o[1];if(a.sound===o[0])op.selected=true;sound.appendChild(op);});
+      var title=document.createElement("input");title.type="text";title.maxLength=40;title.className="settings-input alarm-title-input";title.value=a.title;title.placeholder="알람 제목";
+      var msg=document.createElement("input");msg.type="text";msg.maxLength=100;msg.className="settings-input alarm-message-input";msg.value=a.message;msg.placeholder="알람 내용";
+      var wk=document.createElement("label");wk.className="alarm-weekday-wrap";wk.title="토·일 제외";
+      var wkC=document.createElement("input");wkC.type="checkbox";wkC.className="alarm-weekday-input";wkC.checked=a.weekdaysOnly!==false;wk.appendChild(wkC);wk.appendChild(document.createTextNode("평일"));
+      var acts=document.createElement("div");acts.className="alarm-row-actions";
+      var test=document.createElement("button");test.type="button";test.className="alarm-mini-btn";test.textContent="▶";test.title="이 알람 테스트";
+      test.addEventListener("click",function(){syncAlarmDraftsFromDom();var aa=settingsAlarmDrafts[index];ensureAudio(true).then(function(){showAlarm(aa,true);});});
+      var del=document.createElement("button");del.type="button";del.className="alarm-mini-btn delete";del.textContent="✕";del.title="삭제";
+      del.addEventListener("click",function(){syncAlarmDraftsFromDom();settingsAlarmDrafts.splice(index,1);renderAlarmEditor();});
+      acts.appendChild(test);acts.appendChild(del);
+      row.appendChild(en);row.appendChild(time);row.appendChild(sound);row.appendChild(title);row.appendChild(msg);row.appendChild(wk);row.appendChild(acts);list.appendChild(row);
+    });
+    el("alarmCountLabel").textContent=settingsAlarmDrafts.length+" / "+MAX_CUSTOM_ALARMS+"개 등록";
+    el("alarmAddBtn").disabled=settingsAlarmDrafts.length>=MAX_CUSTOM_ALARMS;
+  }
+
+  function addAlarmDraft(){
+    syncAlarmDraftsFromDom();
+    if(settingsAlarmDrafts.length>=MAX_CUSTOM_ALARMS)return;
+    settingsAlarmDrafts.push(normalizeAlarm({id:"alarm_"+Date.now(),enabled:true,time:"09:00",sound:"chime",title:"",message:"",weekdaysOnly:true},settingsAlarmDrafts.length));
+    renderAlarmEditor();
+  }
+
+  function restoreKmaDefaults(){
+    el("settingHeatThreshold").value=String(KMA_DEFAULTS.heatThreshold);
+    el("settingHeatDays").value=String(KMA_DEFAULTS.heatConsecutiveDays);
+    el("settingHeavyRain3h").value=String(KMA_DEFAULTS.heavyRain3h);
+    el("settingHeavyRain12h").value=String(KMA_DEFAULTS.heavyRain12h);
+  }
+
   function openSettings(){
     fillSettingsForm(CURRENT_SETTINGS);
     closeCctvPip();
+    setSettingsTab("general");
+    renderLogs();
     el("settingsOverlay").classList.add("open");
     el("settingsOverlay").setAttribute("aria-hidden","false");
   }
@@ -1815,10 +2258,15 @@
   }
 
   function readSettingsForm(){
+    syncAlarmDraftsFromDom();
+    syncCctvDraftFromFields(el("settingFacility").value);
     return normalizeSettings({
       district:el("settingDistrict").value,facilityId:el("settingFacility").value,
-      lunchTime:el("settingLunchTime").value,leaveTime:el("settingLeaveTime").value,
+      cctvOverrides:settingsCctvDrafts,
+      customAlarms:settingsAlarmDrafts,
       windThreshold:Number(el("settingWindThreshold").value),
+      heatThreshold:Number(el("settingHeatThreshold").value),heatConsecutiveDays:Number(el("settingHeatDays").value),
+      heavyRain3h:Number(el("settingHeavyRain3h").value),heavyRain12h:Number(el("settingHeavyRain12h").value),
       windAlertEnabled:el("settingWindEnabled").checked,rainAlertEnabled:el("settingRainEnabled").checked,
       heatAlertEnabled:el("settingHeatEnabled").checked,heavyRainAlertEnabled:el("settingHeavyRainEnabled").checked
     });
@@ -1829,19 +2277,25 @@
     var prevId=CURRENT_FACILITY?CURRENT_FACILITY.id:null;
     var f=getFacilityById(next.facilityId)||getFacilityById(SETTINGS_DEFAULTS.facilityId);
     CURRENT_SETTINGS=next;CURRENT_FACILITY=f;LAT=f.lat;LON=f.lon;
-    ALARMS[0].time=next.lunchTime;ALARMS[1].time=next.leaveTime;
+    ALARMS=next.customAlarms.map(cloneAlarm);
     CLIMATE_CONFIG.windThreshold=next.windThreshold;
+    CLIMATE_CONFIG.heatThreshold=next.heatThreshold;
+    CLIMATE_CONFIG.heatConsecutiveDays=next.heatConsecutiveDays;
+    CLIMATE_CONFIG.heavyRain3h=next.heavyRain3h;
+    CLIMATE_CONFIG.heavyRain12h=next.heavyRain12h;
+    firedAlarms={};
 
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 날씨 전광판 · v4.1";
+    document.title=f.name+" 날씨 전광판 · v4.3";
 
-    CCTV_STREAM_URL=f.cctv&&f.cctv.stream?f.cctv.stream:null;
+    var activeCctv=effectiveCctvForFacility(f,next);
+    CCTV_STREAM_URL=activeCctv&&activeCctv.stream?activeCctv.stream:null;
     var cbtn=el("cctvOpenBtn");
     cbtn.disabled=!CCTV_STREAM_URL;
     cbtn.textContent=CCTV_STREAM_URL?"📹 현장 CCTV 확인":"📹 CCTV 미등록";
-    el("cctvPipTitle").textContent="📹 "+(f.cctv?f.cctv.name:(f.name+" 인근 도로 CCTV"));
+    el("cctvPipTitle").textContent="📹 "+(activeCctv?activeCctv.name:(f.name+" 인근 도로 CCTV"));
     var link=el("cctvExternalLink");
     if(CCTV_STREAM_URL){link.href=CCTV_STREAM_URL;link.style.display="inline";}else{link.removeAttribute("href");link.style.display="none";}
 
@@ -1856,9 +2310,8 @@
   }
 
   function saveSettingsFromForm(){
-    var s=readSettingsForm();saveSettingsLocal(s);applySettings(s,true);closeSettings();
+    var s=readSettingsForm();saveSettingsLocal(s);applySettings(s,true);addLog("설정","설정 저장",CURRENT_FACILITY.name+" · 사용자 알람 "+s.customAlarms.length+"개");closeSettings();
   }
-
 
   function weatherInfo(code,isDay){
     var c=Number(code);
@@ -1936,12 +2389,9 @@
     }
   }
 
-  function preloadAllVoices(){
+  function preloadCoreAudio(){
     if(!audioCtx)return;
-    for(var i=0;i<ALARMS.length;i++){
-      if(ALARMS[i].audio)preloadVoice(ALARMS[i].audio).catch(function(){});
-    }
-    preloadVoice(CLIMATE_ALERT_AUDIO).catch(function(){});
+    preloadAudio(CLIMATE_ALERT_AUDIO).catch(function(){});
   }
 
   function ensureAudio(fromUser){
@@ -1960,7 +2410,7 @@
       return Promise.resolve(false);
     }
 
-    preloadAllVoices();
+    preloadCoreAudio();
 
     var resumePromise;
     try{
@@ -2040,95 +2490,61 @@
     });
   }
 
-  function preloadVoice(path){
+  function preloadAudio(path){
     if(!path||!audioCtx)return Promise.reject(new Error("audio context not ready"));
-    if(voiceBuffers[path])return Promise.resolve(voiceBuffers[path]);
-    if(voiceLoads[path])return voiceLoads[path];
-
-    voiceLoads[path]=fetch(path,{cache:"force-cache"})
-      .then(function(r){
-        if(!r.ok)throw new Error("voice file "+r.status);
-        return r.arrayBuffer();
-      })
-      .then(function(buf){return decodeAudioDataCompat(buf);})
-      .then(function(decoded){
-        voiceBuffers[path]=decoded;
-        return decoded;
-      })
-      .catch(function(err){
-        delete voiceLoads[path];
-        console.error("음성 파일 로드 실패:",path,err);
-        throw err;
-      });
-
-    return voiceLoads[path];
+    if(audioBuffers[path])return Promise.resolve(audioBuffers[path]);
+    if(audioLoads[path])return audioLoads[path];
+    audioLoads[path]=fetch(path,{cache:"force-cache"}).then(function(r){
+      if(!r.ok)throw new Error("audio file "+r.status);
+      return r.arrayBuffer();
+    }).then(function(buf){return decodeAudioDataCompat(buf);}).then(function(decoded){
+      audioBuffers[path]=decoded;return decoded;
+    }).catch(function(err){delete audioLoads[path];throw err;});
+    return audioLoads[path];
   }
 
-  function playVoiceBuffer(buffer,onEnded){
-    if(!soundEnabled||!audioCtx||!buffer){if(onEnded)onEnded();return;}
+  function playDecodedAudio(buffer,gainValue){
+    if(!soundEnabled||!audioCtx||!buffer)return;
     if(audioCtx.state==="suspended")audioCtx.resume();
-
-    var source=audioCtx.createBufferSource();
-    var gain=audioCtx.createGain();
-    var compressor=audioCtx.createDynamicsCompressor();
-
-    source.buffer=buffer;
-    gain.gain.value=VOICE_GAIN;
-
-    /* 단순히 키우다 찢어지는 것을 줄이기 위한 소프트 리미터 역할 */
-    compressor.threshold.value=-8;
-    compressor.knee.value=8;
-    compressor.ratio.value=12;
-    compressor.attack.value=.003;
-    compressor.release.value=.22;
-
-    source.connect(gain);
-    gain.connect(compressor);
-    compressor.connect(audioCtx.destination);
-
-    source.onended=function(){
-      try{source.disconnect();gain.disconnect();compressor.disconnect();}catch(e){}
-      if(onEnded)onEnded();
-    };
-    source.start(0);
+    var source=audioCtx.createBufferSource();var gain=audioCtx.createGain();
+    source.buffer=buffer;gain.gain.value=gainValue==null?1:gainValue;source.connect(gain);gain.connect(audioCtx.destination);
+    source.onended=function(){try{source.disconnect();gain.disconnect();}catch(e){}};source.start(0);
   }
 
-  function playVoiceFile(path,repeatCount){
-    if(!soundEnabled||!audioCtx||!path)return;
-    repeatCount=repeatCount||1;
+  function playToneSequence(notes,masterGain){
+    if(!soundEnabled||!audioCtx)return;
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    var now=audioCtx.currentTime;
+    for(var i=0;i<notes.length;i++){
+      var n=notes[i],osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=n.type||"sine";osc.frequency.value=n.f;
+      gain.gain.setValueAtTime(.0001,now+n.t);
+      gain.gain.exponentialRampToValueAtTime((n.g||masterGain||.22),now+n.t+.025);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+n.t+n.d);
+      osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now+n.t);osc.stop(now+n.t+n.d+.06);
+    }
+  }
 
-    preloadVoice(path).then(function(buffer){
-      var played=0;
-      function next(){
-        played++;
-        playVoiceBuffer(buffer,function(){
-          if(played<repeatCount)setTimeout(next,650);
-        });
-      }
-      next();
-    }).catch(function(){
-      /* 음성 파일 문제여도 벨/화면 알림은 계속 정상 동작 */
-      console.error("안내 음성을 재생하지 못했습니다:",path);
-    });
+  function playSoftBell(){
+    playToneSequence([{t:0,f:523.25,d:.38,g:.22},{t:.44,f:659.25,d:.55,g:.20}],.2);
+  }
+
+  function playShortAlert(){
+    playToneSequence([{t:0,f:440,d:.36,g:.23},{t:.48,f:330,d:.48,g:.24},{t:1.08,f:440,d:.28,g:.20}],.22);
+  }
+
+  function playAlarmSound(kind){
+    if(kind==="none")return;
+    if(kind==="soft"){playSoftBell();return;}
+    if(kind==="alert"){playShortAlert();return;}
+    playChime();
   }
 
   function playClimateAlertSound(){
     if(!soundEnabled||!audioCtx)return;
-    preloadVoice(CLIMATE_ALERT_AUDIO).then(function(buffer){
-      if(audioCtx.state==="suspended")audioCtx.resume();
-
-      var source=audioCtx.createBufferSource();
-      var gain=audioCtx.createGain();
-      source.buffer=buffer;
-      gain.gain.value=CLIMATE_ALERT_GAIN;
-      source.connect(gain);
-      gain.connect(audioCtx.destination);
-      source.onended=function(){
-        try{source.disconnect();gain.disconnect();}catch(e){}
-      };
-      source.start(0);
-    }).catch(function(){
-      console.error("기후 경보음을 재생하지 못했습니다:",CLIMATE_ALERT_AUDIO);
+    preloadAudio(CLIMATE_ALERT_AUDIO).then(function(buffer){playDecodedAudio(buffer,CLIMATE_ALERT_GAIN);}).catch(function(){
+      /* 외부 MP3가 없더라도 경보 자체는 들리도록 내장 패턴으로 대체 */
+      playShortAlert();
     });
   }
 
@@ -2164,7 +2580,7 @@
 
     var hd=el("heavyRainDetail");
     if(hd){
-      if(climateTest.heavyRain)hd.textContent="3시간 90mm 이상 예상";
+      if(climateTest.heavyRain)hd.textContent="3시간 "+CLIMATE_CONFIG.heavyRain3h+"mm 이상 예상";
       else if(heavyRainActive&&climateState.heavyRainDetail)hd.textContent=climateState.heavyRainDetail;
       else hd.textContent="";
     }
@@ -2195,7 +2611,7 @@
       return {
         time:nowTime,
         title:"폭염경보 기준 도달 예상",
-        message:climateTest.heat ? "일 최고 체감온도 35℃ 이상이 2일 이상 예상되는 상황을 테스트 중입니다." : (climateState.heatDetail||"향후 일 최고 체감온도 35℃ 이상이 2일 이상 예상됩니다."),
+        message:climateTest.heat ? "일 최고 체감온도 "+CLIMATE_CONFIG.heatThreshold+"℃ 이상이 "+CLIMATE_CONFIG.heatConsecutiveDays+"일 이상 예상되는 상황을 테스트 중입니다." : (climateState.heatDetail||"설정한 폭염 기준에 도달할 것으로 예상됩니다."),
         icon:"🔥",
         climateType:"heat"
       };
@@ -2203,7 +2619,7 @@
     return {
       time:nowTime,
       title:"호우경보 기준 도달 예상",
-      message:climateTest.heavyRain ? "3시간 90mm 이상 또는 12시간 180mm 이상 강수가 예상되는 상황을 테스트 중입니다." : (climateState.heavyRainDetail||"단시간 많은 비가 예상됩니다. 배수 및 외부 시설을 확인하세요."),
+      message:climateTest.heavyRain ? "3시간 "+CLIMATE_CONFIG.heavyRain3h+"mm 이상 또는 12시간 "+CLIMATE_CONFIG.heavyRain12h+"mm 이상 강수가 예상되는 상황을 테스트 중입니다." : (climateState.heavyRainDetail||"단시간 많은 비가 예상됩니다. 배수 및 외부 시설을 확인하세요."),
       icon:"⛈️",
       climateType:"heavy-rain"
     };
@@ -2327,23 +2743,17 @@
     el("alarmIcon").textContent=alarm.icon||"🔔";
     el("alarmTime").textContent=alarm.time||seoulTimeKey(new Date());
     el("alarmTitle").textContent=alarm.title||"알림";
-    el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"");
+    el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"설정한 시간이 되었습니다.");
     overlay.classList.add("active");
 
-    /* 시간 알람과 기후 경보의 소리를 구분합니다.
-       - 점심/퇴근: 기존 벨소리 + 안내 음성 2회
-       - 강풍/우천/폭염/호우: 부드러운 전용 경보음 1회 */
-    if(alarm.climateType){
-      playClimateAlertSound();
-    }else{
-      var chimeMs=playChime();
-      if(alarm.audio){
-        setTimeout(function(){
-          playVoiceFile(alarm.audio,2);
-        },chimeMs+350);
-      }
-    }
+    /* v4.3: 시간 알람은 사용자가 선택한 내장 알람음을 재생합니다. */
+    if(alarm.climateType)playClimateAlertSound();
+    else playAlarmSound(alarm.sound||"chime");
 
+    if(!isTest){
+      if(alarm.climateType)addLog("기상",alarm.title,alarm.message||"");
+      else addLog("시간",alarm.title,(alarm.time||"")+((alarm.message||"")?" · "+alarm.message:""));
+    }
     alarmTimer=setTimeout(hideAlarm,ALARM_SHOW_MS);
   }
 
@@ -2354,10 +2764,11 @@
 
     for(var i=0;i<ALARMS.length;i++){
       var alarm=ALARMS[i];
+      if(alarm.enabled===false)continue;
       if(alarm.time!==time)continue;
       if(alarm.weekdaysOnly&&weekend)continue;
 
-      var key=date+":"+alarm.time;
+      var key=date+":"+(alarm.id||i)+":"+alarm.time;
       if(firedAlarms[key])continue;
       firedAlarms[key]=true;
       /* 정시에도 한 번 더 자동 활성화를 시도한 뒤 알람을 실행합니다. */
@@ -2797,9 +3208,22 @@
   el("settingsCloseBtn").addEventListener("click",closeSettings);
   el("settingsCancelBtn").addEventListener("click",closeSettings);
   el("settingsSaveBtn").addEventListener("click",saveSettingsFromForm);
-  el("settingsResetBtn").addEventListener("click",function(){fillSettingsForm(SETTINGS_DEFAULTS);});
-  el("settingDistrict").addEventListener("change",function(){populateFacilitySelect(this.value,null);});
-  el("settingFacility").addEventListener("change",updateFacilityDetail);
+  el("settingsResetBtn").addEventListener("click",function(){fillSettingsForm(SETTINGS_DEFAULTS);setSettingsTab("general");});
+  el("alarmAddBtn").addEventListener("click",addAlarmDraft);
+  el("kmaResetBtn").addEventListener("click",restoreKmaDefaults);
+  el("logClearBtn").addEventListener("click",function(){saveLogs([]);renderLogs();});
+  var settingsTabs=document.querySelectorAll("[data-settings-tab]");
+  for(var st=0;st<settingsTabs.length;st++)settingsTabs[st].addEventListener("click",function(){setSettingsTab(this.getAttribute("data-settings-tab"));});
+  el("settingDistrict").addEventListener("change",function(){
+    syncCctvDraftFromFields(el("settingFacility").value);
+    populateFacilitySelect(this.value,null);
+  });
+  el("settingFacility").addEventListener("change",function(){
+    var prev=this.getAttribute("data-prev-id");
+    if(prev)syncCctvDraftFromFields(prev);
+    this.setAttribute("data-prev-id",this.value);
+    updateFacilityDetail();
+  });
   el("settingsOverlay").addEventListener("click",function(e){if(e.target===el("settingsOverlay"))closeSettings();});
 
   el("soundEnableBtn").addEventListener("click",function(){
@@ -2808,13 +3232,10 @@
 
   el("alarmTestBtn").addEventListener("click",function(){
     ensureAudio(true).then(function(){
-      showAlarm({
-        time:seoulTimeKey(new Date()),
-        title:"점심 시간입니다",
-        message:"맛점하세요.",
-        audio:"lunch.mp3?v=4.1",
-        icon:"🍚"
-      },true);
+      var sample=null;
+      for(var i=0;i<ALARMS.length;i++)if(ALARMS[i].enabled!==false){sample=ALARMS[i];break;}
+      if(!sample)sample={time:seoulTimeKey(new Date()),title:"사용자 알람 테스트",message:"설정된 알람이 없어서 기본 차임을 재생합니다.",sound:"chime",icon:"🔔"};
+      showAlarm(sample,true);
     });
   });
 
