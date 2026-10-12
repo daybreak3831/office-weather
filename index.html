@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 날씨 전광판 · v4.4 후보</title>
+  <title>창원시설공단 날씨 전광판 · v4.5 후보</title>
 
   <style>
     :root{
@@ -1337,7 +1337,7 @@
     .settings-section-note{color:rgba(220,236,255,.65);font-size:clamp(9px,1.02vh,12px);line-height:1.5}
     .alarm-editor-list{display:flex;flex-direction:column;gap:.72vh;max-height:36vh;overflow:auto;padding-right:.25vw}
     .alarm-editor-row{
-      display:grid;grid-template-columns:42px 110px 145px minmax(130px,.8fr) minmax(180px,1.4fr) 88px 70px;
+      display:grid;grid-template-columns:42px 100px 130px 82px minmax(120px,.8fr) minmax(160px,1.4fr) 78px 70px;
       gap:.5vw;align-items:center;padding:.72vh .58vw;border:1px solid rgba(255,255,255,.12);
       border-radius:1vh;background:rgba(0,0,0,.12);
     }
@@ -1377,11 +1377,11 @@
     .alarm-overlay{z-index:22000}
     .settings-input::placeholder{color:rgba(210,222,236,.46);opacity:1}
     .alarm-field-guide{
-      display:grid;grid-template-columns:42px 110px 145px minmax(130px,.8fr) minmax(180px,1.4fr) 88px 70px;
+      display:grid;grid-template-columns:42px 100px 130px 82px minmax(120px,.8fr) minmax(160px,1.4fr) 78px 70px;
       gap:.5vw;align-items:end;margin:0 0 .42vh;padding:0 .58vw;
       color:rgba(211,227,244,.56);font-size:clamp(8px,.92vh,11px);font-weight:800;
     }
-    .alarm-field-guide span:nth-child(4),.alarm-field-guide span:nth-child(5){padding-left:.1vw}
+    .alarm-field-guide span:nth-child(5),.alarm-field-guide span:nth-child(6){padding-left:.1vw}
     .cctv-register-grid{display:grid;grid-template-columns:minmax(180px,.7fr) minmax(300px,1.6fr);gap:.8vh .8vw}
     .cctv-register-note{margin-top:.6vh;color:rgba(220,236,255,.62);font-size:clamp(9px,1vh,12px);line-height:1.5}
     .info-list{display:flex;flex-direction:column;gap:.62vh;max-height:47vh;overflow:auto;padding-right:.2vw}
@@ -1568,7 +1568,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.4 후보</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.5 후보</span></div>
   </footer>
 
 </main>
@@ -1643,12 +1643,12 @@
         <div class="settings-section-head">
           <div>
             <div class="settings-section-title">🔔 사용자 시간 알람</div>
-            <div class="settings-section-note">점심·퇴근에 한정하지 않고 원하는 알람을 최대 10개까지 등록할 수 있습니다.</div>
+            <div class="settings-section-note">원하는 알람을 최대 10개까지 등록할 수 있습니다. 알람별 재생 횟수는 1~10회이며, 알람음 사이에 1초 쉬고 반복합니다. 닫기를 누르면 반복이 멈춥니다.</div>
           </div>
           <button id="alarmAddBtn" class="settings-action" type="button">＋ 알람 추가</button>
         </div>
         <div class="alarm-field-guide" aria-hidden="true">
-          <span>사용</span><span>시간</span><span>알람음</span><span>알람 제목</span><span>알람 내용</span><span>요일</span><span>동작</span>
+          <span>사용</span><span>시간</span><span>알람음</span><span>재생 횟수</span><span>알람 제목</span><span>알람 내용</span><span>요일</span><span>동작</span>
         </div>
         <div id="alarmEditorList" class="alarm-editor-list"></div>
         <div class="alarm-add-line">
@@ -1721,7 +1721,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v4.4 후보</div><div class="info-version-text">2026-10-07 · 창원시 공식 CCTV 143개 좌표와 등록 사업장 29곳의 최단 직선거리 대조 · 스트림 확인 완료 28곳 기본 CCTV 자동 등록 · 상복공원 최인접 CCTV는 재생목록 오류로 자동 등록 보류 · 기존 사용자 CCTV 설정 우선 적용 유지.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v4.5 후보</div><div class="info-version-text">2026-10-12 · 사용자 시간 알람별 알람음 재생 횟수(1~10회) 설정 추가 · 테스트에도 횟수 적용 · 알람 닫기 및 새 알람 발생 시 이전 반복 중단 · 반복 종료까지 알람창 유지 · 기존 알람은 1회로 자동 승계.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.4 후보</div><div class="info-version-text">2026-10-07 · 창원시 공식 CCTV 143개 좌표와 등록 사업장 29곳의 최단 직선거리 대조 · 스트림 확인 완료 28곳 기본 CCTV 자동 등록 · 상복공원 최인접 CCTV는 재생목록 오류로 자동 등록 보류 · 기존 사용자 CCTV 설정 우선 적용 유지.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.2</div><div class="info-version-text">설정을 일반/알람/로그 탭으로 분리하고, 최대 10개의 사용자 시간 알람과 기상경보 기준 사용자 설정, 알림 발생 로그 기능을 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.1</div><div class="info-version-text">폭염 및 호우 경보 기준 감지와 화면 경고 효과, 테스트 기능을 추가.</div></div>
@@ -1776,7 +1777,7 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    v4.4 후보: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
+    v4.5 후보: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -2010,8 +2011,8 @@
       "lat": 35.2071,
       "lon": 128.663,
       "distanceMeters": 1591,
-      "stream": "https://utis.changwon.go.kr/live2/video122.stream/playlist.m3u8",
-      "verified": true
+      "stream": "https://utis.changwon.go.kr/live/video64.stream/playlist.m3u8",
+      "verified": false
     }
   },
   {
@@ -2379,10 +2380,14 @@
   var SETTINGS_KEY="cwsisulOfficeWeatherV4";
   var LOG_KEY="cwsisulOfficeWeatherV4Logs";
   var MAX_CUSTOM_ALARMS=10;
+  var MAX_ALARM_REPEAT_COUNT=10;
+  var alarmRepeatTimer=null;
+  var timeAlarmNodes=[];
+  var collectingTimeAlarmNodes=false;
   var KMA_DEFAULTS={heatThreshold:35,heatConsecutiveDays:2,heavyRain3h:90,heavyRain12h:180};
   var DEFAULT_CUSTOM_ALARMS=[
-    {id:"default_lunch",enabled:true,time:"11:40",sound:"chime",title:"점심 시간입니다",message:"맛점하세요.",weekdaysOnly:true},
-    {id:"default_leave",enabled:true,time:"18:00",sound:"chime",title:"업무 종료 시간입니다",message:"고생하셨습니다.",weekdaysOnly:true}
+    {id:"default_lunch",enabled:true,time:"11:40",sound:"chime",repeatCount:1,title:"점심 시간입니다",message:"맛점하세요.",weekdaysOnly:true},
+    {id:"default_leave",enabled:true,time:"18:00",sound:"chime",repeatCount:1,title:"업무 종료 시간입니다",message:"고생하셨습니다.",weekdaysOnly:true}
   ];
   var SETTINGS_DEFAULTS={
     district:"마산회원구",facilityId:"ncpark",
@@ -2481,7 +2486,7 @@
   }
 
   function cloneAlarm(a){
-    return {id:a.id,enabled:a.enabled!==false,time:a.time,sound:a.sound,title:a.title,message:a.message,weekdaysOnly:a.weekdaysOnly!==false};
+    return {id:a.id,enabled:a.enabled!==false,time:a.time,sound:a.sound,repeatCount:normalizeAlarmRepeatCount(a.repeatCount),title:a.title,message:a.message,weekdaysOnly:a.weekdaysOnly!==false};
   }
 
   function defaultAlarmCopies(){
@@ -2493,6 +2498,12 @@
     var p=v.split(":");return Number(p[0])>=0&&Number(p[0])<=23&&Number(p[1])>=0&&Number(p[1])<=59;
   }
 
+  function normalizeAlarmRepeatCount(value){
+    var count=Number(value);
+    if(!isFinite(count)||value==null||value==="")return 1;
+    return Math.max(1,Math.min(MAX_ALARM_REPEAT_COUNT,Math.floor(count)));
+  }
+
   function normalizeAlarm(raw,index){
     raw=raw||{};
     var allowedSounds=["chime","soft","alert","none"];
@@ -2501,6 +2512,7 @@
       enabled:raw.enabled!==false,
       time:validTime(raw.time)?raw.time:"09:00",
       sound:allowedSounds.indexOf(raw.sound)>=0?raw.sound:"chime",
+      repeatCount:normalizeAlarmRepeatCount(raw.repeatCount),
       title:(raw.title==null?"":String(raw.title)).slice(0,40),
       message:(raw.message==null?"":String(raw.message)).slice(0,100),
       weekdaysOnly:raw.weekdaysOnly!==false
@@ -2738,6 +2750,7 @@
         enabled:r.querySelector(".alarm-enabled").checked,
         time:r.querySelector(".alarm-time-input").value,
         sound:r.querySelector(".alarm-sound-input").value,
+        repeatCount:r.querySelector(".alarm-repeat-input").value,
         title:r.querySelector(".alarm-title-input").value,
         message:r.querySelector(".alarm-message-input").value,
         weekdaysOnly:r.querySelector(".alarm-weekday-input").checked
@@ -2758,6 +2771,10 @@
       var time=document.createElement("input");time.type="time";time.className="settings-input alarm-time-input";time.value=a.time;
       var sound=document.createElement("select");sound.className="settings-input alarm-sound-input";
       [["chime","기본 차임"],["soft","부드러운 벨"],["alert","짧은 경보"],["none","무음"]].forEach(function(o){var op=document.createElement("option");op.value=o[0];op.textContent=o[1];if(a.sound===o[0])op.selected=true;sound.appendChild(op);});
+      var repeat=document.createElement("select");repeat.className="settings-input alarm-repeat-input";repeat.setAttribute("aria-label","알람음 재생 횟수");repeat.title="이 알람이 울릴 때 알람음을 재생하는 횟수";
+      for(var repeatIndex=1;repeatIndex<=MAX_ALARM_REPEAT_COUNT;repeatIndex++){var repeatOption=document.createElement("option");repeatOption.value=String(repeatIndex);repeatOption.textContent=repeatIndex+"회";repeatOption.selected=repeatIndex===normalizeAlarmRepeatCount(a.repeatCount);repeat.appendChild(repeatOption);}
+      repeat.disabled=a.sound==="none";
+      sound.addEventListener("change",function(){repeat.disabled=sound.value==="none";});
       var title=document.createElement("input");title.type="text";title.maxLength=40;title.className="settings-input alarm-title-input";title.value=a.title;title.placeholder="알람 제목";
       var msg=document.createElement("input");msg.type="text";msg.maxLength=100;msg.className="settings-input alarm-message-input";msg.value=a.message;msg.placeholder="알람 내용";
       var wk=document.createElement("label");wk.className="alarm-weekday-wrap";wk.title="토·일 제외";
@@ -2768,7 +2785,7 @@
       var del=document.createElement("button");del.type="button";del.className="alarm-mini-btn delete";del.textContent="✕";del.title="삭제";
       del.addEventListener("click",function(){syncAlarmDraftsFromDom();settingsAlarmDrafts.splice(index,1);renderAlarmEditor();});
       acts.appendChild(test);acts.appendChild(del);
-      row.appendChild(en);row.appendChild(time);row.appendChild(sound);row.appendChild(title);row.appendChild(msg);row.appendChild(wk);row.appendChild(acts);list.appendChild(row);
+      row.appendChild(en);row.appendChild(time);row.appendChild(sound);row.appendChild(repeat);row.appendChild(title);row.appendChild(msg);row.appendChild(wk);row.appendChild(acts);list.appendChild(row);
     });
     el("alarmCountLabel").textContent=settingsAlarmDrafts.length+" / "+MAX_CUSTOM_ALARMS+"개 등록";
     el("alarmAddBtn").disabled=settingsAlarmDrafts.length>=MAX_CUSTOM_ALARMS;
@@ -2833,7 +2850,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 날씨 전광판 · v4.4 후보";
+    document.title=f.name+" 날씨 전광판 · v4.5 후보";
 
     var activeCctv=effectiveCctvForFacility(f,next);
     CCTV_STREAM_URL=activeCctv&&activeCctv.stream?activeCctv.stream:null;
@@ -3002,7 +3019,7 @@
       {t:2.00,f:1318.51,d:.60}
     ];
 
-    /* 벨소리도 이전보다 조금 더 크게. 알림음은 1회만 재생 */
+    /* 한 회차의 차임 패턴. 반복 횟수는 사용자 시간 알람에서 관리합니다. */
     var CHIME_GAIN=.46;
 
     for(var i=0;i<notes.length;i++){
@@ -3016,6 +3033,7 @@
       gain.gain.exponentialRampToValueAtTime(0.0001,now+n.t+n.d);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
+      trackTimeAlarmNode(osc,gain);
       osc.start(now+n.t);
       osc.stop(now+n.t+n.d+.05);
     }
@@ -3066,7 +3084,7 @@
       gain.gain.setValueAtTime(.0001,now+n.t);
       gain.gain.exponentialRampToValueAtTime((n.g||masterGain||.22),now+n.t+.025);
       gain.gain.exponentialRampToValueAtTime(.0001,now+n.t+n.d);
-      osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now+n.t);osc.stop(now+n.t+n.d+.06);
+      osc.connect(gain);gain.connect(audioCtx.destination);trackTimeAlarmNode(osc,gain);osc.start(now+n.t);osc.stop(now+n.t+n.d+.06);
     }
   }
 
@@ -3076,6 +3094,43 @@
 
   function playShortAlert(){
     playToneSequence([{t:0,f:440,d:.36,g:.23},{t:.48,f:330,d:.48,g:.24},{t:1.08,f:440,d:.28,g:.20}],.22);
+  }
+
+  function trackTimeAlarmNode(source,gain){
+    if(!collectingTimeAlarmNodes)return;
+    var entry={source:source,gain:gain};
+    timeAlarmNodes.push(entry);
+    source.onended=function(){
+      var index=timeAlarmNodes.indexOf(entry);
+      if(index>=0)timeAlarmNodes.splice(index,1);
+      try{source.disconnect();gain.disconnect();}catch(e){}
+    };
+  }
+
+  function stopTimeAlarmRepeats(){
+    if(alarmRepeatTimer!==null){clearTimeout(alarmRepeatTimer);alarmRepeatTimer=null;}
+    var nodes=timeAlarmNodes.slice();timeAlarmNodes=[];
+    for(var i=0;i<nodes.length;i++){
+      try{nodes[i].source.stop();}catch(e){}
+      try{nodes[i].source.disconnect();nodes[i].gain.disconnect();}catch(e){}
+    }
+  }
+
+  function playTimeAlarmRepeats(kind,repeatCount){
+    stopTimeAlarmRepeats();
+    if(kind==="none"||!soundEnabled||!audioCtx)return 0;
+    var count=normalizeAlarmRepeatCount(repeatCount),played=0;
+    var duration=kind==="soft"?1100:kind==="alert"?1500:2800;
+    function playNext(){
+      alarmRepeatTimer=null;
+      if(!soundEnabled||!el("alarmOverlay").classList.contains("active"))return;
+      collectingTimeAlarmNodes=true;
+      try{playAlarmSound(kind);}finally{collectingTimeAlarmNodes=false;}
+      played++;
+      if(played<count)alarmRepeatTimer=setTimeout(playNext,duration+1000);
+    }
+    playNext();
+    return count*duration+(count-1)*1000;
   }
 
   function playAlarmSound(kind){
@@ -3274,12 +3329,14 @@
   }
 
   function hideAlarm(){
+    stopTimeAlarmRepeats();
     var overlay=el("alarmOverlay");
     overlay.classList.remove("active","climate-wind","climate-rain","climate-heat","climate-heavy-rain");
     if(alarmTimer){clearTimeout(alarmTimer);alarmTimer=null;}
   }
 
   function showAlarm(alarm,isTest){
+    stopTimeAlarmRepeats();
     if(alarmTimer)clearTimeout(alarmTimer);
     var overlay=el("alarmOverlay");
     overlay.classList.remove("climate-wind","climate-rain","climate-heat","climate-heavy-rain");
@@ -3291,15 +3348,16 @@
     el("alarmMessage").textContent=(isTest?"[테스트] ":"")+(alarm.message||"설정한 시간이 되었습니다.");
     overlay.classList.add("active");
 
-    /* v4.3: 시간 알람은 사용자가 선택한 내장 알람음을 재생합니다. */
+    /* 사용자 시간 알람은 설정된 횟수로 반복하고 기상 경보는 기존 방식으로 재생합니다. */
+    var repeatDuration=0;
     if(alarm.climateType)playClimateAlertSound();
-    else playAlarmSound(alarm.sound||"chime");
+    else repeatDuration=playTimeAlarmRepeats(alarm.sound||"chime",alarm.repeatCount);
 
     if(!isTest){
       if(alarm.climateType)addLog("기상",alarm.title,alarm.message||"");
       else addLog("시간",alarm.title,(alarm.time||"")+((alarm.message||"")?" · "+alarm.message:""));
     }
-    alarmTimer=setTimeout(hideAlarm,ALARM_SHOW_MS);
+    alarmTimer=setTimeout(hideAlarm,Math.max(ALARM_SHOW_MS,repeatDuration+1000));
   }
 
   function checkAlarms(now){
