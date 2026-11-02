@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 날씨 전광판 · v4.5 CCTV·알람·화면유지 통합</title>
+  <title>창원시설공단 기상정보시스템 · v5.0</title>
 
   <style>
     :root{
@@ -1427,6 +1427,104 @@
       .days{grid-template-columns:repeat(3,1fr)}
       .hourly{grid-template-columns:repeat(5,1fr)}
     }
+
+    /* v5.0 · 6일 예보 / 일정창 공통 헤더 */
+    .forecast-toolbar{display:grid;grid-template-columns:minmax(90px,1fr) auto minmax(120px,1fr);align-items:center;gap:.5vw;min-height:3.4vh;margin-bottom:.6vh}
+    .forecast-toolbar .section-title{text-align:center;margin:0;white-space:nowrap}
+    .forecast-switches{display:flex;align-items:center;justify-content:flex-end;gap:.3vw}
+    .forecast-action{border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:.42vh .5vw;background:rgba(4,24,48,.2);color:#e8f5ff;font:inherit;font-weight:800;font-size:clamp(10px,1.16vh,15px);white-space:nowrap;cursor:pointer;min-height:30px}
+    .forecast-action:hover,.forecast-action:focus-visible{background:rgba(120,194,255,.22);outline:1px solid rgba(178,225,255,.45)}
+    .forecast-action.active{background:rgba(95,191,255,.30);border-color:rgba(142,220,255,.7);color:#fff;box-shadow:0 0 12px rgba(81,163,245,.2)}
+    .schedule-add-button{justify-self:start}
+    .switch-arrow{font-size:clamp(11px,1.35vh,17px);min-width:29px}
+    .forecast-view{flex:1;min-height:0;min-width:0;display:none}
+    .forecast-view.active{display:flex;flex-direction:column}
+    .forecast-view[hidden]{display:none!important}
+    .forecast-view .days{flex:1}
+    .schedule-view{gap:.5vh;overflow:hidden}
+    .schedule-summary{display:flex;justify-content:space-between;gap:1vw;align-items:center;color:rgba(222,238,255,.78);font-size:clamp(9px,1.08vh,12px);padding:0 .3vw}
+    .schedule-summary span:last-child{color:rgba(222,238,255,.55)}
+    .schedule-items{flex:1;min-height:0;display:flex;flex-direction:column;gap:.52vh;overflow:auto;padding:.1vh .25vw .3vh;scrollbar-width:thin}
+    .schedule-item{display:flex;align-items:center;gap:.7vw;padding:.76vh .8vw;border:1px solid rgba(255,255,255,.15);border-radius:1.1vh;background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));min-height:3.9vh}
+    .schedule-item.done{opacity:.58}
+    .schedule-checkbox{flex:none;width:clamp(18px,2.1vh,24px);height:clamp(18px,2.1vh,24px);accent-color:#6fceef;cursor:pointer}
+    .schedule-item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15vh}
+    .schedule-item-title{font-size:clamp(11px,1.54vh,19px);font-weight:800;white-space:normal;overflow-wrap:anywhere;line-height:1.4}
+    .schedule-item.done .schedule-item-title{text-decoration:line-through}
+    .schedule-item-meta{font-size:clamp(9px,1.05vh,13px);color:#cfdef3}
+    .schedule-item-bell{flex:none;font-size:clamp(13px,1.55vh,20px)}
+    .schedule-empty{margin:auto;text-align:center;color:rgba(238,247,255,.72);font-size:clamp(12px,1.55vh,20px);line-height:1.7}
+    .schedule-modal{z-index:18000}
+    .schedule-modal-card{width:min(850px,95vw);max-height:94vh;overflow:auto}
+    .schedule-form{display:flex;flex-direction:column;gap:1vh;padding:1.3vh 1.1vw;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:1.2vh}
+    .schedule-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1vh .8vw}
+    .schedule-form-bottom{display:flex;align-items:end;gap:1.5vw;flex-wrap:wrap}
+    .schedule-repeat-count{width:130px}
+    .schedule-form-note,.schedule-form-feedback{color:rgba(220,237,255,.7);font-size:12px;line-height:1.5}
+    .schedule-form-feedback{min-height:1em;color:#bde8ff}
+    .schedule-form-actions{display:flex;gap:.5vw;justify-content:flex-end}
+    .schedule-editor-head{display:flex;justify-content:space-between;align-items:center;margin:1.7vh .3vw .7vh;font-size:14px}
+    .schedule-editor-list{display:flex;flex-direction:column;gap:.55vh;max-height:22vh;overflow:auto;scrollbar-width:thin}
+    .schedule-editor-entry{display:flex;align-items:center;gap:8px;min-width:0;padding:.7vh .8vw;background:rgba(255,255,255,.055);border-radius:9px;border:1px solid rgba(255,255,255,.10)}
+    .schedule-editor-copy{flex:1;min-width:0;line-height:1.4}
+    .schedule-editor-copy strong{display:block;overflow-wrap:anywhere;font-size:13px}
+    .schedule-editor-copy small{display:block;color:#bdcee4;font-size:11px}
+    .schedule-editor-entry .settings-action{flex:none;padding:6px 9px}
+
+    /* v5.0 · 모바일은 읽기 위주의 한 열 레이아웃으로 간소화 */
+    @media(max-width:760px){
+      html,body{width:100%;height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+      .app{width:100%;height:auto;min-height:100dvh;padding:12px;display:flex;flex-direction:column;gap:12px;overflow:visible}
+      .topbar{display:flex;align-items:flex-start;gap:8px;padding:2px 1px}
+      .place{font-size:16px;white-space:normal}
+      .subplace{font-size:10px;white-space:normal;line-height:1.4}
+      .topbar-right{display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px}
+      .datetime{text-align:right}.date{font-size:10px}.clock{font-size:22px}
+      .settings-open-btn{padding:7px 10px;font-size:12px}
+      .main{display:flex;flex-direction:column;gap:12px}
+      .panel{border-radius:14px}
+      .current-panel{padding:18px 12px 14px;min-height:280px;gap:12px}
+      .hero{gap:8px;justify-content:center}
+      .weather-art{width:100px;height:100px}
+      .temp{font-size:56px}.condition{font-size:21px}.feels,.range{font-size:12px}
+      .heat-warning-badge{font-size:10px;white-space:normal}
+      .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      .metric{padding:10px 7px;border-radius:10px}.metric-label{font-size:11px}.metric-value{font-size:18px}.metric-sub{font-size:10px}
+      .forecast-panel{padding:12px;min-height:315px}
+      .forecast-toolbar{min-height:36px;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+      .forecast-toolbar .section-title{order:-1;text-align:left;font-size:16px;grid-column:1/-1}
+      .schedule-add-button{grid-column:1;grid-row:2}.forecast-switches{grid-column:2;grid-row:2;gap:5px}
+      .forecast-action{font-size:11px;min-height:31px;padding:5px 8px}
+      .days{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+      .day{padding:10px 4px;min-height:105px;border-radius:10px}
+      .day-name{font-size:11px}.day-icon{font-size:29px;margin:8px 0}.day-temp{font-size:12px}.day-rain{font-size:10px}
+      .schedule-items{max-height:290px;min-height:190px;gap:7px}
+      .schedule-item{padding:10px;gap:10px;border-radius:10px}
+      .schedule-item-title{font-size:14px}.schedule-item-meta{font-size:11px}
+      .schedule-summary{font-size:11px;gap:8px}.schedule-summary span:last-child{display:none}
+      .hourly-panel{padding:12px;min-height:300px;border-radius:14px}
+      .hourly-title{font-size:15px;margin:0 0 8px}
+      .hourly{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+      .hour{min-height:108px;padding:8px 2px;border-radius:9px}.hour-time{font-size:10px}.hour-icon{font-size:24px}.hour-temp{font-size:13px}.hour-rain{font-size:10px}
+      .footer{font-size:10px;white-space:normal;gap:6px;flex-direction:column;align-items:flex-start;padding:2px}
+      .footer>div:last-child{font-size:9px}
+      .climate-test-controls,.alarm-controls{display:none}
+      .settings-overlay{padding:8px;align-items:center}
+      .settings-card{width:100%;max-height:94dvh;padding:14px;border-radius:14px}
+      .settings-head{gap:9px}.settings-title{font-size:18px}.settings-subtitle{font-size:11px}
+      .settings-tabs{gap:4px}.settings-tab{padding:9px 3px;font-size:11px}
+      .settings-grid,.schedule-form-grid,.cctv-register-grid{grid-template-columns:1fr}
+      .settings-field.full{grid-column:auto}
+      .alarm-editor-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+      .alarm-editor-row .alarm-title-input,.alarm-editor-row .alarm-message-input{grid-column:1/-1}
+      .alarm-editor-row .alarm-enabled-wrap,.alarm-editor-row .alarm-weekday-wrap{justify-content:flex-start}
+      .climate-threshold-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .log-entry{grid-template-columns:90px 55px minmax(0,1fr);gap:5px}
+      .schedule-form{padding:12px;gap:9px}.schedule-repeat-count{width:110px}
+      .schedule-editor-list{max-height:30dvh}.schedule-editor-entry{flex-wrap:wrap}
+      .cctv-pip{width:95vw;height:50dvh;min-height:260px;right:2.5vw;bottom:2.5vh}
+    }
+    @media(max-width:365px){.weather-art{width:74px;height:88px}.temp{font-size:46px}.clock{font-size:19px}.forecast-action{padding:5px 6px}}
   </style>
 </head>
 
@@ -1554,8 +1652,17 @@
       </div>
     </article>
 
-    <article class="panel forecast-panel">
-      <h2 class="section-title">6일 예보</h2>
+    <article class="panel forecast-panel" aria-label="6일 예보 및 일정창">
+      <div class="forecast-toolbar">
+        <button id="scheduleOpenBtn" class="forecast-action schedule-add-button" type="button" title="일정 추가 및 관리">＋ 일정추가</button>
+        <h2 id="forecastViewTitle" class="section-title">6일 예보</h2>
+        <div class="forecast-switches" aria-label="화면 전환 도구">
+          <button id="forecastAutoBtn" class="forecast-action active" type="button" aria-pressed="true" title="설정된 주기로 자동 전환">AUTO</button>
+          <button id="forecastPrevBtn" class="forecast-action switch-arrow" type="button" aria-label="이전 화면">◀</button>
+          <button id="forecastNextBtn" class="forecast-action switch-arrow" type="button" aria-label="다음 화면">▶</button>
+        </div>
+      </div>
+      <div id="forecastWeatherView" class="forecast-view active" aria-hidden="false">
       <div id="days" class="days">
         <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
         <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
@@ -1563,6 +1670,11 @@
         <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
         <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
         <div class="day"><div class="day-name">--</div><div class="day-icon">·</div><div class="day-temp">-- / --</div><div class="day-rain">강수 --%</div></div>
+      </div>
+      </div>
+      <div id="forecastScheduleView" class="forecast-view schedule-view" aria-hidden="true" hidden>
+        <div class="schedule-summary"><span id="scheduleCount">등록된 일정 0건</span><span id="scheduleViewHint">일정을 등록하면 이곳에 표시됩니다.</span></div>
+        <div id="scheduleItems" class="schedule-items" aria-live="polite"></div>
       </div>
     </article>
 
@@ -1578,7 +1690,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v4.5 CCTV·알람·화면유지 통합</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.0</span></div>
   </footer>
 
 </main>
@@ -1661,6 +1773,19 @@
         <div id="settingKeepAwakeStatus" class="settings-section-note" style="margin-top:.75vh">기본값 ON · 일부 TV 자체 운영체제의 강제 화면보호기는 브라우저에서 완전히 차단하지 못할 수 있습니다.</div>
       </div>
 
+      <div class="settings-section">
+        <div class="settings-section-head"><div>
+          <div class="settings-section-title">📅 6일 예보 · 일정창 자동 전환</div>
+          <div class="settings-section-note">자동 전환 버튼을 누르면 지정한 시간만큼 두 화면을 번갈아 표시합니다. ◀ ▶ 버튼을 누르면 수동 모드로 바뀝니다.</div>
+        </div></div>
+        <div class="settings-toggles">
+          <label class="settings-toggle"><input id="settingForecastAutoEnabled" type="checkbox" checked><span class="settings-toggle-label">자동 전환 기본 사용</span></label>
+        </div>
+        <div class="settings-grid" style="margin-top:1vh">
+          <div class="settings-field"><label for="settingForecastSeconds">6일 예보 표시 시간 (초)</label><select id="settingForecastSeconds" class="settings-input"><option value="10">10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option><option value="60" selected>60초</option><option value="90">90초</option><option value="120">120초</option></select></div>
+          <div class="settings-field"><label for="settingScheduleSeconds">일정창 표시 시간 (초)</label><select id="settingScheduleSeconds" class="settings-input"><option value="10">10초</option><option value="20">20초</option><option value="30" selected>30초</option><option value="40">40초</option><option value="50">50초</option><option value="60">60초</option><option value="90">90초</option><option value="120">120초</option></select></div>
+        </div>
+      </div>
       <div class="settings-hint-box">설정은 각 TV/브라우저에 개별 저장됩니다. 같은 웹주소를 여러 사업장에서 사용해도 각 사업장의 설정은 서로 영향을 주지 않습니다.</div>
     </div>
 
@@ -1747,7 +1872,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v4.5 CCTV·알람·화면유지 통합</div><div class="info-version-text">2026-10-13 · 설정 &gt; 일반에 TV 화면 절전 방지 기능 추가 · 지원 브라우저에서는 Screen Wake Lock을 요청하고, 초저부하 무음 영상 반복재생을 보조 방식으로 함께 사용 · 화면 복귀 시 Wake Lock 자동 재획득 · OFF 시 화면 유지 기능 즉시 해제.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v5.0</div><div class="info-version-text">2026-11-01 · 모바일 세로형 반응형 레이아웃 · 6일 예보/일정창 AUTO 및 수동 전환 · 일정·공지 등록/수정/삭제/완료 표시 · 날짜·반복·알람 기능 · 사업장별 브라우저 로컬 저장.</div></div>
+          <div class="info-version"><div class="info-version-tag">v4.5</div><div class="info-version-text">2026-10-13 · 설정 &gt; 일반에 TV 화면 절전 방지 기능 추가 · 지원 브라우저에서는 Screen Wake Lock을 요청하고, 초저부하 무음 영상 반복재생을 보조 방식으로 함께 사용 · 화면 복귀 시 Wake Lock 자동 재획득 · OFF 시 화면 유지 기능 즉시 해제.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.4 CCTV·알람 통합</div><div class="info-version-text">창원시 공식 CCTV 143개 좌표와 등록 사업장 29곳의 최단 직선거리 대조 · 스트림 확인 완료 28곳 기본 CCTV 자동 등록 · 상복공원 최인접 CCTV는 재생목록 오류로 자동 등록 보류 · 기존 사용자 CCTV 설정 우선 적용 유지 · 사용자 시간 알람별 1~5회 반복 설정 및 테스트·로그 반영.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.2</div><div class="info-version-text">설정을 일반/알람/로그 탭으로 분리하고, 최대 10개의 사용자 시간 알람과 기상경보 기준 사용자 설정, 알림 발생 로그 기능을 추가.</div></div>
@@ -1769,6 +1895,40 @@
       <button id="settingsSaveBtn" class="settings-action primary" type="button">설정 저장</button>
     </div>
     <div class="settings-save-note">변경한 설정은 현재 TV/브라우저에 저장되며 다른 사업장의 설정에는 영향을 주지 않습니다.</div>
+  </section>
+</div>
+
+<div id="scheduleModal" class="settings-overlay schedule-modal" aria-hidden="true">
+  <section class="settings-card schedule-modal-card" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
+    <div class="settings-head">
+      <div><div id="scheduleModalTitle" class="settings-title">📅 일정추가 · 일정관리</div>
+      <div class="settings-subtitle">공지사항과 일정을 관리합니다. 등록 내용은 현재 브라우저의 선택 사업장에만 저장됩니다.</div></div>
+      <button id="scheduleModalCloseBtn" class="settings-x" type="button" aria-label="일정창 닫기">✕</button>
+    </div>
+    <form id="scheduleForm" class="schedule-form">
+      <input id="scheduleEditId" type="hidden">
+      <div class="settings-field full"><label for="scheduleTitleInput">일정 또는 공지사항 내용</label>
+        <input id="scheduleTitleInput" class="settings-input" type="text" maxlength="140" placeholder="예: 기계실 정기점검 / 동절기 시설물 점검 안내" required></div>
+      <div class="schedule-form-grid">
+        <div class="settings-field"><label for="scheduleDateInput">날짜 (공지사항은 생략)</label><input id="scheduleDateInput" class="settings-input" type="date"></div>
+        <div class="settings-field"><label for="scheduleTimeInput">시간 (선택)</label><input id="scheduleTimeInput" class="settings-input" type="time"></div>
+        <div class="settings-field"><label for="scheduleRepeatInput">반복</label><select id="scheduleRepeatInput" class="settings-input"><option value="none">반복 없음</option><option value="daily">매일</option><option value="weekdays">평일 (월~금)</option></select></div>
+        <div class="settings-field"><label for="scheduleSoundInput">알람음</label><select id="scheduleSoundInput" class="settings-input"><option value="chime">기본 차임</option><option value="soft">부드러운 벨</option><option value="alert">짧은 경보</option><option value="none">무음 (화면만)</option></select></div>
+      </div>
+      <div class="schedule-form-bottom">
+        <label class="settings-toggle"><input id="scheduleAlarmEnabled" type="checkbox"><span class="settings-toggle-label">지정 시간 알람 사용</span></label>
+        <div class="settings-field schedule-repeat-count"><label for="scheduleRepeatCount">알람 반복</label><select id="scheduleRepeatCount" class="settings-input"><option value="1">1회</option><option value="2" selected>2회</option><option value="3">3회</option><option value="4">4회</option><option value="5">5회</option></select></div>
+      </div>
+      <div class="schedule-form-note">일회성 알람은 날짜·시간을 모두 지정해야 합니다. 반복 알람은 시작일을 생략할 수 있으며, 완료된 일정의 알람은 울리지 않습니다.</div>
+      <div class="schedule-form-actions">
+        <button id="scheduleClearBtn" class="settings-action" type="button">입력 초기화</button>
+        <button id="scheduleSaveBtn" class="settings-action primary" type="submit">＋ 일정 등록</button>
+      </div>
+      <div id="scheduleFormFeedback" class="schedule-form-feedback" role="status"></div>
+    </form>
+    <div class="schedule-editor-head"><strong>등록된 일정</strong><span id="scheduleModalCount">0건</span></div>
+    <div id="scheduleEditorList" class="schedule-editor-list"></div>
+    <div class="settings-save-note">다른 PC·TV·휴대전화와 자동 동기화되지 않습니다. 알람은 웹페이지가 열린 상태에서만 실행됩니다.</div>
   </section>
 </div>
 
@@ -1803,7 +1963,7 @@
     <button id="cctvCloseBtn" class="cctv-head-btn" type="button" title="닫기">✕</button>
   </div>
   <div class="cctv-pip-note">
-    v4.5 CCTV·알람·화면유지 통합: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결 · TV 화면 유지</strong>
+    v5.0: <strong>사업장별 CCTV 연동 · 자동재생 · 지연 감지 · 자동 재연결 · TV 화면 유지</strong>
   </div>
   <div class="cctv-frame-wrap">
     <video id="cctvVideo" class="cctv-video" controls autoplay muted playsinline preload="auto"></video>
@@ -2405,6 +2565,12 @@
 
   var SETTINGS_KEY="cwsisulOfficeWeatherV4";
   var LOG_KEY="cwsisulOfficeWeatherV4Logs";
+  var SCHEDULE_KEY_PREFIX="cwsisulOfficeWeatherV5Schedules:";
+  var scheduleItems=[];
+  var forecastAutoEnabled=true;
+  var activeForecastView="weather";
+  var forecastViewStartedAt=Date.now();
+  var scheduleAlertQueue=[];
   var MAX_CUSTOM_ALARMS=10;
   var KMA_DEFAULTS={heatThreshold:35,heatConsecutiveDays:2,heavyRain3h:90,heavyRain12h:180};
   var DEFAULT_CUSTOM_ALARMS=[
@@ -2414,6 +2580,7 @@
   var SETTINGS_DEFAULTS={
     district:"마산회원구",facilityId:"ncpark",
     keepAwakeEnabled:true,
+    forecastAutoEnabled:true,forecastSeconds:60,scheduleSeconds:30,
     customAlarms:DEFAULT_CUSTOM_ALARMS,
     windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true,
     heatThreshold:35,heatConsecutiveDays:2,heatAlertEnabled:true,
@@ -2546,6 +2713,7 @@
     var s={
       district:SETTINGS_DEFAULTS.district,facilityId:SETTINGS_DEFAULTS.facilityId,
       keepAwakeEnabled:true,
+      forecastAutoEnabled:true,forecastSeconds:60,scheduleSeconds:30,
       cctvOverrides:{},
       customAlarms:defaultAlarmCopies(),
       windThreshold:SETTINGS_DEFAULTS.windThreshold,windAlertEnabled:true,rainAlertEnabled:true,
@@ -2585,6 +2753,9 @@
     if(isFinite(hr12)&&hr12>=20&&hr12<=500)s.heavyRain12h=Math.round(hr12*10)/10;
 
     if(typeof raw.keepAwakeEnabled==="boolean")s.keepAwakeEnabled=raw.keepAwakeEnabled;
+    if(typeof raw.forecastAutoEnabled==="boolean")s.forecastAutoEnabled=raw.forecastAutoEnabled;
+    if([10,20,30,40,50,60,90,120].indexOf(Number(raw.forecastSeconds))>=0)s.forecastSeconds=Number(raw.forecastSeconds);
+    if([10,20,30,40,50,60,90,120].indexOf(Number(raw.scheduleSeconds))>=0)s.scheduleSeconds=Number(raw.scheduleSeconds);
     if(typeof raw.windAlertEnabled==="boolean")s.windAlertEnabled=raw.windAlertEnabled;
     if(typeof raw.rainAlertEnabled==="boolean")s.rainAlertEnabled=raw.rainAlertEnabled;
     if(typeof raw.heatAlertEnabled==="boolean")s.heatAlertEnabled=raw.heatAlertEnabled;
@@ -2759,6 +2930,9 @@
     el("settingHeatEnabled").checked=!!s.heatAlertEnabled;
     el("settingHeavyRainEnabled").checked=!!s.heavyRainAlertEnabled;
     el("settingKeepAwakeEnabled").checked=s.keepAwakeEnabled!==false;
+    el("settingForecastAutoEnabled").checked=s.forecastAutoEnabled!==false;
+    el("settingForecastSeconds").value=String(s.forecastSeconds);
+    el("settingScheduleSeconds").value=String(s.scheduleSeconds);
     updateKeepAwakeStatus();
   }
 
@@ -2850,6 +3024,9 @@
       district:el("settingDistrict").value,facilityId:el("settingFacility").value,
       cctvOverrides:settingsCctvDrafts,
       keepAwakeEnabled:el("settingKeepAwakeEnabled").checked,
+      forecastAutoEnabled:el("settingForecastAutoEnabled").checked,
+      forecastSeconds:Number(el("settingForecastSeconds").value),
+      scheduleSeconds:Number(el("settingScheduleSeconds").value),
       customAlarms:settingsAlarmDrafts,
       windThreshold:Number(el("settingWindThreshold").value),
       heatThreshold:Number(el("settingHeatThreshold").value),heatConsecutiveDays:Number(el("settingHeatDays").value),
@@ -2946,7 +3123,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 날씨 전광판 · v4.5 CCTV·알람·화면유지 통합";
+    document.title=f.name+" 기상정보시스템 · v5.0";
 
     var activeCctv=effectiveCctvForFacility(f,next);
     CCTV_STREAM_URL=activeCctv&&activeCctv.stream?activeCctv.stream:null;
@@ -2957,7 +3134,12 @@
     var link=el("cctvExternalLink");
     if(CCTV_STREAM_URL){link.href=CCTV_STREAM_URL;link.style.display="inline";}else{link.removeAttribute("href");link.style.display="none";}
 
+    forecastAutoEnabled=next.forecastAutoEnabled!==false;
+    updateForecastAutoButton();
+    forecastViewStartedAt=Date.now();
     if(prevId!==f.id){
+      loadFacilitySchedules(f.id);
+      showForecastView("weather",false);
       closeCctvPip();
       climateState.initialized=false;climateState.windy=false;climateState.raining=false;
       climateState.heatWarning=false;climateState.heavyRainWarning=false;climateState.lastWind=0;
@@ -3406,6 +3588,10 @@
     var overlay=el("alarmOverlay");
     overlay.classList.remove("active","climate-wind","climate-rain","climate-heat","climate-heavy-rain");
     if(alarmTimer){clearTimeout(alarmTimer);alarmTimer=null;}
+    if(scheduleAlertQueue.length){
+      var next=scheduleAlertQueue.shift();
+      setTimeout(function(){showAlarm(next,false);},100);
+    }
   }
 
   function showAlarm(alarm,isTest){
@@ -3428,6 +3614,7 @@
 
     if(!isTest){
       if(alarm.climateType)addLog("기상",alarm.title,alarm.message||"");
+      else if(alarm.scheduleAlarm)addLog("일정",alarm.title,(alarm.time||"")+" · "+(alarm.message||""));
       else addLog("시간",alarm.title,(alarm.time||"")+" · 알람 "+Math.max(1,Math.min(5,Math.round(Number(alarm.repeatCount)||2)))+"회"+((alarm.message||"")?" · "+alarm.message:""));
     }
     alarmTimer=setTimeout(hideAlarm,Math.max(ALARM_SHOW_MS,soundTotalMs+1200));
@@ -3469,6 +3656,8 @@
     el("date").textContent=dateFmt.format(now);
     el("clock").textContent=timeFmt.format(now);
     checkAlarms(now);
+    checkScheduleAlarms(now);
+    tickForecastAuto();
   }
 
   function currentHourIndex(times){
@@ -3851,6 +4040,236 @@
 
     layer.innerHTML=html;
   }
+
+
+  /* ----------------------------------------------------
+     v5.0 · 사업장별 일정 저장/전환/알람
+     기존 V4 설정 키를 유지해 v4.5 개인 설정을 보존합니다.
+     ---------------------------------------------------- */
+  function scheduleStorageKey(){
+    return SCHEDULE_KEY_PREFIX+(CURRENT_FACILITY?CURRENT_FACILITY.id:SETTINGS_DEFAULTS.facilityId);
+  }
+  function localDateTimeParts(now){
+    var dt=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(now);
+    var r={};dt.forEach(function(p){r[p.type]=p.value;});
+    return {date:r.year+"-"+r.month+"-"+r.day,time:r.hour+":"+r.minute,weekday:r.weekday};
+  }
+  function validScheduleDate(value){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value||""))return false;
+    var d=new Date(value+"T00:00:00Z");return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;
+  }
+  function normalizeScheduleEntry(raw){
+    if(!raw||typeof raw!=="object")return null;
+    var title=String(raw.title==null?"":raw.title).trim().slice(0,140);
+    if(!title)return null;
+    var date=validScheduleDate(raw.date)?raw.date:"";
+    var time=validTime(raw.time)?raw.time:"";
+    var repeat=["none","daily","weekdays"].indexOf(raw.repeat)>=0?raw.repeat:"none";
+    var sound=["chime","soft","alert","none"].indexOf(raw.sound)>=0?raw.sound:"chime";
+    var alarm=raw.alarm===true&&!!time&&(!!date||repeat!=="none");
+    return {
+      id:typeof raw.id==="string"&&raw.id?raw.id.slice(0,80):"item_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),
+      title:title,date:date,time:time,repeat:repeat,sound:sound,
+      repeatCount:Math.max(1,Math.min(5,Math.round(Number(raw.repeatCount)||2))),
+      alarm:alarm,done:raw.done===true,lastFiredKey:typeof raw.lastFiredKey==="string"?raw.lastFiredKey.slice(0,35):""
+    };
+  }
+  function loadFacilitySchedules(){
+    scheduleItems=[];
+    try{
+      var raw=JSON.parse(localStorage.getItem(scheduleStorageKey())||"[]");
+      if(Array.isArray(raw))scheduleItems=raw.slice(0,100).map(normalizeScheduleEntry).filter(Boolean);
+    }catch(e){}
+    renderScheduleItems();renderScheduleEditor();
+  }
+  function saveFacilitySchedules(){
+    try{localStorage.setItem(scheduleStorageKey(),JSON.stringify(scheduleItems));}
+    catch(e){var fb=el("scheduleFormFeedback");if(fb)fb.textContent="저장소가 가득 찼거나 차단되어 일정을 저장하지 못했습니다.";}
+    renderScheduleItems();renderScheduleEditor();
+  }
+  function scheduleMeta(item){
+    var desc=[];
+    if(item.repeat==="daily")desc.push("매일 반복");
+    else if(item.repeat==="weekdays")desc.push("평일 반복");
+    if(item.date)desc.push(item.date+(item.repeat!=="none"?"부터":""));
+    if(item.time)desc.push(item.time);
+    if(!desc.length)desc.push("상시 공지");
+    if(item.done)desc.push("완료");
+    return desc.join(" · ");
+  }
+  function sortedSchedules(){
+    return scheduleItems.slice().sort(function(a,b){
+      if(a.done!==b.done)return a.done?1:-1;
+      if(!!a.date!==!!b.date)return a.date?1:-1;
+      var aSort=(a.date||"9999-99-99")+" "+(a.time||"99:99");
+      var bSort=(b.date||"9999-99-99")+" "+(b.time||"99:99");
+      return aSort.localeCompare(bSort);
+    });
+  }
+  function makeTextEl(tag,className,content){
+    var n=document.createElement(tag);if(className)n.className=className;
+    if(content!=null)n.textContent=content;return n;
+  }
+  function renderScheduleItems(){
+    var list=el("scheduleItems");if(!list)return;
+    list.textContent="";
+    var sorted=sortedSchedules();
+    el("scheduleCount").textContent="등록된 일정 "+sorted.length+"건";
+    if(!sorted.length){
+      var empty=makeTextEl("div","schedule-empty","📅 등록된 일정이 없습니다.\n좌측 '일정추가' 버튼을 눌러 등록하세요.");
+      empty.style.whiteSpace="pre-line";list.appendChild(empty);return;
+    }
+    sorted.forEach(function(item){
+      var row=makeTextEl("div","schedule-item"+(item.done?" done":""));
+      var checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.className="schedule-checkbox";checkbox.checked=!!item.done;
+      checkbox.setAttribute("aria-label",item.title+" 완료 처리");
+      checkbox.addEventListener("change",function(){
+        item.done=checkbox.checked;saveFacilitySchedules();
+      });
+      var body=makeTextEl("div","schedule-item-body");
+      body.appendChild(makeTextEl("div","schedule-item-title",item.title));
+      body.appendChild(makeTextEl("div","schedule-item-meta",scheduleMeta(item)));
+      row.appendChild(checkbox);row.appendChild(body);
+      if(item.alarm&&!item.done)row.appendChild(makeTextEl("span","schedule-item-bell","🔔"));
+      list.appendChild(row);
+    });
+  }
+  function renderScheduleEditor(){
+    var list=el("scheduleEditorList");if(!list)return;
+    list.textContent="";
+    el("scheduleModalCount").textContent=scheduleItems.length+"건";
+    if(!scheduleItems.length){list.appendChild(makeTextEl("div","settings-section-note","등록된 일정이 없습니다."));return;}
+    sortedSchedules().forEach(function(item){
+      var row=makeTextEl("div","schedule-editor-entry");
+      var copy=makeTextEl("div","schedule-editor-copy");
+      copy.appendChild(makeTextEl("strong",null,(item.done?"✓ ":"")+item.title));
+      copy.appendChild(makeTextEl("small",null,scheduleMeta(item)+(item.alarm?" · 🔔 알람":"")));
+      var edit=makeTextEl("button","settings-action","수정");edit.type="button";
+      edit.addEventListener("click",function(){fillScheduleForm(item);});
+      var del=makeTextEl("button","settings-action","삭제");del.type="button";
+      del.addEventListener("click",function(){
+        if(!window.confirm("'"+item.title+"' 일정을 삭제할까요?"))return;
+        scheduleItems=scheduleItems.filter(function(v){return v.id!==item.id;});
+        saveFacilitySchedules();if(el("scheduleEditId").value===item.id)resetScheduleForm();
+      });
+      row.appendChild(copy);row.appendChild(edit);row.appendChild(del);list.appendChild(row);
+    });
+  }
+  function resetScheduleForm(){
+    el("scheduleForm").reset();el("scheduleEditId").value="";
+    el("scheduleRepeatCount").value="2";
+    el("scheduleSaveBtn").textContent="＋ 일정 등록";
+    el("scheduleFormFeedback").textContent="";
+  }
+  function fillScheduleForm(item){
+    el("scheduleEditId").value=item.id;
+    el("scheduleTitleInput").value=item.title;
+    el("scheduleDateInput").value=item.date;
+    el("scheduleTimeInput").value=item.time;
+    el("scheduleRepeatInput").value=item.repeat;
+    el("scheduleSoundInput").value=item.sound;
+    el("scheduleRepeatCount").value=String(item.repeatCount);
+    el("scheduleAlarmEnabled").checked=item.alarm;
+    el("scheduleSaveBtn").textContent="✓ 수정 저장";
+    el("scheduleFormFeedback").textContent="선택한 일정을 수정하는 중입니다.";
+    el("scheduleTitleInput").focus();
+  }
+  function openScheduleModal(){
+    resetScheduleForm();el("scheduleModal").classList.add("open");
+    el("scheduleModal").setAttribute("aria-hidden","false");
+    forecastAutoEnabled=false;updateForecastAutoButton();
+    showForecastView("schedule",false);
+    renderScheduleEditor();
+  }
+  function closeScheduleModal(){el("scheduleModal").classList.remove("open");el("scheduleModal").setAttribute("aria-hidden","true");}
+  function saveScheduleFromForm(evt){
+    if(evt)evt.preventDefault();
+    var id=el("scheduleEditId").value;
+    var item=normalizeScheduleEntry({
+      id:id||undefined,title:el("scheduleTitleInput").value,
+      date:el("scheduleDateInput").value,time:el("scheduleTimeInput").value,
+      repeat:el("scheduleRepeatInput").value,sound:el("scheduleSoundInput").value,
+      repeatCount:Number(el("scheduleRepeatCount").value),alarm:el("scheduleAlarmEnabled").checked
+    });
+    var message=el("scheduleFormFeedback");
+    if(!item){message.textContent="일정 내용을 입력해 주세요.";return;}
+    if(el("scheduleAlarmEnabled").checked&&!item.alarm){
+      message.textContent="알람에는 시간이 필요하며, 반복 없음일 때는 날짜도 입력해야 합니다.";return;
+    }
+    if(!id&&scheduleItems.length>=100){message.textContent="일정은 최대 100건까지 등록할 수 있습니다.";return;}
+    if(id){
+      var idx=scheduleItems.findIndex(function(v){return v.id===id;});
+      if(idx>=0){item.done=scheduleItems[idx].done;item.lastFiredKey=scheduleItems[idx].lastFiredKey;scheduleItems[idx]=item;}
+      else scheduleItems.push(item);
+    }else scheduleItems.push(item);
+    saveFacilitySchedules();resetScheduleForm();
+    message.textContent=id?"일정을 수정했어.":"일정을 등록했어.";
+  }
+  function updateForecastAutoButton(){
+    var btn=el("forecastAutoBtn");if(!btn)return;
+    btn.classList.toggle("active",!!forecastAutoEnabled);
+    btn.setAttribute("aria-pressed",forecastAutoEnabled?"true":"false");
+    btn.title=forecastAutoEnabled?"자동 전환 사용 중 (클릭하면 중지)":"자동 전환 중지 (클릭하면 시작)";
+    btn.textContent=forecastAutoEnabled?"AUTO":"AUTO OFF";
+  }
+  function showForecastView(name,resetTimer){
+    activeForecastView=name==="schedule"?"schedule":"weather";
+    var weather=activeForecastView==="weather";
+    el("forecastWeatherView").classList.toggle("active",weather);
+    el("forecastScheduleView").classList.toggle("active",!weather);
+    el("forecastWeatherView").hidden=!weather;
+    el("forecastScheduleView").hidden=weather;
+    el("forecastWeatherView").setAttribute("aria-hidden",weather?"false":"true");
+    el("forecastScheduleView").setAttribute("aria-hidden",weather?"true":"false");
+    el("forecastViewTitle").textContent=weather?"6일 예보":"공지사항 · 일정";
+    if(resetTimer!==false)forecastViewStartedAt=Date.now();
+  }
+  function switchForecastManually(){
+    forecastAutoEnabled=false;updateForecastAutoButton();
+    showForecastView(activeForecastView==="weather"?"schedule":"weather");
+  }
+  function tickForecastAuto(){
+    if(!forecastAutoEnabled||!CURRENT_SETTINGS)return;
+    if(el("scheduleModal").classList.contains("open")||el("settingsOverlay").classList.contains("open"))return;
+    var seconds=activeForecastView==="weather"?CURRENT_SETTINGS.forecastSeconds:CURRENT_SETTINGS.scheduleSeconds;
+    if(Date.now()-forecastViewStartedAt>=seconds*1000)
+      showForecastView(activeForecastView==="weather"?"schedule":"weather");
+  }
+  function scheduleDue(item,parts){
+    if(item.done||!item.alarm||!item.time||item.time!==parts.time)return false;
+    if(item.date&&parts.date<item.date)return false;
+    if(item.repeat==="none")return item.date===parts.date;
+    if(item.repeat==="weekdays")return parts.weekday!=="Sat"&&parts.weekday!=="Sun";
+    return true;
+  }
+  function checkScheduleAlarms(now){
+    if(!CURRENT_FACILITY||!scheduleItems.length)return;
+    var parts=localDateTimeParts(now);
+    scheduleItems.forEach(function(item){
+      if(!scheduleDue(item,parts))return;
+      var firedKey=parts.date+" "+parts.time;
+      if(item.lastFiredKey===firedKey)return;
+      item.lastFiredKey=firedKey; // 저장하여 새로고침 직후 중복 알람 방지
+      saveFacilitySchedules();
+      var alert={icon:"📅",time:parts.time,title:item.title,message:scheduleMeta(item),sound:item.sound,repeatCount:item.repeatCount,scheduleAlarm:true};
+      if(el("alarmOverlay").classList.contains("active")||scheduleAlertQueue.length){
+        scheduleAlertQueue.push(alert);
+      }else{
+        ensureAudio(false).then(function(){showAlarm(alert,false);});
+      }
+    });
+  }
+  el("scheduleOpenBtn").addEventListener("click",openScheduleModal);
+  el("scheduleModalCloseBtn").addEventListener("click",closeScheduleModal);
+  el("scheduleModal").addEventListener("click",function(e){if(e.target===el("scheduleModal"))closeScheduleModal();});
+  el("scheduleForm").addEventListener("submit",saveScheduleFromForm);
+  el("scheduleClearBtn").addEventListener("click",resetScheduleForm);
+  el("forecastAutoBtn").addEventListener("click",function(){
+    forecastAutoEnabled=!forecastAutoEnabled;updateForecastAutoButton();forecastViewStartedAt=Date.now();
+  });
+  el("forecastPrevBtn").addEventListener("click",switchForecastManually);
+  el("forecastNextBtn").addEventListener("click",switchForecastManually);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeScheduleModal();});
 
   function refresh(){
     setStatus("기상정보 갱신 중","loading");
