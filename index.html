@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 기상정보시스템 · v5.0</title>
+  <title>창원시설공단 기상정보시스템 · v5.1.1</title>
 
   <style>
     :root{
@@ -115,7 +115,7 @@
       overflow:hidden;
       padding:1.2vh 1.15vw 1vh;
       display:grid;
-      grid-template-rows:8.5vh minmax(0,1fr) 25.5vh 3vh;
+      grid-template-rows:8.5vh 4.4vh minmax(0,1fr) 25.5vh 3vh;
       gap:1vh;
     }
 
@@ -1525,6 +1525,43 @@
       .cctv-pip{width:95vw;height:50dvh;min-height:260px;right:2.5vw;bottom:2.5vh}
     }
     @media(max-width:365px){.weather-art{width:74px;height:88px}.temp{font-size:46px}.clock{font-size:19px}.forecast-action{padding:5px 6px}}
+
+    /* v5.1.1 · 사용자가 전환하는 드론 이륙 검토 화면 */
+    .view-tabs{display:flex;align-items:center;gap:8px;padding:0 .4vw;min-height:0}
+    .view-tab{height:100%;min-height:32px;padding:0 22px;border:1px solid rgba(255,255,255,.23);border-radius:12px;background:rgba(5,25,48,.27);color:#d5e9fb;font:inherit;font-weight:800;font-size:clamp(12px,1.5vh,18px);cursor:pointer}
+    .view-tab[aria-selected="true"]{background:#eaf6ff;color:#123756;border-color:#eaf6ff;box-shadow:0 5px 18px rgba(0,0,0,.12)}
+    .view-tab:focus-visible{outline:3px solid #a6ebff;outline-offset:2px}
+    body.drone-active{--bgA:#164a69;--bgB:#071729}
+    body.drone-active .main,body.drone-active .hourly-panel,body.drone-active .footer,body.drone-active .alarm-controls,body.drone-active .climate-test-controls{display:none!important}
+    body.drone-active .app{grid-template-rows:8.5vh 4.4vh minmax(0,1fr)}
+    body.drone-active .weather-fx{opacity:.25}
+    .drone-view[hidden]{display:none!important}
+    .drone-view{min-height:0;overflow:auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.15vh;padding:.35vh .25vw .6vh}
+    .drone-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:1.5vh 1.5vw;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:linear-gradient(110deg,rgba(15,54,79,.95),rgba(18,72,99,.72))}
+    .drone-hero h2{margin:0 0 5px;font-size:clamp(20px,3.2vh,38px)}
+    .drone-hero p{margin:0;color:#c7e2f1;font-size:clamp(12px,1.35vh,17px);line-height:1.5}
+    .drone-decision{flex:none;min-width:235px;max-width:43%;padding:1.1vh 1.25vw;border-radius:14px;background:rgba(95,123,145,.45);font-size:clamp(17px,2.5vh,29px);font-weight:900;text-align:center}
+    .drone-decision.good{background:#146b58;color:#ddfff1}.drone-decision.caution{background:#876128;color:#fff3d1}.drone-decision.hold{background:#9b3e43;color:#fff0f1}
+    .drone-decision small{display:block;margin-top:4px;font-size:clamp(10px,1.15vh,14px);font-weight:600}
+    .drone-grid{min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1vw}
+    .drone-card{min-width:0;padding:1.6vh 1.3vw;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:linear-gradient(145deg,rgba(20,63,87,.88),rgba(9,34,56,.87));display:flex;flex-direction:column;justify-content:space-between}
+    .drone-card-label{color:#b8d5e5;font-size:clamp(12px,1.6vh,19px);font-weight:800}
+    .drone-card-value{font-size:clamp(27px,4.6vh,55px);font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .drone-card-value small{font-size:.43em;font-weight:700;letter-spacing:0}
+    .drone-card-note{color:#a8c8d9;font-size:clamp(10px,1.2vh,15px);line-height:1.4}
+    .drone-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:.8vh .5vw;color:#d3e7f2;font-size:clamp(10px,1.28vh,15px);line-height:1.45}
+    .drone-bottom strong{color:#fff}
+    .drone-thresholds{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .drone-thresholds label{white-space:nowrap}
+    .drone-thresholds input{width:54px;padding:5px;border:1px solid #8db0c1;border-radius:7px;background:#173c56;color:#fff;font:inherit;text-align:center}
+    .drone-thresholds button{padding:5px 10px;border:1px solid #8db0c1;border-radius:8px;background:#275872;color:#fff;font:inherit;cursor:pointer}
+    .drone-refresh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .drone-refresh button{padding:6px 11px;border:1px solid #8db0c1;border-radius:8px;background:#275872;color:#fff;font:inherit;cursor:pointer}
+    .drone-refresh button:disabled{opacity:.55;cursor:wait}
+    .drone-refresh-status{color:#c9e2ef;font-size:clamp(10px,1.15vh,14px)}
+    @media(max-width:1100px){.drone-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr))}.drone-view{overflow:auto}.drone-card{min-height:120px}.drone-bottom{flex-wrap:wrap}}
+    @media(max-width:760px){body.drone-active .app{display:flex;flex-direction:column}.view-tabs{height:42px;flex:none}.view-tab{padding:0 13px;font-size:12px}.drone-view{display:flex;flex-direction:column;overflow:visible}.drone-hero{flex-direction:column;align-items:stretch;padding:16px}.drone-decision{max-width:none;min-width:0}.drone-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}.drone-card{min-height:125px;padding:14px}.drone-card-value{font-size:30px}.drone-bottom{display:block;padding:12px 4px}.drone-thresholds{margin-top:12px}}
+    @media(max-width:400px){.drone-grid{grid-template-columns:1fr}.drone-card{min-height:105px}}
   </style>
 </head>
 
@@ -1551,7 +1588,33 @@
     </div>
   </header>
 
-  <section class="main">
+  <nav class="view-tabs" role="tablist" aria-label="화면 선택">
+    <button id="weatherTab" class="view-tab" type="button" role="tab" aria-selected="true" aria-controls="weatherMain">기상정보</button>
+    <button id="droneTab" class="view-tab" type="button" role="tab" aria-selected="false" aria-controls="droneView">드론 이륙 검토</button>
+  </nav>
+
+  <section id="droneView" class="drone-view" role="tabpanel" aria-labelledby="droneTab" hidden>
+    <div class="drone-hero">
+      <div><h2 id="droneSite">드론 이륙 검토</h2><p id="droneReason">현장 기상과 우주환경 자료를 불러오는 중입니다.</p></div>
+      <div id="droneDecision" class="drone-decision caution">자료 확인 중<small>자동 예비 검토 · 최종 판단은 조종자</small></div>
+    </div>
+    <div class="drone-grid">
+      <article class="drone-card"><div class="drone-card-label">현재 풍속 · 10m 예보</div><div id="droneWind" class="drone-card-value">--</div><div id="droneWindNote" class="drone-card-note">선택 사업장 기준</div></article>
+      <article class="drone-card"><div class="drone-card-label">순간 최대풍속 · 직전 1시간</div><div id="droneGust" class="drone-card-value">--</div><div class="drone-card-note">지상 예보치 · 고소부 풍속은 별도 확인</div></article>
+      <article class="drone-card"><div class="drone-card-label">현재 강수</div><div id="dronePrecip" class="drone-card-value">--</div><div id="dronePrecipNote" class="drone-card-note">직전 15분 예보 강수량</div></article>
+      <article class="drone-card"><div class="drone-card-label">향후 2시간 강수 가능성</div><div id="droneNextRain" class="drone-card-value">--</div><div id="droneNextRainNote" class="drone-card-note">시간대별 예보 기준</div></article>
+      <article class="drone-card"><div class="drone-card-label">지자기교란 경보</div><div id="droneG" class="drone-card-value">--</div><div id="droneGNote" class="drone-card-note">우주환경센터 · GNSS 참고</div></article>
+      <article class="drone-card"><div class="drone-card-label">국내 지자기 지수 · Kk</div><div id="droneKk" class="drone-card-value">--</div><div class="drone-card-note">국내 관측 · 약 3시간 간격</div></article>
+      <article class="drone-card"><div class="drone-card-label">행성 지자기 지수 · Kp</div><div id="droneKp" class="drone-card-value">--</div><div class="drone-card-note">전 지구 지자기 활동 지표</div></article>
+      <article class="drone-card"><div class="drone-card-label">태양풍 속도</div><div id="droneSolarWind" class="drone-card-value">--</div><div id="droneSolarNote" class="drone-card-note">ACE 위성 관측 · 예비 지표</div></article>
+    </div>
+    <div class="drone-bottom">
+      <div><strong id="droneTimes">자료 시각 확인 중</strong><br>현장 풍속·강수, 기체의 GNSS 상태와 제조사 운용한계, 공역·승인을 조종자가 최종 확인하세요.<div class="drone-refresh"><button id="droneRefreshSpace" type="button">우주환경 새로고침</button><span id="droneRefreshStatus" class="drone-refresh-status" role="status" aria-live="polite">자동 갱신 대기 중</span></div></div>
+      <div class="drone-thresholds" aria-label="임시 검토 기준"><span>임시 검토 기준</span><label>풍속 <input id="droneWindLimit" type="number" min="1" max="30" step="0.5" value="5"> m/s</label><label>돌풍 <input id="droneGustLimit" type="number" min="1" max="40" step="0.5" value="8"> m/s</label><button id="droneSaveLimits" type="button">기준 저장</button></div>
+    </div>
+  </section>
+
+  <section id="weatherMain" class="main" role="tabpanel" aria-labelledby="weatherTab">
 
     <article class="panel current-panel">
       <div class="current-center">
@@ -1690,7 +1753,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.0</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.1.1</span></div>
   </footer>
 
 </main>
@@ -1872,7 +1935,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v5.0</div><div class="info-version-text">2026-11-01 · 모바일 세로형 반응형 레이아웃 · 6일 예보/일정창 AUTO 및 수동 전환 · 일정·공지 등록/수정/삭제/완료 표시 · 날짜·반복·알람 기능 · 사업장별 브라우저 로컬 저장.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v5.1.1</div><div class="info-version-text">2026-11-21 · 드론 이륙 검토 탭 추가 · 풍속·돌풍·강수와 우주환경센터 관측값 통합 · 자료 지연을 반영한 예비 검토 및 임시 풍속 기준 설정.</div></div>
+          <div class="info-version"><div class="info-version-tag">v5.0</div><div class="info-version-text">2026-11-01 · 모바일 세로형 반응형 레이아웃 · 6일 예보/일정창 AUTO 및 수동 전환 · 일정·공지 등록/수정/삭제/완료 표시 · 날짜·반복·알람 기능 · 사업장별 브라우저 로컬 저장.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.5</div><div class="info-version-text">2026-10-13 · 설정 &gt; 일반에 TV 화면 절전 방지 기능 추가 · 지원 브라우저에서는 Screen Wake Lock을 요청하고, 초저부하 무음 영상 반복재생을 보조 방식으로 함께 사용 · 화면 복귀 시 Wake Lock 자동 재획득 · OFF 시 화면 유지 기능 즉시 해제.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.4 CCTV·알람 통합</div><div class="info-version-text">창원시 공식 CCTV 143개 좌표와 등록 사업장 29곳의 최단 직선거리 대조 · 스트림 확인 완료 28곳 기본 CCTV 자동 등록 · 상복공원 최인접 CCTV는 재생목록 오류로 자동 등록 보류 · 기존 사용자 CCTV 설정 우선 적용 유지 · 사용자 시간 알람별 1~5회 반복 설정 및 테스트·로그 반영.</div></div>
           <div class="info-version"><div class="info-version-tag">v4.3</div><div class="info-version-text">사업장별 CCTV 스트림 주소 직접 등록 기능 추가 · 사용자 알람 입력창 안내 개선 · 설정 중 알람 테스트가 최상단에 표시되도록 수정 · 정보(패치노트) 탭 추가.</div></div>
@@ -2592,6 +2656,10 @@
   var LON=128.5823;
   var TZ="Asia/Seoul";
   var REFRESH_MS=10*60*1000;
+  var droneView=false;
+  var DRONE_WEATHER=null,DRONE_WEATHER_FETCHED=0,DRONE_SPACE=null,DRONE_SPACE_RECEIVED=0;
+  var DRONE_SPACE_INFLIGHT=null,DRONE_SPACE_RETRY_TIMER=null;
+  var DRONE_LIMITS={wind:5,gust:8}; // 기체별 제조사 기준을 확인한 뒤 화면에서 변경하는 임시 검토값
 
   var ALARMS=[];
   var ALARM_SHOW_MS=12000;
@@ -2659,7 +2727,7 @@
     return "https://api.open-meteo.com/v1/forecast"+
       "?latitude="+LAT+
       "&longitude="+LON+
-      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,is_day"+
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,is_day"+
       "&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,is_day"+
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum"+
       "&temperature_unit=celsius"+
@@ -3123,7 +3191,8 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 기상정보시스템 · v5.0";
+    document.title=f.name+" 기상정보시스템 · v5.1.1";
+    el("droneSite").textContent=f.name+" · 드론 이륙 검토";
 
     var activeCctv=effectiveCctvForFacility(f,next);
     CCTV_STREAM_URL=activeCctv&&activeCctv.stream?activeCctv.stream:null;
@@ -3138,6 +3207,8 @@
     updateForecastAutoButton();
     forecastViewStartedAt=Date.now();
     if(prevId!==f.id){
+      DRONE_WEATHER=null;DRONE_WEATHER_FETCHED=0;
+      renderDroneReview();
       loadFacilitySchedules(f.id);
       showForecastView("weather",false);
       closeCctvPip();
@@ -3689,6 +3760,7 @@
 
   function applyTheme(info){
     document.body.className=info.theme;
+    document.body.classList.toggle("drone-active",droneView);
     el("weatherArt").className="weather-art "+info.art;
   }
 
@@ -4271,6 +4343,132 @@
   el("forecastNextBtn").addEventListener("click",switchForecastManually);
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeScheduleModal();});
 
+  function droneNumber(value,decimals){
+    var n=Number(value);
+    return value===null||value===undefined||value===""||!Number.isFinite(n)||n<0?"--":n.toFixed(decimals||0);
+  }
+  function droneDate(value){
+    if(!value)return null;
+    var s=String(value).trim();
+    if(/^\d{13}$/.test(s))return new Date(Number(s));
+    if(/^\d{12}$/.test(s))return new Date(Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8),+s.slice(8,10),+s.slice(10,12)));
+    if(/^\d{4}-\d\d-\d\d \d\d:\d\d/.test(s))return new Date(s.replace(" ","T")+"Z");
+    return new Date(s);
+  }
+  function droneTimeLabel(date){
+    return date&&!isNaN(date.getTime())?new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(date):"시각 없음";
+  }
+  function droneWetCode(code){
+    var n=Number(code);
+    return (n>=51&&n<=67)||(n>=71&&n<=86)||(n>=95&&n<=99);
+  }
+  function droneNextForecast(weather){
+    var h=weather&&weather.hourly||{},c=weather&&weather.current||{};
+    if(!h.time||!h.time.length||!h.precipitation||!h.precipitation_probability)return null;
+    var key=String(c.time||"").slice(0,13),index=0;
+    while(index<h.time.length-1&&String(h.time[index]).slice(0,13)<key)index++;
+    var sum=0,prob=0,count=0;
+    for(var i=index;i<Math.min(index+2,h.time.length);i++){
+      var rain=Number(h.precipitation[i]),p=Number(h.precipitation_probability[i]);
+      if(!Number.isFinite(rain)||!Number.isFinite(p))return null;
+      sum+=rain;prob=Math.max(prob,p);count++;
+    }
+    return count?{rain:sum,prob:prob}:null;
+  }
+  function renderDroneReview(){
+    var w=DRONE_WEATHER,c=w&&w.current||{},s=DRONE_SPACE||{};
+    var warning=s.warn&&(s.warn.Warn||s.warn.warn)||{},gRaw=warning.G&&warning.G.v0;
+    var gMatch=/^G([0-5])$/.exec(String(gRaw||"").toUpperCase()),g=gMatch?Number(gMatch[1]):null;
+    var k=s.kindex&&(s.kindex.Kindex||s.kindex.kindex)||{},rows=s.solarWind&&(s.solarWind.Data||s.solarWind.data)||[];
+    var solar=Array.isArray(rows)?rows.filter(function(row){return row&&row.Time}).sort(function(a,b){return String(b.Time).localeCompare(String(a.Time))})[0]:null;
+    var wind=Number(c.wind_speed_10m),gust=Number(c.wind_gusts_10m),precip=Number(c.precipitation),next=droneNextForecast(w);
+    var weatherAt=c.time?new Date(String(c.time).slice(0,16)+":00+09:00"):null;
+    var spaceAt=droneDate(s.generatedAt),weatherFresh=weatherAt&&!isNaN(weatherAt.getTime())&&Date.now()-weatherAt.getTime()<90*60000&&Date.now()-weatherAt.getTime()>-10*60000;
+    var spaceFresh=spaceAt&&!isNaN(spaceAt.getTime())&&Date.now()-spaceAt.getTime()<45*60000&&Date.now()-spaceAt.getTime()>-5*60000;
+    var windValid=w&&c.wind_speed_10m!=null&&Number.isFinite(wind)&&wind>=0;
+    var gustValid=w&&c.wind_gusts_10m!=null&&Number.isFinite(gust)&&gust>=0;
+    var rainValid=w&&c.precipitation!=null&&Number.isFinite(precip)&&precip>=0&&c.weather_code!=null;
+    el("droneWind").innerHTML=windValid?droneNumber(wind,1)+" <small>m/s</small>":"--";
+    el("droneGust").innerHTML=gustValid?droneNumber(gust,1)+" <small>m/s</small>":"--";
+    el("dronePrecip").innerHTML=rainValid?droneNumber(precip,1)+" <small>mm</small>":"--";
+    el("droneNextRain").innerHTML=next?droneNumber(next.rain,1)+" <small>mm</small>":"--";
+    el("droneNextRainNote").textContent=next?"최대 강수확률 "+Math.round(next.prob)+"% · 2개 시간대":"시간대별 예보 없음";
+    el("droneWindNote").textContent=CURRENT_FACILITY?CURRENT_FACILITY.name+" · 기상모델 예보":"사업장 확인 중";
+    el("dronePrecipNote").textContent=droneWetCode(c.weather_code)?"비·눈·뇌우 코드 감지":"현재 15분 예보 강수량";
+    el("droneG").textContent=gMatch?gMatch[0]:"--";
+    el("droneGNote").textContent=g===null?"경보 자료 없음":g===0?"교란 없음 · GNSS 현장 확인":g>=3?"강한 교란 · 항법 주의":"지자기교란 · GNSS 주의";
+    el("droneKk").textContent=k.CurrentK!=null?droneNumber(k.CurrentK,0):"--";
+    el("droneKp").textContent=k.CurrentP!=null?droneNumber(k.CurrentP,0):"--";
+    el("droneSolarWind").innerHTML=solar&&solar.BulkSpeed!=null?droneNumber(solar.BulkSpeed,1)+" <small>km/s</small>":"--";
+    el("droneSolarNote").textContent=solar?"ACE 관측 "+droneTimeLabel(droneDate(solar.Time)):"ACE 관측 자료 없음";
+    el("droneTimes").textContent="기상 "+droneTimeLabel(weatherAt)+" · 우주환경 수집 "+droneTimeLabel(spaceAt)+" · 지자기 "+droneTimeLabel(droneDate(k.Time));
+    var reasons=[],kind="good",label="기상 조건 양호";
+    if(!weatherFresh||!spaceFresh||!windValid||!gustValid||!rainValid||!next||g===null){
+      kind="caution";label="자료 확인 필요";
+      if(!weatherFresh||!windValid||!gustValid||!rainValid||!next)reasons.push("기상 자료가 없거나 오래되었습니다");
+      if(!spaceFresh||g===null)reasons.push("우주환경 자료가 없거나 오래되었습니다");
+    }else{
+      if(wind>=DRONE_LIMITS.wind)reasons.push("풍속이 임시 검토 기준 "+DRONE_LIMITS.wind+" m/s 이상");
+      if(gust>=DRONE_LIMITS.gust)reasons.push("돌풍이 임시 검토 기준 "+DRONE_LIMITS.gust+" m/s 이상");
+      if(precip>0||droneWetCode(c.weather_code))reasons.push("현재 비·눈·뇌우 가능성");
+      if(g>=3)reasons.push("지자기교란 "+gMatch[0]+" · GNSS 영향 우려");
+      if(reasons.length){kind="hold";label="이륙 보류 권고";}
+      else{
+        if(next.rain>0||next.prob>=50)reasons.push("향후 2시간 강수 가능성");
+        if(g>=1)reasons.push("지자기교란 "+gMatch[0]+" · GNSS 상태 확인");
+        if(reasons.length){kind="caution";label="추가 확인 필요";}
+      }
+    }
+    if(!reasons.length)reasons.push("설정한 예비 기준에 해당하는 위험 신호는 없습니다");
+    el("droneDecision").className="drone-decision "+kind;
+    el("droneDecision").innerHTML=label+"<small>자동 예비 검토 · 최종 판단은 조종자</small>";
+    el("droneReason").textContent=reasons.join(" · ")+". 현장 실측과 기체별 운용가이드를 확인하세요.";
+  }
+  function refreshSpaceWeather(){
+    if(DRONE_SPACE_INFLIGHT)return DRONE_SPACE_INFLIGHT;
+    if(DRONE_SPACE_RETRY_TIMER){clearTimeout(DRONE_SPACE_RETRY_TIMER);DRONE_SPACE_RETRY_TIMER=null;}
+    var button=el("droneRefreshSpace"),status=el("droneRefreshStatus");
+    button.disabled=true;status.textContent="우주환경 자료 요청 중…";
+    var controller=new AbortController(),timeout=setTimeout(function(){controller.abort();},12000);
+    DRONE_SPACE_INFLIGHT=fetch("spaceweather.json?t="+Date.now(),{cache:"no-store",signal:controller.signal})
+      .then(function(r){if(!r.ok)throw new Error("spaceweather");return r.json();})
+      .then(function(data){
+        if(!data||data.source!=="KASA Korea Space Weather Center")throw new Error("invalid spaceweather");
+        DRONE_SPACE=data;DRONE_SPACE_RECEIVED=Date.now();renderDroneReview();
+        var at=droneDate(data.generatedAt),fresh=at&&!isNaN(at.getTime())&&Date.now()-at.getTime()<45*60000&&Date.now()-at.getTime()>-5*60000;
+        status.textContent=fresh?"새로고침 완료 · "+droneTimeLabel(at):"수집 자료가 오래되었습니다 · 1분 뒤 재시도";
+        if(!fresh)scheduleSpaceWeatherRetry();
+      }).catch(function(){
+        DRONE_SPACE=null;DRONE_SPACE_RECEIVED=0;renderDroneReview();
+        status.textContent="연결 실패 · 1분 뒤 자동 재시도";scheduleSpaceWeatherRetry();
+      }).finally(function(){clearTimeout(timeout);button.disabled=false;DRONE_SPACE_INFLIGHT=null;});
+    return DRONE_SPACE_INFLIGHT;
+  }
+  function scheduleSpaceWeatherRetry(){
+    if(DRONE_SPACE_RETRY_TIMER)clearTimeout(DRONE_SPACE_RETRY_TIMER);
+    DRONE_SPACE_RETRY_TIMER=setTimeout(function(){DRONE_SPACE_RETRY_TIMER=null;refreshSpaceWeather();},60000);
+  }
+  function switchMainView(view){
+    droneView=view==="drone";
+    document.body.classList.toggle("drone-active",droneView);
+    el("droneView").hidden=!droneView;
+    el("droneTab").setAttribute("aria-selected",droneView?"true":"false");
+    el("weatherTab").setAttribute("aria-selected",droneView?"false":"true");
+    el("weatherMain").setAttribute("aria-hidden",droneView?"true":"false");
+    if(droneView){closeCctvPip();renderDroneReview();if(Date.now()-DRONE_SPACE_RECEIVED>5*60000)refreshSpaceWeather();}
+  }
+  function loadDroneLimits(){
+    try{var saved=JSON.parse(localStorage.getItem("officeWeatherDroneLimits")||"null");if(saved&&Number(saved.wind)>0&&Number(saved.gust)>0){DRONE_LIMITS={wind:Number(saved.wind),gust:Number(saved.gust)};}}catch(e){}
+    el("droneWindLimit").value=DRONE_LIMITS.wind;el("droneGustLimit").value=DRONE_LIMITS.gust;
+  }
+  function saveDroneLimits(){
+    var wind=Number(el("droneWindLimit").value),gust=Number(el("droneGustLimit").value);
+    if(!Number.isFinite(wind)||!Number.isFinite(gust)||wind<1||wind>30||gust<1||gust>40||gust<wind){alert("풍속은 1~30, 돌풍은 풍속 이상 40 m/s 이하로 입력하세요.");return;}
+    DRONE_LIMITS={wind:wind,gust:gust};
+    try{localStorage.setItem("officeWeatherDroneLimits",JSON.stringify(DRONE_LIMITS));}catch(e){}
+    renderDroneReview();
+  }
+
   function refresh(){
     setStatus("기상정보 갱신 중","loading");
 
@@ -4281,6 +4479,7 @@
       })
       .then(function(data){
         renderWeather(data);
+        DRONE_WEATHER=data;DRONE_WEATHER_FETCHED=Date.now();renderDroneReview();
 
         var t=new Intl.DateTimeFormat("ko-KR",{
           timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false
@@ -4289,6 +4488,7 @@
         setStatus("정상 · 최근 갱신 "+t,"");
       })
       .catch(function(){
+        DRONE_WEATHER=null;DRONE_WEATHER_FETCHED=0;renderDroneReview();
         setStatus("날씨 서버 연결 실패 · 자동 재시도","error");
       });
   }
@@ -4300,6 +4500,10 @@
   el("cctvReloadBtn").addEventListener("click",reloadCctvPip);
 
   el("settingsOpenBtn").addEventListener("click",openSettings);
+  el("weatherTab").addEventListener("click",function(){switchMainView("weather");});
+  el("droneTab").addEventListener("click",function(){switchMainView("drone");});
+  el("droneRefreshSpace").addEventListener("click",refreshSpaceWeather);
+  el("droneSaveLimits").addEventListener("click",saveDroneLimits);
   el("settingsCloseBtn").addEventListener("click",closeSettings);
   el("settingsCancelBtn").addEventListener("click",closeSettings);
   el("settingsSaveBtn").addEventListener("click",saveSettingsFromForm);
@@ -4380,9 +4584,12 @@
   setInterval(updateClock,1000);
 
   CURRENT_SETTINGS=loadSettings();
+  loadDroneLimits();
   applySettings(CURRENT_SETTINGS,false);
   refresh();
   setInterval(refresh,REFRESH_MS);
+  refreshSpaceWeather();
+  setInterval(refreshSpaceWeather,REFRESH_MS);
 })();
 </script>
 
