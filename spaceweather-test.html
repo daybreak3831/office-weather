@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071729">
+  <title>우주환경 · 드론 점검 테스트</title>
+  <style>
+    :root { color-scheme: dark; font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif; background:#071729; color:#eaf4ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at 84% 4%,#174773 0,transparent 36%),radial-gradient(circle at 2% 92%,#123554 0,transparent 40%),#071729; }
+    main { max-width:1160px; margin:auto; padding:32px 22px 50px; }
+    header { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:25px; }
+    .eyebrow { color:#70d7e8; font-size:13px; font-weight:800; letter-spacing:.13em; }
+    h1 { margin:8px 0 8px; font-size:clamp(27px,4vw,42px); letter-spacing:-.055em; }
+    .subtitle { margin:0; color:#a6bdcf; line-height:1.6; }
+    button { border:1px solid #4f7896; border-radius:12px; background:#193b58; color:white; padding:12px 16px; font:inherit; font-weight:700; cursor:pointer; }
+    button:hover { background:#285675; } button:disabled { opacity:.5; cursor:wait; }
+    .buttons { display:flex; gap:9px; flex-wrap:wrap; }
+    .status { display:flex; gap:12px; align-items:center; padding:14px 18px; margin-bottom:16px; border:1px solid #35516b; border-radius:14px; background:#122c43; line-height:1.5; }
+    .dot { flex:none; height:10px; width:10px; border-radius:50%; background:#82a1b5; box-shadow:0 0 14px currentColor; color:#82a1b5; }
+    .status.live .dot { background:#52deaa; color:#52deaa; } .status.sample .dot { background:#ffc777; color:#ffc777; }
+    .status.error .dot { background:#ff8d91; color:#ff8d91; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .card { min-height:210px; border:1px solid #33516b; background:linear-gradient(145deg,#163650e8,#0c253ce8); border-radius:22px; padding:24px; }
+    .card.primary { grid-column:span 2; display:flex; justify-content:space-between; gap:20px; background:linear-gradient(120deg,#204c6c,#102a44); }
+    .label { color:#9ebdd1; font-size:15px; font-weight:700; }
+    .value { margin:19px 0 8px; font-size:clamp(35px,5vw,60px); font-weight:800; line-height:1.1; letter-spacing:-.05em; font-variant-numeric:tabular-nums; }
+    .unit { color:#a9c4d7; font-size:18px; font-weight:500; letter-spacing:0; }
+    .note { color:#a9c0d1; font-size:13px; line-height:1.6; }
+    .badge { align-self:flex-start; border-radius:99px; padding:9px 14px; background:#314f65; color:#d6e9f7; font-weight:800; white-space:nowrap; }
+    .badge.quiet { background:#174f48; color:#95f3d0; } .badge.watch { background:#694a22; color:#ffdb9a; }
+    .badge.strong { background:#682e3d; color:#ffb6c1; }
+    .strip { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+    .mini { padding:18px 20px; border:1px solid #31516a; border-radius:16px; background:#102d45; }
+    .mini .value { font-size:27px; margin:9px 0 4px; }
+    .panel { border:1px solid #31516a; border-radius:18px; background:#102b43; padding:20px 24px; line-height:1.7; }
+    .panel h2 { margin:0 0 8px; font-size:18px; } .panel p { margin:6px 0; color:#bfd0de; }
+    .meta { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:18px; color:#92aabe; font-size:13px; }
+    a { color:#8adff2; } code { color:#d0eafb; }
+    @media(max-width:760px) { header { align-items:flex-start; flex-direction:column; } .grid { grid-template-columns:1fr 1fr; } .card.primary { grid-column:span 2; } .strip { grid-template-columns:1fr; } }
+    @media(max-width:520px) { main { padding:24px 14px; } .grid { grid-template-columns:1fr; } .card.primary { grid-column:span 1; } .card { min-height:170px; } .value { font-size:40px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><div class="eyebrow">SPACE WEATHER · DRONE OPERATIONS</div><h1>우주환경 · 드론 점검</h1><p class="subtitle">지자기교란과 태양풍 관측값을 한눈에 확인하는 독립형 테스트 화면</p></div>
+    <div class="buttons"><button id="refresh" type="button">실시간 새로고침</button><button id="demo" type="button">샘플 화면 보기</button></div>
+  </header>
+  <div id="status" class="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText">공식 관측 자료를 불러오는 중…</span></div>
+  <section class="grid" aria-label="우주환경 관측값">
+    <article class="card primary"><div><div class="label">현재 지자기교란 경보</div><div class="value" id="g">—</div><div class="note" id="gNote">우주환경센터 G 등급</div></div><div class="badge" id="badge">자료 확인 중</div></article>
+    <article class="card"><div class="label">국내 지자기 지수 · Kk</div><div class="value" id="kk">—</div><div class="note">이천·강릉·제주 관측 기반 · 약 3시간 단위</div></article>
+    <article class="card"><div class="label">행성 지자기 지수 · Kp</div><div class="value" id="kp">—</div><div class="note">전 지구 지자기 활동 지표 · 0~9</div></article>
+    <article class="card"><div class="label">태양풍 속도</div><div class="value" id="speed">—</div><div class="note">ACE 위성 관측 · km/s</div></article>
+    <article class="card"><div class="label">태양풍 밀도</div><div class="value" id="density">—</div><div class="note">ACE 위성 관측 · 개/cm³</div></article>
+  </section>
+  <section class="strip" aria-label="자료 시각">
+    <div class="mini"><div class="label">경보 갱신</div><div class="value" id="warnTime">—</div></div>
+    <div class="mini"><div class="label">지자기 관측</div><div class="value" id="kTime">—</div></div>
+    <div class="mini"><div class="label">태양풍 관측</div><div class="value" id="swTime">—</div></div>
+  </section>
+  <section class="panel"><h2>드론 점검 참고</h2><p id="guidance">공식 자료를 불러온 뒤 현재 경보를 표시합니다.</p><p>이 화면은 우주환경 참고 자료입니다. 실제 비행 전에는 현장 바람·강수, 기체의 GNSS 수신 상태, 관제·공역 조건을 함께 확인하세요. G 등급만으로 비행 가능 여부를 판정하지 않습니다.</p></section>
+  <div class="meta"><span>출처: <a href="https://spaceweather.kasa.go.kr/openpotal/datasetInfo/openApiList.do" target="_blank" rel="noopener">우주항공청 우주환경센터 공개 API</a> · 10분마다 새로고침</span><span>표시 시간: 한국시간(KST) · API 연결 실패 시 값은 임의로 대체하지 않음</span></div>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  const put = (id, value) => { $(id).textContent = value ?? '—'; };
+  const kst = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false });
+  function timeLabel(value) {
+    if (!value) return '—';
+    let d;
+    const s = String(value).trim();
+    if (/^\d{13}$/.test(s)) d = new Date(Number(s));
+    else if (/^\d{12}$/.test(s)) d = new Date(Date.UTC(+s.slice(0,4), +s.slice(4,6)-1, +s.slice(6,8), +s.slice(8,10), +s.slice(10,12)));
+    else if (/^\d{4}-\d\d-\d\d \d\d:\d\d/.test(s)) d = new Date(s.replace(' ','T') + 'Z');
+    else d = new Date(s);
+    return Number.isNaN(d.getTime()) ? '—' : kst.format(d);
+  }
+  function setStatus(kind, message) { $('status').className = 'status ' + kind; put('statusText',message); }
+  function setG(raw) {
+    const match = /^G([0-5])$/.exec(String(raw ?? '').trim().toUpperCase());
+    const n = match ? Number(match[1]) : null;
+    put('g',match?.[0] ?? '—');
+    const label = n === null ? '자료 확인 필요' : n === 0 ? '교란 없음' : n === 1 ? '약한 교란' : n === 2 ? '중간 교란' : '강한 교란';
+    put('badge',label);
+    $('badge').className = 'badge ' + (n === 0 ? 'quiet' : n === 1 || n === 2 ? 'watch' : n >= 3 ? 'strong' : '');
+    put('gNote', n === null ? '경보 값을 확인할 수 없습니다' : '우주환경센터 현재 G 등급');
+    put('guidance', n === null ? '경보 자료가 없어 공식 발표와 기체 상태를 확인하세요.' : n === 0 ? '현재 지자기교란 경보는 없습니다. 비행 전 기체의 실제 GNSS 수신 상태를 확인하세요.' : '지자기교란이 관측되고 있습니다. 공식 경보와 기체의 GNSS 수신·위치 정확도를 특히 주의 깊게 확인하세요.');
+  }
+  function newest(rows) {
+    if (!Array.isArray(rows)) return null;
+    return rows.filter(row => row && (row.Time || row.time))
+      .sort((a,b) => String(b.Time ?? b.time).localeCompare(String(a.Time ?? a.time)))[0] || null;
+  }
+  function numeric(value, digits=0) {
+    const n = Number(value);
+    return value === null || value === undefined || value === '' || !Number.isFinite(n) || n < 0 ? '—' : n.toLocaleString('ko-KR',{ maximumFractionDigits:digits });
+  }
+  async function refresh() {
+    $('refresh').disabled = true;
+    setStatus('','저장된 공식 관측 자료를 불러오는 중…');
+    let bundle;
+    try {
+      const response = await fetch('./spaceweather.json?t=' + Date.now(), {cache:'no-store'});
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      bundle = await response.json();
+      if (!bundle.generatedAt || bundle.source !== 'KASA Korea Space Weather Center') throw new Error('자료 형식 오류');
+    } catch (error) {
+      setG(null);
+      for (const id of ['kp','kk','speed','density','warnTime','kTime','swTime']) put(id,'—');
+      setStatus('error', location.protocol === 'file:'
+        ? '파일을 직접 열면 자료를 읽을 수 없습니다. 배포 묶음을 GitHub Pages에 올려 확인하거나 샘플 화면을 보세요.'
+        : 'spaceweather.json이 없습니다. GitHub Actions의 데이터 갱신 작업을 먼저 실행하세요. (' + error.message + ')');
+      $('refresh').disabled = false;
+      return;
+    }
+    const outcomes = [bundle.warn,bundle.kindex,bundle.solarWind].map(value => value ? {status:'fulfilled',value} : {status:'rejected'});
+    let count=0;
+    if (outcomes[0].status === 'fulfilled') {
+      const d=outcomes[0].value; setG((d.Warn ?? d.warn)?.G?.v0); put('warnTime',timeLabel(d.LastUpdate)); count++;
+    } else { setG(null); put('warnTime','—'); }
+    if (outcomes[1].status === 'fulfilled') {
+      const d=outcomes[1].value.Kindex ?? outcomes[1].value.kindex;
+      if (d) { put('kp',numeric(d.CurrentP)); put('kk',numeric(d.CurrentK)); put('kTime',timeLabel(d.Time)); count++; }
+      else { put('kp','—'); put('kk','—'); put('kTime','—'); }
+    } else { put('kp','—'); put('kk','—'); put('kTime','—'); }
+    if (outcomes[2].status === 'fulfilled') {
+      const d=outcomes[2].value, row=newest(d.Data ?? d.data);
+      if (row) { put('speed',numeric(row.BulkSpeed,1)); put('density',numeric(row.ProtonDensity,2)); put('swTime',timeLabel(row.Time ?? d.LastUpdate)); count++; }
+      else { put('speed','—'); put('density','—'); put('swTime','—'); }
+    } else { put('speed','—'); put('density','—'); put('swTime','—'); }
+    const ageMinutes = (Date.now() - new Date(bundle.generatedAt).getTime()) / 60000;
+    const ageText = Number.isFinite(ageMinutes) ? Math.max(0,Math.floor(ageMinutes)) + '분 전 수집' : '수집 시각 확인 필요';
+    if (ageMinutes > 45 || ageMinutes < -5 || !Number.isFinite(ageMinutes)) setStatus('error','자료 갱신 지연 · ' + ageText + '. 최신 경보는 공식 사이트에서 확인하세요.');
+    else if (count === 3) setStatus('live','우주환경센터 자료 · ' + ageText + ' · 화면은 10분마다 확인');
+    else if (count) setStatus('error','일부 자료 누락 ('+count+'/3) · ' + ageText + '. 표시되지 않은 항목은 공식 사이트에서 확인하세요.');
+    else setStatus('error','관측값이 없습니다. 공식 사이트를 확인하세요.');
+    $('refresh').disabled = false;
+  }
+  function demo() {
+    setG('G1'); put('kp','5'); put('kk','4'); put('speed','518'); put('density','6.3');
+    put('warnTime','예시'); put('kTime','예시'); put('swTime','예시');
+    setStatus('sample','샘플 화면 · 표시된 수치는 실제 관측값이 아닙니다.');
+  }
+  $('refresh').addEventListener('click',refresh);
+  $('demo').addEventListener('click',demo);
+  if (location.protocol === 'file:') demo(); else refresh();
+  setInterval(refresh, 10 * 60 * 1000);
+</script>
+</body>
+</html>
