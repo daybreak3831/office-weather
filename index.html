@@ -1536,7 +1536,7 @@
     }
     @media(max-width:365px){.weather-art{width:74px;height:88px}.temp{font-size:46px}.clock{font-size:19px}.forecast-action{padding:5px 6px}}
 
-    /* v5.2 · 사용자가 전환하는 드론 이륙 검토 화면 */
+    /* v5.3 · 사용자가 전환하는 드론 이륙 검토 화면 */
     .view-tabs{display:flex;align-items:center;gap:8px;padding:0 .4vw;min-height:0}
     .view-tab{height:100%;min-height:32px;padding:0 22px;border:1px solid rgba(255,255,255,.23);border-radius:12px;background:rgba(5,25,48,.27);color:#d5e9fb;font:inherit;font-weight:800;font-size:clamp(12px,1.5vh,18px);cursor:pointer}
     .view-tab[aria-selected="true"]{background:#eaf6ff;color:#123756;border-color:#eaf6ff;box-shadow:0 5px 18px rgba(0,0,0,.12)}
@@ -1557,6 +1557,14 @@
     .drone-card{min-width:0;padding:1.6vh 1.3vw;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:linear-gradient(145deg,rgba(20,63,87,.88),rgba(9,34,56,.87));display:flex;flex-direction:column;justify-content:space-between}
     .drone-card.space-warn{border-color:#f9cb64;background:linear-gradient(145deg,rgba(116,78,23,.94),rgba(67,46,23,.92));box-shadow:0 0 18px rgba(255,194,65,.18)}
     .drone-card.space-hold{border-color:#ff8e92;background:linear-gradient(145deg,rgba(132,40,48,.95),rgba(70,23,34,.94));box-shadow:0 0 18px rgba(250,76,92,.22)}
+    .drone-card.weather-hold{border-color:rgba(255,139,151,.78);box-shadow:inset 0 0 0 1px rgba(255,139,151,.16),0 0 16px rgba(253,84,101,.16);background:linear-gradient(145deg,rgba(66,44,61,.9),rgba(28,37,58,.92))}
+    .drone-card.weather-warn{border-color:rgba(249,203,100,.8);box-shadow:0 0 15px rgba(255,194,65,.14);background:linear-gradient(145deg,rgba(74,62,46,.88),rgba(26,43,58,.91))}
+    .weather-hold .drone-card-flag{background:#f36a76;color:#fff}
+    .drone-card--solar,.drone-card--geomag{position:relative;isolation:isolate;overflow:hidden}
+    .drone-card--solar::before,.drone-card--geomag::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
+    .drone-card--solar::before{background-image:radial-gradient(circle at 75% 50%,rgba(255,164,72,.46),transparent 58%),url("https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg");background-size:cover,auto 145%;background-position:center,82% center;background-repeat:no-repeat;opacity:.30;filter:saturate(1.2)}
+    .drone-card--geomag::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 180'%3E%3Cg fill='none' stroke='%2376d8ed' stroke-width='2' opacity='.8'%3E%3Cpath d='M260 78 C175 4 120 5 105 90 C120 175 175 176 260 102'/%3E%3Cpath d='M260 78 C200 30 170 40 160 90 C170 140 200 150 260 102'/%3E%3Cpath d='M260 78 C210 -13 61 -13 45 90 C61 193 210 193 260 102'/%3E%3Cpath d='M260 78 C185 15 142 22 130 90 C142 158 185 165 260 102'/%3E%3C/g%3E%3Ccircle cx='260' cy='90' r='30' fill='%233b94b4' opacity='.85'/%3E%3Cpath d='M244 70 Q260 82 252 92 Q271 96 276 111' fill='none' stroke='%23b8ecf4' stroke-width='3' opacity='.8'/%3E%3C/svg%3E");background-size:cover;background-position:center;opacity:.36;mask-image:linear-gradient(90deg,transparent 5%,#000 55%)}
+    .drone-card--solar>*,.drone-card--geomag>*{position:relative;z-index:1}
     .drone-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;flex-wrap:wrap}
     .drone-card-flag{flex:none;padding:3px 7px;border-radius:7px;background:#e9b648;color:#241908;font-size:clamp(10px,1.2vh,15px);font-weight:900;white-space:nowrap}
     .space-hold .drone-card-flag{background:#f36a76;color:#fff}
@@ -1615,14 +1623,14 @@
       <div id="droneDecision" class="drone-decision caution">자료 확인 중<small>자동 예비 검토 · 최종 판단은 조종자</small></div>
     </div>
     <div class="drone-grid">
-      <article class="drone-card"><div class="drone-card-label">현재 풍속 · 10m 예보</div><div id="droneWind" class="drone-card-value">--</div><div id="droneWindNote" class="drone-card-note">선택 사업장 기준</div></article>
-      <article class="drone-card"><div class="drone-card-label">순간 최대풍속 · 직전 1시간</div><div id="droneGust" class="drone-card-value">--</div><div class="drone-card-note">지상 예보치 · 고소부 풍속은 별도 확인</div></article>
-      <article class="drone-card"><div class="drone-card-label">현재 강수</div><div id="dronePrecip" class="drone-card-value">--</div><div id="dronePrecipNote" class="drone-card-note">직전 15분 예보 강수량</div></article>
-      <article class="drone-card"><div class="drone-card-label">향후 2시간 강수 가능성</div><div id="droneNextRain" class="drone-card-value">--</div><div id="droneNextRainNote" class="drone-card-note">시간대별 예보 기준</div></article>
-      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">지자기교란 경보</div><span id="droneGFlag" class="drone-card-flag" hidden></span></div><div id="droneG" class="drone-card-value">--</div><div id="droneGNote" class="drone-card-note">우주환경센터 · GNSS 참고</div></article>
-      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">국내 지자기 지수 · Kk</div><span id="droneKkFlag" class="drone-card-flag" hidden></span></div><div id="droneKk" class="drone-card-value">--</div><div id="droneKkNote" class="drone-card-note">국내 관측 · 약 3시간 간격</div></article>
-      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">행성 지자기 지수 · Kp</div><span id="droneKpFlag" class="drone-card-flag" hidden></span></div><div id="droneKp" class="drone-card-value">--</div><div id="droneKpNote" class="drone-card-note">전 지구 지자기 활동 지표</div></article>
-      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">태양풍 속도</div><span id="droneSolarFlag" class="drone-card-flag" hidden></span></div><div id="droneSolarWind" class="drone-card-value">--</div><div id="droneSolarNote" class="drone-card-note">ACE 위성 관측 · 예비 지표</div></article>
+      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">현재 풍속 · 10m 예보</div><span id="droneWindFlag" class="drone-card-flag" hidden></span></div><div id="droneWind" class="drone-card-value">--</div><div id="droneWindNote" class="drone-card-note">선택 사업장 기준</div></article>
+      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">순간 최대풍속 · 직전 1시간</div><span id="droneGustFlag" class="drone-card-flag" hidden></span></div><div id="droneGust" class="drone-card-value">--</div><div id="droneGustNote" class="drone-card-note">지상 예보치 · 고소부 풍속은 별도 확인</div></article>
+      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">현재 강수</div><span id="dronePrecipFlag" class="drone-card-flag" hidden></span></div><div id="dronePrecip" class="drone-card-value">--</div><div id="dronePrecipNote" class="drone-card-note">직전 15분 예보 강수량</div></article>
+      <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">향후 2시간 강수 가능성</div><span id="droneNextRainFlag" class="drone-card-flag" hidden></span></div><div id="droneNextRain" class="drone-card-value">--</div><div id="droneNextRainNote" class="drone-card-note">시간대별 예보 기준</div></article>
+      <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">지자기교란 경보</div><span id="droneGFlag" class="drone-card-flag" hidden></span></div><div id="droneG" class="drone-card-value">--</div><div id="droneGNote" class="drone-card-note">우주환경센터 · GNSS 참고</div></article>
+      <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">국내 지자기 지수 · Kk</div><span id="droneKkFlag" class="drone-card-flag" hidden></span></div><div id="droneKk" class="drone-card-value">--</div><div id="droneKkNote" class="drone-card-note">국내 관측 · 약 3시간 간격</div></article>
+      <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">행성 지자기 지수 · Kp</div><span id="droneKpFlag" class="drone-card-flag" hidden></span></div><div id="droneKp" class="drone-card-value">--</div><div id="droneKpNote" class="drone-card-note">전 지구 지자기 활동 지표</div></article>
+      <article class="drone-card drone-card--solar"><div class="drone-card-heading"><div class="drone-card-label">태양풍 속도</div><span id="droneSolarFlag" class="drone-card-flag" hidden></span></div><div id="droneSolarWind" class="drone-card-value">--</div><div id="droneSolarNote" class="drone-card-note">ACE 위성 관측 · 배경 NASA/SDO</div></article>
     </div>
     <div class="drone-bottom">
       <div><strong id="droneTimes">자료 시각 확인 중</strong><br>내부 예비 기준: G1~G2·Kp/Kk 5~6 주의 / G3 이상·Kp/Kk 7 이상 이륙 불가 권고. 태양풍 700 km/s 이상은 주의이며 단독 이륙 금지 기준은 아닙니다.<br>현장 풍속·강수, 기체의 GNSS 상태와 제조사 운용한계, 공역·승인을 조종자가 최종 확인하세요.<div class="drone-refresh"><button id="droneRefreshSpace" type="button">우주환경 새로고침</button><span id="droneRefreshStatus" class="drone-refresh-status" role="status" aria-live="polite">자동 갱신 대기 중</span></div></div>
@@ -1951,7 +1959,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v5.31</div><div class="info-version-text">2026-11-23 · 안개(기상코드 45·48) 아이콘의 사각형 배경 문제 수정 · 6일 예보 및 시간대별 예보에 투명 배경 SVG 적용.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v5.31</div><div class="info-version-text">2026-11-23 · 안개(기상코드 45·48) 아이콘 사각형 배경 제거 · 6일 예보 및 시간대별 날씨에 투명 배경 SVG 적용.</div></div>
+          <div class="info-version"><div class="info-version-tag">v5.3</div><div class="info-version-text">2026-11-21 · 드론 이륙 보류·주의 원인 카드 강조 및 실제 관측값과 설정 기준 표시 · 태양풍과 지자기 카드에 반투명 배경 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.2</div><div class="info-version-text">2026-11-21 · 지자기교란·Kp·Kk·태양풍 카드에 단계별 주의 표시 추가 · G3 이상 또는 Kp/Kk 7 이상에서 내부 운용 기준에 따라 이륙 불가 권고.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.1.1</div><div class="info-version-text">2026-11-21 · 드론 이륙 검토 탭 추가 · 풍속·돌풍·강수와 우주환경센터 관측값 통합 · 우주환경 수동 새로고침과 자료 지연 시 재시도.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.0</div><div class="info-version-text">2026-11-01 · 모바일 세로형 반응형 레이아웃 · 6일 예보/일정창 AUTO 및 수동 전환 · 일정·공지 등록/수정/삭제/완료 표시 · 날짜·반복·알람 기능 · 사업장별 브라우저 로컬 저장.</div></div>
@@ -4407,6 +4416,12 @@
     card.classList.toggle("space-warn",level==="warn");
     card.classList.toggle("space-hold",level==="hold");
   }
+  function setDroneWeatherFlag(id,level){
+    var badge=el(id),card=badge.parentElement.parentElement;
+    badge.hidden=!level;badge.textContent=level==="hold"?"⚠ 보류 원인":level==="warn"?"⚠ 주의 원인":"";
+    card.classList.toggle("weather-hold",level==="hold");
+    card.classList.toggle("weather-warn",level==="warn");
+  }
   function renderDroneReview(){
     var w=DRONE_WEATHER,c=w&&w.current||{},s=DRONE_SPACE||{};
     var warning=s.warn&&(s.warn.Warn||s.warn.warn)||{},gRaw=warning.G&&warning.G.v0;
@@ -4431,8 +4446,13 @@
     el("dronePrecip").innerHTML=rainValid?droneNumber(precip,1)+" <small>mm</small>":"--";
     el("droneNextRain").innerHTML=next?droneNumber(next.rain,1)+" <small>mm</small>":"--";
     el("droneNextRainNote").textContent=next?"최대 강수확률 "+Math.round(next.prob)+"% · 2개 시간대":"시간대별 예보 없음";
-    el("droneWindNote").textContent=CURRENT_FACILITY?CURRENT_FACILITY.name+" · 기상모델 예보":"사업장 확인 중";
-    el("dronePrecipNote").textContent=droneWetCode(c.weather_code)?"비·눈·뇌우 코드 감지":"현재 15분 예보 강수량";
+    el("droneWindNote").textContent="설정 기준 "+droneNumber(DRONE_LIMITS.wind,1)+" m/s · "+(CURRENT_FACILITY?CURRENT_FACILITY.name:"사업장 확인 중");
+    el("droneGustNote").textContent="설정 기준 "+droneNumber(DRONE_LIMITS.gust,1)+" m/s · 고소부 현장 확인";
+    el("dronePrecipNote").textContent=droneWetCode(c.weather_code)?"비·눈·뇌우 예보 감지 · 현장 확인":"현재 15분 예보 강수량";
+    setDroneWeatherFlag("droneWindFlag",weatherFresh&&windValid&&wind>=DRONE_LIMITS.wind?"hold":"");
+    setDroneWeatherFlag("droneGustFlag",weatherFresh&&gustValid&&gust>=DRONE_LIMITS.gust?"hold":"");
+    setDroneWeatherFlag("dronePrecipFlag",weatherFresh&&rainValid&&(precip>0||droneWetCode(c.weather_code))?"hold":"");
+    setDroneWeatherFlag("droneNextRainFlag",weatherFresh&&next&&(next.rain>0||next.prob>=50)?"warn":"");
     el("droneG").textContent=gMatch?gMatch[0]:"--";
     el("droneGNote").textContent=!spaceFresh||g===null?"경보 자료 확인 필요":g===0?"교란 없음 · GNSS 현장 확인":g>=3?"강한 교란 · 위성항법 장애 가능":"지자기교란 · GNSS 상태 확인";
     el("droneKk").textContent=kkValid?droneNumber(kk,0):"--";
@@ -4440,7 +4460,7 @@
     el("droneSolarWind").innerHTML=solarValid?droneNumber(solarSpeed,1)+" <small>km/s</small>":"--";
     el("droneKkNote").textContent=kFresh?"국내 자기장 관측 · "+droneTimeLabel(kAt):"관측 시각 지연 · 판정 미반영";
     el("droneKpNote").textContent=kFresh?"전 지구 지자기 지수 · "+droneTimeLabel(kAt):"관측 시각 지연 · 판정 미반영";
-    el("droneSolarNote").textContent=solarFresh?"ACE 관측 "+droneTimeLabel(solarAt):"ACE 관측 지연 · 판정 미반영";
+    el("droneSolarNote").textContent=(solarFresh?"ACE 관측 "+droneTimeLabel(solarAt):"ACE 관측 지연 · 판정 미반영")+" · 배경 NASA/SDO";
     el("droneTimes").textContent="기상 "+droneTimeLabel(weatherAt)+" · 우주환경 수집 "+droneTimeLabel(spaceAt)+" · 지자기 "+droneTimeLabel(kAt);
     setDroneSpaceFlag("droneGFlag",spaceFresh&&g!==null?(g>=3?"hold":g>=1?"warn":""):"",g>=3?"이륙 불가 권고":"주의");
     setDroneSpaceFlag("droneKkFlag",kFresh&&kkValid?(kk>=7?"hold":kk>=5?"warn":""):"",kk>=7?"이륙 불가 권고":"주의");
@@ -4450,10 +4470,10 @@
     if(!weatherFresh||!windValid||!gustValid||!rainValid||!next)missing.push("기상 자료가 없거나 오래되었습니다");
     if(!spaceFresh||g===null)missing.push("우주환경 경보 자료가 없거나 오래되었습니다");
     if(weatherFresh){
-      if(windValid&&wind>=DRONE_LIMITS.wind)blockers.push("풍속이 임시 검토 기준 "+DRONE_LIMITS.wind+" m/s 이상");
-      if(gustValid&&gust>=DRONE_LIMITS.gust)blockers.push("돌풍이 임시 검토 기준 "+DRONE_LIMITS.gust+" m/s 이상");
-      if(rainValid&&(precip>0||droneWetCode(c.weather_code)))blockers.push("현재 비·눈·뇌우 가능성");
-      if(next&&(next.rain>0||next.prob>=50))cautions.push("향후 2시간 강수 가능성");
+      if(windValid&&wind>=DRONE_LIMITS.wind)blockers.push("현재 풍속 "+droneNumber(wind,1)+" m/s ≥ 설정 "+droneNumber(DRONE_LIMITS.wind,1)+" m/s");
+      if(gustValid&&gust>=DRONE_LIMITS.gust)blockers.push("현재 돌풍 "+droneNumber(gust,1)+" m/s ≥ 설정 "+droneNumber(DRONE_LIMITS.gust,1)+" m/s");
+      if(rainValid&&(precip>0||droneWetCode(c.weather_code)))blockers.push("현재 강수 "+droneNumber(precip,1)+" mm"+(droneWetCode(c.weather_code)?" · 비·눈·뇌우 예보":""));
+      if(next&&(next.rain>0||next.prob>=50))cautions.push("향후 2시간 예상 강수 "+droneNumber(next.rain,1)+" mm · 최대 강수확률 "+Math.round(next.prob)+"%");
     }
     if(spaceFresh&&g!==null){
       if(g>=3){blockers.push("지자기교란 "+gMatch[0]+" · 위성항법 장애 우려");spaceBlocker=true;}
@@ -4475,7 +4495,7 @@
     if(!reasons.length)reasons.push("설정한 예비 기준에 해당하는 위험 신호는 없습니다");
     el("droneDecision").className="drone-decision "+kind;
     el("droneDecision").innerHTML=label+"<small>자동 예비 검토 · 최종 판단은 조종자</small>";
-    el("droneReason").textContent=reasons.join(" · ")+". 현장 실측과 기체별 운용가이드를 확인하세요.";
+    el("droneReason").textContent=reasons.join(" · ")+". "+((blockers.length||cautions.length)?"강조된 카드가 판정에 반영된 항목입니다. ":"")+"현장 실측과 기체별 운용가이드를 확인하세요.";
   }
   function refreshSpaceWeather(){
     if(DRONE_SPACE_INFLIGHT)return DRONE_SPACE_INFLIGHT;
