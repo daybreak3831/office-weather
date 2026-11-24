@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 기상정보시스템 · v5.31</title>
+  <title>창원시설공단 기상정보시스템 · v5.4</title>
 
   <style>
     :root{
@@ -755,16 +755,6 @@
       font-size:clamp(27px,5vh,55px);
       line-height:1;
       margin:.6vh 0;
-    }
-
-    /* v5.31 · 6일/시간대별 안개 아이콘은 투명 배경의 벡터 이미지로 표시 */
-    .day-icon .fog-icon-svg,
-    .hour-icon .fog-icon-svg{
-      display:block;
-      width:1em;
-      height:1em;
-      margin:0 auto;
-      overflow:visible;
     }
 
     .day-temp{
@@ -1535,57 +1525,67 @@
       .cctv-pip{width:95vw;height:50dvh;min-height:260px;right:2.5vw;bottom:2.5vh}
     }
     @media(max-width:365px){.weather-art{width:74px;height:88px}.temp{font-size:46px}.clock{font-size:19px}.forecast-action{padding:5px 6px}}
-
-    /* v5.3 · 사용자가 전환하는 드론 이륙 검토 화면 */
+    /* v5.4 · 드론 화면 / TV 호환 레이아웃 */
     .view-tabs{display:flex;align-items:center;gap:8px;padding:0 .4vw;min-height:0}
-    .view-tab{height:100%;min-height:32px;padding:0 22px;border:1px solid rgba(255,255,255,.23);border-radius:12px;background:rgba(5,25,48,.27);color:#d5e9fb;font:inherit;font-weight:800;font-size:clamp(12px,1.5vh,18px);cursor:pointer}
+    .view-tab{height:100%;min-height:26px;padding:0 22px;border:1px solid rgba(255,255,255,.23);border-radius:12px;background:rgba(5,25,48,.27);color:#d5e9fb;font:inherit;font-weight:800;font-size:14px;font-size:clamp(12px,1.5vh,18px);cursor:pointer;margin-right:8px}
     .view-tab[aria-selected="true"]{background:#eaf6ff;color:#123756;border-color:#eaf6ff;box-shadow:0 5px 18px rgba(0,0,0,.12)}
     .view-tab:focus-visible{outline:3px solid #a6ebff;outline-offset:2px}
+    .view-tabs[hidden],.drone-view[hidden],.drone-card-flag[hidden]{display:none!important}
+    body.drone-disabled .app{grid-template-rows:8.5vh minmax(0,1fr) 25.5vh 3vh}
     body.drone-active{--bgA:#164a69;--bgB:#071729}
     body.drone-active .main,body.drone-active .hourly-panel,body.drone-active .footer,body.drone-active .alarm-controls,body.drone-active .climate-test-controls{display:none!important}
     body.drone-active .app{grid-template-rows:8.5vh 4.4vh minmax(0,1fr)}
     body.drone-active .weather-fx{opacity:.25}
-    .drone-view[hidden]{display:none!important}
-    .drone-view{min-height:0;overflow:auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.15vh;padding:.35vh .25vw .6vh}
-    .drone-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:1.5vh 1.5vw;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:linear-gradient(110deg,rgba(15,54,79,.95),rgba(18,72,99,.72))}
-    .drone-hero h2{margin:0 0 5px;font-size:clamp(20px,3.2vh,38px)}
-    .drone-hero p{margin:0;color:#c7e2f1;font-size:clamp(12px,1.35vh,17px);line-height:1.5}
-    .drone-decision{flex:none;min-width:235px;max-width:43%;padding:1.1vh 1.25vw;border-radius:14px;background:rgba(95,123,145,.45);font-size:clamp(17px,2.5vh,29px);font-weight:900;text-align:center}
+    .drone-view{min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;padding:.35vh .25vw .6vh}
+    .drone-hero{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:1.1vh 1.2vw;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:linear-gradient(110deg,rgba(15,54,79,.95),rgba(18,72,99,.72));margin-bottom:1vh}
+    .drone-hero>div:first-child{flex:1;min-width:0;margin-right:1vw}
+    .drone-hero h2{margin:0 0 4px;font-size:3vh;font-size:clamp(17px,3vh,36px)}
+    .drone-hero p{margin:0;color:#c7e2f1;font-size:1.5vh;font-size:clamp(10px,1.5vh,17px);line-height:1.4;overflow-wrap:break-word}
+    .drone-decision{flex:0 0 25%;min-width:0;padding:1vh 1vw;border-radius:14px;background:rgba(95,123,145,.45);font-size:2.5vh;font-size:clamp(15px,2.5vh,29px);font-weight:900;text-align:center}
     .drone-decision.good{background:#146b58;color:#ddfff1}.drone-decision.caution{background:#876128;color:#fff3d1}.drone-decision.hold{background:#9b3e43;color:#fff0f1}
-    .drone-decision small{display:block;margin-top:4px;font-size:clamp(10px,1.15vh,14px);font-weight:600}
-    .drone-grid{min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1vw}
-    .drone-card{min-width:0;padding:1.6vh 1.3vw;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:linear-gradient(145deg,rgba(20,63,87,.88),rgba(9,34,56,.87));display:flex;flex-direction:column;justify-content:space-between}
+    .drone-decision small{display:block;margin-top:3px;font-size:1.25vh;font-size:clamp(9px,1.25vh,14px);font-weight:600}
+    /* Flex 대신 행 높이를 재계산하는 구형 Grid 문제를 피하기 위해 두 행을 명시적으로 분리. */
+    .drone-grid{flex:1 0 auto;min-height:220px;display:flex;flex-direction:column;min-width:0}
+    .drone-row{display:flex;flex:1 0 auto;min-height:0;min-width:0;align-items:stretch}
+    .drone-row+.drone-row{margin-top:1vh}
+    .drone-card{flex:1 1 0;min-width:0;min-height:0;position:relative;overflow:hidden;padding:1.15vh 1vw;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:linear-gradient(145deg,rgba(20,63,87,.88),rgba(9,34,56,.87));display:flex;flex-direction:column;justify-content:space-between}
+    .drone-card+.drone-card{margin-left:.8vw}
     .drone-card.space-warn{border-color:#f9cb64;background:linear-gradient(145deg,rgba(116,78,23,.94),rgba(67,46,23,.92));box-shadow:0 0 18px rgba(255,194,65,.18)}
     .drone-card.space-hold{border-color:#ff8e92;background:linear-gradient(145deg,rgba(132,40,48,.95),rgba(70,23,34,.94));box-shadow:0 0 18px rgba(250,76,92,.22)}
     .drone-card.weather-hold{border-color:rgba(255,139,151,.78);box-shadow:inset 0 0 0 1px rgba(255,139,151,.16),0 0 16px rgba(253,84,101,.16);background:linear-gradient(145deg,rgba(66,44,61,.9),rgba(28,37,58,.92))}
     .drone-card.weather-warn{border-color:rgba(249,203,100,.8);box-shadow:0 0 15px rgba(255,194,65,.14);background:linear-gradient(145deg,rgba(74,62,46,.88),rgba(26,43,58,.91))}
-    .weather-hold .drone-card-flag{background:#f36a76;color:#fff}
+    .weather-hold .drone-card-flag,.space-hold .drone-card-flag{background:#f36a76;color:#fff}
     .drone-card--solar,.drone-card--geomag{position:relative;isolation:isolate;overflow:hidden}
-    .drone-card--solar::before,.drone-card--geomag::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
+    .drone-card--solar::before,.drone-card--geomag::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;pointer-events:none}
     .drone-card--solar::before{background-image:radial-gradient(circle at 75% 50%,rgba(255,164,72,.46),transparent 58%),url("https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg");background-size:cover,auto 145%;background-position:center,82% center;background-repeat:no-repeat;opacity:.30;filter:saturate(1.2)}
     .drone-card--geomag::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 180'%3E%3Cg fill='none' stroke='%2376d8ed' stroke-width='2' opacity='.8'%3E%3Cpath d='M260 78 C175 4 120 5 105 90 C120 175 175 176 260 102'/%3E%3Cpath d='M260 78 C200 30 170 40 160 90 C170 140 200 150 260 102'/%3E%3Cpath d='M260 78 C210 -13 61 -13 45 90 C61 193 210 193 260 102'/%3E%3Cpath d='M260 78 C185 15 142 22 130 90 C142 158 185 165 260 102'/%3E%3C/g%3E%3Ccircle cx='260' cy='90' r='30' fill='%233b94b4' opacity='.85'/%3E%3Cpath d='M244 70 Q260 82 252 92 Q271 96 276 111' fill='none' stroke='%23b8ecf4' stroke-width='3' opacity='.8'/%3E%3C/svg%3E");background-size:cover;background-position:center;opacity:.36;mask-image:linear-gradient(90deg,transparent 5%,#000 55%)}
     .drone-card--solar>*,.drone-card--geomag>*{position:relative;z-index:1}
-    .drone-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;flex-wrap:wrap}
-    .drone-card-flag{flex:none;padding:3px 7px;border-radius:7px;background:#e9b648;color:#241908;font-size:clamp(10px,1.2vh,15px);font-weight:900;white-space:nowrap}
-    .space-hold .drone-card-flag{background:#f36a76;color:#fff}
-    .drone-card-flag[hidden]{display:none}
-    .drone-card-label{color:#b8d5e5;font-size:clamp(12px,1.6vh,19px);font-weight:800}
-    .drone-card-value{font-size:clamp(27px,4.6vh,55px);font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .drone-card-heading{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;flex:0 0 auto}
+    .drone-card-flag{flex:none;padding:2px 5px;border-radius:7px;background:#e9b648;color:#241908;font-size:1.2vh;font-size:clamp(9px,1.2vh,15px);font-weight:900;white-space:nowrap;margin:2px 0}
+    .drone-card-label{color:#b8d5e5;font-size:1.6vh;font-size:clamp(10px,1.6vh,19px);font-weight:800;line-height:1.25}
+    .drone-card-value{flex:0 0 auto;font-size:4.6vh;font-size:clamp(22px,4.6vh,55px);font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.15;margin:.45vh 0}
     .drone-card-value small{font-size:.43em;font-weight:700;letter-spacing:0}
-    .drone-card-note{color:#a8c8d9;font-size:clamp(10px,1.2vh,15px);line-height:1.4}
-    .drone-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:.8vh .5vw;color:#d3e7f2;font-size:clamp(10px,1.28vh,15px);line-height:1.45}
+    .drone-card-note{flex:0 0 auto;color:#a8c8d9;font-size:1.35vh;font-size:clamp(9px,1.35vh,15px);line-height:1.35;overflow-wrap:break-word}
+    .drone-bottom{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:.7vh .5vw 0;color:#d3e7f2;font-size:1.25vh;font-size:clamp(9px,1.25vh,15px);line-height:1.4;margin-top:.5vh}
+    .drone-bottom>div:first-child{flex:1;min-width:0;margin-right:1vw}
     .drone-bottom strong{color:#fff}
-    .drone-thresholds{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .drone-thresholds label{white-space:nowrap}
-    .drone-thresholds input{width:54px;padding:5px;border:1px solid #8db0c1;border-radius:7px;background:#173c56;color:#fff;font:inherit;text-align:center}
-    .drone-thresholds button{padding:5px 10px;border:1px solid #8db0c1;border-radius:8px;background:#275872;color:#fff;font:inherit;cursor:pointer}
-    .drone-refresh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .drone-refresh button{padding:6px 11px;border:1px solid #8db0c1;border-radius:8px;background:#275872;color:#fff;font:inherit;cursor:pointer}
+    .drone-thresholds{flex:0 0 25%;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+    .drone-thresholds label{white-space:nowrap;margin:3px 0 3px 7px}
+    .drone-thresholds input{width:48px;padding:4px;border:1px solid #8db0c1;border-radius:7px;background:#173c56;color:#fff;font:inherit;text-align:center}
+    .drone-thresholds button,.drone-refresh button{padding:5px 9px;border:1px solid #8db0c1;border-radius:8px;background:#275872;color:#fff;font:inherit;cursor:pointer;margin:3px 0 3px 7px}
+    .drone-refresh{display:flex;align-items:center;flex-wrap:wrap}.drone-refresh button{margin-left:0;margin-right:7px}
     .drone-refresh button:disabled{opacity:.55;cursor:wait}
-    .drone-refresh-status{color:#c9e2ef;font-size:clamp(10px,1.15vh,14px)}
-    @media(max-width:1100px){.drone-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr))}.drone-view{overflow:auto}.drone-card{min-height:120px}.drone-bottom{flex-wrap:wrap}}
-    @media(max-width:760px){body.drone-active .app{display:flex;flex-direction:column}.view-tabs{height:42px;flex:none}.view-tab{padding:0 13px;font-size:12px}.drone-view{display:flex;flex-direction:column;overflow:visible}.drone-hero{flex-direction:column;align-items:stretch;padding:16px}.drone-decision{max-width:none;min-width:0}.drone-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}.drone-card{min-height:125px;padding:14px}.drone-card-value{font-size:30px}.drone-bottom{display:block;padding:12px 4px}.drone-thresholds{margin-top:12px}}
-    @media(max-width:400px){.drone-grid{grid-template-columns:1fr}.drone-card{min-height:105px}}
+    .drone-refresh-status{color:#c9e2ef;font-size:1.2vh;font-size:clamp(9px,1.2vh,14px)}
+    @media (orientation:landscape) and (max-height:650px){
+      .drone-hero{padding:.8vh 1vw}.drone-grid{min-height:180px}.drone-card{padding:.8vh .8vw;border-radius:10px}.drone-card-value{font-size:clamp(20px,4.1vh,34px)}.drone-bottom{font-size:clamp(9px,1.35vh,12px)}.view-tab{min-height:22px}
+    }
+    @media (orientation:landscape) and (max-width:760px){
+      body.drone-active{height:100%;overflow:hidden}body.drone-active .app{height:100vh;min-height:0;display:grid;grid-template-rows:10vh 7vh minmax(0,1fr);gap:1vh;padding:1vh 1vw;overflow:hidden}body.drone-active .topbar-right{flex-direction:row;align-items:center}
+    }
+    @media (orientation:portrait){
+      body.drone-active .app{height:auto;min-height:100vh;display:flex;flex-direction:column;overflow:visible}body.drone-disabled .app{grid-template-rows:auto auto auto auto}.view-tabs{height:42px;flex:none}.view-tab{padding:0 13px;font-size:12px}.drone-view{overflow:visible;flex:0 0 auto}.drone-hero{flex-direction:column;align-items:stretch;padding:16px}.drone-hero>div:first-child{margin:0 0 8px}.drone-decision{flex:none}.drone-grid{display:block;min-height:0}.drone-row{display:flex;flex-wrap:wrap;margin:0 -4px!important}.drone-card,.drone-card+.drone-card{flex:0 0 calc(50% - 8px);margin:4px;min-height:125px;padding:12px}.drone-card-value{font-size:30px}.drone-card-label{font-size:13px}.drone-card-note{font-size:11px}.drone-bottom{display:block;padding:12px 4px;font-size:11px}.drone-thresholds{margin-top:12px;justify-content:flex-start}
+    }
+    @media (orientation:portrait) and (max-width:400px){.drone-card,.drone-card+.drone-card{flex-basis:calc(100% - 8px);min-height:105px}}
   </style>
 </head>
 
@@ -1612,32 +1612,33 @@
     </div>
   </header>
 
-  <nav class="view-tabs" role="tablist" aria-label="화면 선택">
+  <nav id="mainViewTabs" class="view-tabs" role="tablist" aria-label="화면 선택">
     <button id="weatherTab" class="view-tab" type="button" role="tab" aria-selected="true" aria-controls="weatherMain">기상정보</button>
     <button id="droneTab" class="view-tab" type="button" role="tab" aria-selected="false" aria-controls="droneView">드론 이륙 검토</button>
   </nav>
-
   <section id="droneView" class="drone-view" role="tabpanel" aria-labelledby="droneTab" hidden>
     <div class="drone-hero">
       <div><h2 id="droneSite">드론 이륙 검토</h2><p id="droneReason">현장 기상과 우주환경 자료를 불러오는 중입니다.</p></div>
       <div id="droneDecision" class="drone-decision caution">자료 확인 중<small>자동 예비 검토 · 최종 판단은 조종자</small></div>
     </div>
     <div class="drone-grid">
+      <div class="drone-row">
       <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">현재 풍속 · 10m 예보</div><span id="droneWindFlag" class="drone-card-flag" hidden></span></div><div id="droneWind" class="drone-card-value">--</div><div id="droneWindNote" class="drone-card-note">선택 사업장 기준</div></article>
       <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">순간 최대풍속 · 직전 1시간</div><span id="droneGustFlag" class="drone-card-flag" hidden></span></div><div id="droneGust" class="drone-card-value">--</div><div id="droneGustNote" class="drone-card-note">지상 예보치 · 고소부 풍속은 별도 확인</div></article>
       <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">현재 강수</div><span id="dronePrecipFlag" class="drone-card-flag" hidden></span></div><div id="dronePrecip" class="drone-card-value">--</div><div id="dronePrecipNote" class="drone-card-note">직전 15분 예보 강수량</div></article>
       <article class="drone-card"><div class="drone-card-heading"><div class="drone-card-label">향후 2시간 강수 가능성</div><span id="droneNextRainFlag" class="drone-card-flag" hidden></span></div><div id="droneNextRain" class="drone-card-value">--</div><div id="droneNextRainNote" class="drone-card-note">시간대별 예보 기준</div></article>
+      </div><div class="drone-row">
       <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">지자기교란 경보</div><span id="droneGFlag" class="drone-card-flag" hidden></span></div><div id="droneG" class="drone-card-value">--</div><div id="droneGNote" class="drone-card-note">우주환경센터 · GNSS 참고</div></article>
       <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">국내 지자기 지수 · Kk</div><span id="droneKkFlag" class="drone-card-flag" hidden></span></div><div id="droneKk" class="drone-card-value">--</div><div id="droneKkNote" class="drone-card-note">국내 관측 · 약 3시간 간격</div></article>
       <article class="drone-card drone-card--geomag"><div class="drone-card-heading"><div class="drone-card-label">행성 지자기 지수 · Kp</div><span id="droneKpFlag" class="drone-card-flag" hidden></span></div><div id="droneKp" class="drone-card-value">--</div><div id="droneKpNote" class="drone-card-note">전 지구 지자기 활동 지표</div></article>
       <article class="drone-card drone-card--solar"><div class="drone-card-heading"><div class="drone-card-label">태양풍 속도</div><span id="droneSolarFlag" class="drone-card-flag" hidden></span></div><div id="droneSolarWind" class="drone-card-value">--</div><div id="droneSolarNote" class="drone-card-note">ACE 위성 관측 · 배경 NASA/SDO</div></article>
+      </div>
     </div>
     <div class="drone-bottom">
       <div><strong id="droneTimes">자료 시각 확인 중</strong><br>내부 예비 기준: G1~G2·Kp/Kk 5~6 주의 / G3 이상·Kp/Kk 7 이상 이륙 불가 권고. 태양풍 700 km/s 이상은 주의이며 단독 이륙 금지 기준은 아닙니다.<br>현장 풍속·강수, 기체의 GNSS 상태와 제조사 운용한계, 공역·승인을 조종자가 최종 확인하세요.<div class="drone-refresh"><button id="droneRefreshSpace" type="button">우주환경 새로고침</button><span id="droneRefreshStatus" class="drone-refresh-status" role="status" aria-live="polite">자동 갱신 대기 중</span></div></div>
       <div class="drone-thresholds" aria-label="임시 검토 기준"><span>임시 검토 기준</span><label>풍속 <input id="droneWindLimit" type="number" min="1" max="30" step="0.5" value="5"> m/s</label><label>돌풍 <input id="droneGustLimit" type="number" min="1" max="40" step="0.5" value="8"> m/s</label><button id="droneSaveLimits" type="button">기준 저장</button></div>
     </div>
   </section>
-
   <section id="weatherMain" class="main" role="tabpanel" aria-labelledby="weatherTab">
 
     <article class="panel current-panel">
@@ -1777,7 +1778,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.31</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.4</span></div>
   </footer>
 
 </main>
@@ -1873,6 +1874,17 @@
           <div class="settings-field"><label for="settingScheduleSeconds">일정창 표시 시간 (초)</label><select id="settingScheduleSeconds" class="settings-input"><option value="10">10초</option><option value="20">20초</option><option value="30" selected>30초</option><option value="40">40초</option><option value="50">50초</option><option value="60">60초</option><option value="90">90초</option><option value="120">120초</option></select></div>
         </div>
       </div>
+      <div class="settings-section">
+        <div class="settings-section-head"><div>
+          <div class="settings-section-title">드론 이륙 검토</div>
+          <div class="settings-section-note">드론을 사용하지 않는 사업장은 OFF로 설정하세요. 화면 선택 탭이 사라지고 일반 기상정보만 표시됩니다.</div>
+        </div></div>
+        <div class="settings-field">
+          <label for="settingDroneEnabled">드론 이륙 검토 기능</label>
+          <select id="settingDroneEnabled" class="settings-input"><option value="on">ON · 사용</option><option value="off">OFF · 미사용</option></select>
+        </div>
+        <div class="settings-section-note" style="margin-top:.6vh">OFF 시 이 TV/브라우저의 우주환경 자동 조회 및 재시도를 중지합니다. 다시 ON으로 저장하면 사용할 수 있습니다.</div>
+      </div>
       <div class="settings-hint-box">설정은 각 TV/브라우저에 개별 저장됩니다. 같은 웹주소를 여러 사업장에서 사용해도 각 사업장의 설정은 서로 영향을 주지 않습니다.</div>
     </div>
 
@@ -1959,7 +1971,7 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v5.31</div><div class="info-version-text">2026-11-23 · 안개(기상코드 45·48) 아이콘 사각형 배경 제거 · 6일 예보 및 시간대별 날씨에 투명 배경 SVG 적용.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v5.4</div><div class="info-version-text">2026-11-24 · TV 드론 이륙 검토 화면 겹침 개선(가로형 4열 2행, 구형 브라우저 호환 레이아웃) · 설정 일반에 드론 이륙 검토 ON/OFF 추가 · OFF 시 탭 숨김 및 우주환경 조회 중지.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.3</div><div class="info-version-text">2026-11-21 · 드론 이륙 보류·주의 원인 카드 강조 및 실제 관측값과 설정 기준 표시 · 태양풍과 지자기 카드에 반투명 배경 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.2</div><div class="info-version-text">2026-11-21 · 지자기교란·Kp·Kk·태양풍 카드에 단계별 주의 표시 추가 · G3 이상 또는 Kp/Kk 7 이상에서 내부 운용 기준에 따라 이륙 불가 권고.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.1.1</div><div class="info-version-text">2026-11-21 · 드론 이륙 검토 탭 추가 · 풍속·돌풍·강수와 우주환경센터 관측값 통합 · 우주환경 수동 새로고침과 자료 지연 시 재시도.</div></div>
@@ -2670,7 +2682,7 @@
   ];
   var SETTINGS_DEFAULTS={
     district:"마산회원구",facilityId:"ncpark",
-    keepAwakeEnabled:true,
+    keepAwakeEnabled:true,droneEnabled:true,
     forecastAutoEnabled:true,forecastSeconds:60,scheduleSeconds:30,
     customAlarms:DEFAULT_CUSTOM_ALARMS,
     windThreshold:15,windAlertEnabled:true,rainAlertEnabled:true,
@@ -2685,7 +2697,7 @@
   var REFRESH_MS=10*60*1000;
   var droneView=false;
   var DRONE_WEATHER=null,DRONE_WEATHER_FETCHED=0,DRONE_SPACE=null,DRONE_SPACE_RECEIVED=0;
-  var DRONE_SPACE_INFLIGHT=null,DRONE_SPACE_RETRY_TIMER=null;
+  var DRONE_SPACE_INFLIGHT=null,DRONE_SPACE_RETRY_TIMER=null,DRONE_SPACE_CONTROLLER=null;
   var DRONE_LIMITS={wind:5,gust:8}; // 기체별 제조사 기준을 확인한 뒤 화면에서 변경하는 임시 검토값
 
   var ALARMS=[];
@@ -2754,7 +2766,7 @@
     return "https://api.open-meteo.com/v1/forecast"+
       "?latitude="+LAT+
       "&longitude="+LON+
-      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,is_day"+
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability"+(droneEnabled()?",precipitation,wind_gusts_10m":"")+",weather_code,wind_speed_10m,wind_direction_10m,is_day"+
       "&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,is_day"+
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum"+
       "&temperature_unit=celsius"+
@@ -2807,7 +2819,7 @@
     raw=raw||{};
     var s={
       district:SETTINGS_DEFAULTS.district,facilityId:SETTINGS_DEFAULTS.facilityId,
-      keepAwakeEnabled:true,
+      keepAwakeEnabled:true,droneEnabled:true,
       forecastAutoEnabled:true,forecastSeconds:60,scheduleSeconds:30,
       cctvOverrides:{},
       customAlarms:defaultAlarmCopies(),
@@ -2847,6 +2859,7 @@
     var hr12=Number(raw.heavyRain12h);
     if(isFinite(hr12)&&hr12>=20&&hr12<=500)s.heavyRain12h=Math.round(hr12*10)/10;
 
+    if(typeof raw.droneEnabled==="boolean")s.droneEnabled=raw.droneEnabled;
     if(typeof raw.keepAwakeEnabled==="boolean")s.keepAwakeEnabled=raw.keepAwakeEnabled;
     if(typeof raw.forecastAutoEnabled==="boolean")s.forecastAutoEnabled=raw.forecastAutoEnabled;
     if([10,20,30,40,50,60,90,120].indexOf(Number(raw.forecastSeconds))>=0)s.forecastSeconds=Number(raw.forecastSeconds);
@@ -3025,6 +3038,7 @@
     el("settingHeatEnabled").checked=!!s.heatAlertEnabled;
     el("settingHeavyRainEnabled").checked=!!s.heavyRainAlertEnabled;
     el("settingKeepAwakeEnabled").checked=s.keepAwakeEnabled!==false;
+    el("settingDroneEnabled").value=s.droneEnabled!==false?"on":"off";
     el("settingForecastAutoEnabled").checked=s.forecastAutoEnabled!==false;
     el("settingForecastSeconds").value=String(s.forecastSeconds);
     el("settingScheduleSeconds").value=String(s.scheduleSeconds);
@@ -3119,6 +3133,7 @@
       district:el("settingDistrict").value,facilityId:el("settingFacility").value,
       cctvOverrides:settingsCctvDrafts,
       keepAwakeEnabled:el("settingKeepAwakeEnabled").checked,
+      droneEnabled:el("settingDroneEnabled").value==="on",
       forecastAutoEnabled:el("settingForecastAutoEnabled").checked,
       forecastSeconds:Number(el("settingForecastSeconds").value),
       scheduleSeconds:Number(el("settingScheduleSeconds").value),
@@ -3204,8 +3219,10 @@
   function applySettings(next,doRefresh){
     next=normalizeSettings(next);
     var prevId=CURRENT_FACILITY?CURRENT_FACILITY.id:null;
+    var wasDroneEnabled=droneEnabled();
     var f=getFacilityById(next.facilityId)||getFacilityById(SETTINGS_DEFAULTS.facilityId);
     CURRENT_SETTINGS=next;CURRENT_FACILITY=f;LAT=f.lat;LON=f.lon;
+    syncDroneSetting();
     applyKeepAwakeSetting(next.keepAwakeEnabled);
     ALARMS=next.customAlarms.map(cloneAlarm);
     CLIMATE_CONFIG.windThreshold=next.windThreshold;
@@ -3218,7 +3235,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 기상정보시스템 · v5.31";
+    document.title=f.name+" 기상정보시스템 · v5.4";
     el("droneSite").textContent=f.name+" · 드론 이륙 검토";
 
     var activeCctv=effectiveCctvForFacility(f,next);
@@ -3245,18 +3262,11 @@
       applyClimateVisuals();
     }
     if(doRefresh)refresh();
+    if(!wasDroneEnabled&&droneEnabled())refreshSpaceWeather();
   }
 
   function saveSettingsFromForm(){
     var s=readSettingsForm();saveSettingsLocal(s);applySettings(s,true);addLog("설정","설정 저장",CURRENT_FACILITY.name+" · 사용자 알람 "+s.customAlarms.length+"개");closeSettings();
-  }
-
-  /* v5.31 · 투명 배경의 안개 SVG 아이콘 (운영체제 이모지 배경 차이 방지) */
-  function fogIconSvg(){
-    return '<svg class="fog-icon-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
-      '<path d="M17 37.5c-5.5 0-9.5-3.9-9.5-9.1 0-4.8 3.7-8.7 8.5-9.1C18.5 11.9 24.7 7 32 7c9 0 16.1 6.2 17.3 14.5 4.5.8 7.7 4.3 7.7 8.8 0 4.2-3 7.2-7.3 7.2H17Z" fill="#f0f6ff"/>'+
-      '<path d="M8.5 44.5h47M14 52.5h36" fill="none" stroke="#d9eaff" stroke-width="4.8" stroke-linecap="round"/>'+
-      '</svg>';
   }
 
   function weatherInfo(code,isDay){
@@ -3267,7 +3277,7 @@
     if(c===1) return {text:"대체로 맑음",icon:day?"🌤️":"🌙",theme:day?"theme-clear":"theme-night",art:day?"partly":"night"};
     if(c===2) return {text:"구름 조금",icon:"⛅",theme:"theme-cloud",art:"partly"};
     if(c===3) return {text:"흐림",icon:"☁️",theme:"theme-cloud",art:"cloudy"};
-    if(c===45||c===48) return {text:"안개",icon:fogIconSvg(),theme:"theme-fog",art:"foggy"};
+    if(c===45||c===48) return {text:"안개",icon:"🌫️",theme:"theme-fog",art:"foggy"};
     if(c===51||c===53||c===55) return {text:"이슬비",icon:"🌦️",theme:"theme-rain",art:"rainy"};
     if(c===56||c===57) return {text:"어는 이슬비",icon:"🌧️",theme:"theme-rain",art:"rainy"};
     if(c===61||c===63||c===65) return {text:"비",icon:"🌧️",theme:"theme-rain",art:"rainy"};
@@ -3796,6 +3806,7 @@
   function applyTheme(info){
     document.body.className=info.theme;
     document.body.classList.toggle("drone-active",droneView);
+    document.body.classList.toggle("drone-disabled",!droneEnabled());
     el("weatherArt").className="weather-art "+info.art;
   }
 
@@ -4423,6 +4434,7 @@
     card.classList.toggle("weather-warn",level==="warn");
   }
   function renderDroneReview(){
+    if(!droneEnabled())return;
     var w=DRONE_WEATHER,c=w&&w.current||{},s=DRONE_SPACE||{};
     var warning=s.warn&&(s.warn.Warn||s.warn.warn)||{},gRaw=warning.G&&warning.G.v0;
     var gMatch=/^G([0-5])$/.exec(String(gRaw||"").toUpperCase()),g=gMatch?Number(gMatch[1]):null;
@@ -4497,32 +4509,51 @@
     el("droneDecision").innerHTML=label+"<small>자동 예비 검토 · 최종 판단은 조종자</small>";
     el("droneReason").textContent=reasons.join(" · ")+". "+((blockers.length||cautions.length)?"강조된 카드가 판정에 반영된 항목입니다. ":"")+"현장 실측과 기체별 운용가이드를 확인하세요.";
   }
+  function droneEnabled(){return !CURRENT_SETTINGS||CURRENT_SETTINGS.droneEnabled!==false;}
+  function syncDroneSetting(){
+    var enabled=droneEnabled();
+    document.body.classList.toggle("drone-disabled",!enabled);
+    el("mainViewTabs").hidden=!enabled;
+    if(!enabled){
+      switchMainView("weather");
+      if(DRONE_SPACE_RETRY_TIMER){clearTimeout(DRONE_SPACE_RETRY_TIMER);DRONE_SPACE_RETRY_TIMER=null;}
+      if(DRONE_SPACE_CONTROLLER){try{DRONE_SPACE_CONTROLLER.abort();}catch(e){}}
+      DRONE_SPACE=null;DRONE_SPACE_RECEIVED=0;
+    }
+  }
   function refreshSpaceWeather(){
+    if(!droneEnabled())return Promise.resolve();
     if(DRONE_SPACE_INFLIGHT)return DRONE_SPACE_INFLIGHT;
     if(DRONE_SPACE_RETRY_TIMER){clearTimeout(DRONE_SPACE_RETRY_TIMER);DRONE_SPACE_RETRY_TIMER=null;}
     var button=el("droneRefreshSpace"),status=el("droneRefreshStatus");
     button.disabled=true;status.textContent="우주환경 자료 요청 중…";
-    var controller=new AbortController(),timeout=setTimeout(function(){controller.abort();},12000);
-    DRONE_SPACE_INFLIGHT=fetch("spaceweather.json?t="+Date.now(),{cache:"no-store",signal:controller.signal})
+    var controller=typeof AbortController!=="undefined"?new AbortController():null;
+    DRONE_SPACE_CONTROLLER=controller;
+    var timeout=setTimeout(function(){if(controller)controller.abort();},12000);
+    var options={cache:"no-store"};if(controller)options.signal=controller.signal;
+    DRONE_SPACE_INFLIGHT=fetch("spaceweather.json?t="+Date.now(),options)
       .then(function(r){if(!r.ok)throw new Error("spaceweather");return r.json();})
       .then(function(data){
+        if(!droneEnabled()||(controller&&controller.signal.aborted))return;
         if(!data||data.source!=="KASA Korea Space Weather Center")throw new Error("invalid spaceweather");
         DRONE_SPACE=data;DRONE_SPACE_RECEIVED=Date.now();renderDroneReview();
         var at=droneDate(data.generatedAt),fresh=at&&!isNaN(at.getTime())&&Date.now()-at.getTime()<45*60000&&Date.now()-at.getTime()>-5*60000;
         status.textContent=fresh?"새로고침 완료 · "+droneTimeLabel(at):"수집 자료가 오래되었습니다 · 1분 뒤 재시도";
         if(!fresh)scheduleSpaceWeatherRetry();
       }).catch(function(){
+        if(!droneEnabled())return;
         DRONE_SPACE=null;DRONE_SPACE_RECEIVED=0;renderDroneReview();
         status.textContent="연결 실패 · 1분 뒤 자동 재시도";scheduleSpaceWeatherRetry();
-      }).finally(function(){clearTimeout(timeout);button.disabled=false;DRONE_SPACE_INFLIGHT=null;});
+      }).then(function(){clearTimeout(timeout);button.disabled=false;DRONE_SPACE_INFLIGHT=null;DRONE_SPACE_CONTROLLER=null;});
     return DRONE_SPACE_INFLIGHT;
   }
   function scheduleSpaceWeatherRetry(){
     if(DRONE_SPACE_RETRY_TIMER)clearTimeout(DRONE_SPACE_RETRY_TIMER);
-    DRONE_SPACE_RETRY_TIMER=setTimeout(function(){DRONE_SPACE_RETRY_TIMER=null;refreshSpaceWeather();},60000);
+    DRONE_SPACE_RETRY_TIMER=null;
+    if(droneEnabled())DRONE_SPACE_RETRY_TIMER=setTimeout(function(){DRONE_SPACE_RETRY_TIMER=null;refreshSpaceWeather();},60000);
   }
   function switchMainView(view){
-    droneView=view==="drone";
+    droneView=view==="drone"&&droneEnabled();
     document.body.classList.toggle("drone-active",droneView);
     el("droneView").hidden=!droneView;
     el("droneTab").setAttribute("aria-selected",droneView?"true":"false");
