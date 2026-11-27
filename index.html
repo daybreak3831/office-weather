@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1628" />
-  <title>창원시설공단 기상정보시스템 · v5.4</title>
+  <title>창원시설공단 기상정보시스템 · v5.4.1</title>
 
   <style>
     :root{
@@ -755,6 +755,15 @@
       font-size:clamp(27px,5vh,55px);
       line-height:1;
       margin:.6vh 0;
+    }
+
+    /* 안개 이모지(🌫️)가 운영체제별로 사각형 배경과 함께 표시되는 문제 방지 */
+    .day-icon .fog-symbol,.hour-icon .fog-symbol{
+      display:inline-block;
+      width:1em;
+      height:1em;
+      vertical-align:-.07em;
+      overflow:visible;
     }
 
     .day-temp{
@@ -1778,7 +1787,7 @@
       <span id="statusDot" class="dot loading"></span>
       <span id="statusText">기상정보 연결 중</span>
     </div>
-    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.4</span></div>
+    <div>10분마다 자동 갱신 · Open-Meteo · 기상 알림 기준 사용자 설정 가능 · <span class="version-tag">v5.4.1</span></div>
   </footer>
 
 </main>
@@ -1971,7 +1980,8 @@
           </div>
         </div>
         <div class="info-list">
-          <div class="info-version info-current"><div class="info-version-tag">v5.4</div><div class="info-version-text">2026-11-24 · TV 드론 이륙 검토 화면 겹침 개선(가로형 4열 2행, 구형 브라우저 호환 레이아웃) · 설정 일반에 드론 이륙 검토 ON/OFF 추가 · OFF 시 탭 숨김 및 우주환경 조회 중지.</div></div>
+          <div class="info-version info-current"><div class="info-version-tag">v5.4.1</div><div class="info-version-text">2026-11-27 · 시간대별 예보와 6일 예보에서 안개 아이콘이 사각형 배경과 함께 표시되던 문제 수정.</div></div>
+          <div class="info-version"><div class="info-version-tag">v5.4</div><div class="info-version-text">2026-11-24 · TV 드론 이륙 검토 화면 겹침 개선(가로형 4열 2행, 구형 브라우저 호환 레이아웃) · 설정 일반에 드론 이륙 검토 ON/OFF 추가 · OFF 시 탭 숨김 및 우주환경 조회 중지.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.3</div><div class="info-version-text">2026-11-21 · 드론 이륙 보류·주의 원인 카드 강조 및 실제 관측값과 설정 기준 표시 · 태양풍과 지자기 카드에 반투명 배경 추가.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.2</div><div class="info-version-text">2026-11-21 · 지자기교란·Kp·Kk·태양풍 카드에 단계별 주의 표시 추가 · G3 이상 또는 Kp/Kk 7 이상에서 내부 운용 기준에 따라 이륙 불가 권고.</div></div>
           <div class="info-version"><div class="info-version-tag">v5.1.1</div><div class="info-version-text">2026-11-21 · 드론 이륙 검토 탭 추가 · 풍속·돌풍·강수와 우주환경센터 관측값 통합 · 우주환경 수동 새로고침과 자료 지연 시 재시도.</div></div>
@@ -3235,7 +3245,7 @@
     el("placeName").textContent=f.name+" 날씨";
     el("subplaceName").textContent="경남 창원시 "+f.district+" · 사무실 기상 전광판";
     el("alarmSiteLabel").textContent=f.name+" 알림";
-    document.title=f.name+" 기상정보시스템 · v5.4";
+    document.title=f.name+" 기상정보시스템 · v5.4.1";
     el("droneSite").textContent=f.name+" · 드론 이륙 검토";
 
     var activeCctv=effectiveCctvForFacility(f,next);
@@ -3269,6 +3279,14 @@
     var s=readSettingsForm();saveSettingsLocal(s);applySettings(s,true);addLog("설정","설정 저장",CURRENT_FACILITY.name+" · 사용자 알람 "+s.customAlarms.length+"개");closeSettings();
   }
 
+  /* 안개(기상코드 45, 48)는 배경 없는 벡터 SVG로 표시: 브라우저/OS와 무관한 디자인 */
+  var FOG_ICON_SVG =
+    '<svg class="fog-symbol" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="안개">' +
+      '<path d="M14 35c-5 0-8.5-3.5-8.5-8 0-4.4 3.5-7.9 7.9-7.9h1.3C16.4 13 22 8.5 28.8 8.5c6.7 0 12.3 4.6 13.9 10.8a12 12 0 0 1 4.3-.8c6.7 0 12.1 5.3 12.1 11.9 0 1.7-.3 3.3-1 4.6H14Z" fill="#F4F9FF"/>' +
+      '<path d="M13 34.8c-4.8-.6-7.5-3.9-7.5-7.8 0-4.4 3.5-7.9 7.9-7.9h1.3C16.4 13 22 8.5 28.8 8.5c6.7 0 12.3 4.6 13.9 10.8" fill="none" stroke="#D6E6F7" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<path d="M9 43h44M16 50h39M8 57h34" fill="none" stroke="#DFECFA" stroke-width="5" stroke-linecap="round"/>' +
+    '</svg>';
+
   function weatherInfo(code,isDay){
     var c=Number(code);
     var day=isDay!==0&&isDay!==false;
@@ -3277,7 +3295,7 @@
     if(c===1) return {text:"대체로 맑음",icon:day?"🌤️":"🌙",theme:day?"theme-clear":"theme-night",art:day?"partly":"night"};
     if(c===2) return {text:"구름 조금",icon:"⛅",theme:"theme-cloud",art:"partly"};
     if(c===3) return {text:"흐림",icon:"☁️",theme:"theme-cloud",art:"cloudy"};
-    if(c===45||c===48) return {text:"안개",icon:"🌫️",theme:"theme-fog",art:"foggy"};
+    if(c===45||c===48) return {text:"안개",icon:FOG_ICON_SVG,theme:"theme-fog",art:"foggy"};
     if(c===51||c===53||c===55) return {text:"이슬비",icon:"🌦️",theme:"theme-rain",art:"rainy"};
     if(c===56||c===57) return {text:"어는 이슬비",icon:"🌧️",theme:"theme-rain",art:"rainy"};
     if(c===61||c===63||c===65) return {text:"비",icon:"🌧️",theme:"theme-rain",art:"rainy"};
